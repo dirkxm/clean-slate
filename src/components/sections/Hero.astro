@@ -1,0 +1,63 @@
+---
+import Button from "../ui/Button.astro";
+import heroImage from "../../assets/images/clean-slate-haul-away.jpg";
+import { site } from "../../config/site";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description: string;
+}
+
+const { eyebrow, title, description } = Astro.props;
+---
+
+<section>
+  <div class="container grid gap-16 lg:grid-cols-2 lg:items-center">
+
+    <div>
+
+      {eyebrow && (
+        <p class="mb-4 font-semibold text-primary">
+          {site.tagline}
+        </p>
+      )}
+
+      <h1 class="mb-6">
+        {title}
+      </h1>
+
+      <p class="max-w-xl text-body">
+        {description}
+      </p>
+
+      <div class="mt-10 flex flex-wrap gap-4">
+        <Button href="/contact">
+          Get Free Quote
+        </Button>
+
+        <Button href="/pricing" variant="secondary">
+          View Pricing
+        </Button>
+      </div>
+
+      ✓ Same-Day Service
+
+✓ Licensed & Insured
+
+✓ Free Estimates
+
+★★★★★ 5-Star Local Service
+
+    </div>
+
+    <div class="rounded-3xl overflow-hidden">
+      <img
+        src={heroImage.src}
+        alt="Construction cleanup"
+        class="w-full object-cover"
+      />
+    </div>
+
+  </div>
+</section>

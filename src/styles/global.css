@@ -1,0 +1,207 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
+
+@import "tailwindcss";
+
+/* ==========================================================
+   Tailwind Theme Tokens
+   ========================================================== */
+
+@theme {
+  /* Colors */
+  --color-primary: #1b6b6e;
+  --color-primary-dark: #145457;
+  --color-primary-light: #2ba3a8;
+  --color-accent: #73d8c7;
+
+  --color-background: #f8f7f4;
+  --color-surface: #ffffff;
+
+  --color-heading: #1c2427;
+  --color-body: #49545a;
+  --color-muted: #7b878e;
+  --color-border: #d5dadd;
+
+  /* Fonts */
+  --font-heading: "Manrope", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+/* ==========================================================
+   Design Tokens
+   ========================================================== */
+
+:root {
+  --primary: #1b6b6e;
+  --primary-dark: #145457;
+  --primary-light: #2ba3a8;
+  --accent: #73d8c7;
+
+  --background: #f8f7f4;
+  --surface: #ffffff;
+
+  --heading: #1c2427;
+  --body: #49545a;
+  --muted: #7b878e;
+  --border: #d5dadd;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --container: 1280px;
+}
+
+/* ==========================================================
+   Base
+   ========================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--body);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================
+   Typography
+   ========================================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--heading);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+h1 {
+  font-size: clamp(3rem, 5vw, 4.5rem);
+}
+
+h2 {
+  font-size: clamp(2.25rem, 5vw, 4rem);
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+p {
+  margin-block: 1.25rem;
+}
+
+/* ==========================================================
+   Links & Media
+   ========================================================== */
+
+a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+button {
+  transition: all 0.2s ease;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ==========================================================
+   Layout
+   ========================================================== */
+
+.container {
+  width: min(var(--container), calc(100% - 48px));
+  margin-inline: auto;
+}
+
+section {
+  padding-block: clamp(5rem, 10vw, 8rem);
+}
+
+/* ==========================================================
+   Forms
+   ========================================================== */
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+/* ==========================================================
+   Accessibility
+   ========================================================== */
+
+:focus-visible {
+  outline: 3px solid var(--primary-light);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--heading);
+}
+
+/* ==========================================================
+   Utility Classes
+   ========================================================== */
+
+.text-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--primary-light)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass {
+  background: rgb(255 255 255 / 0.75);
+  backdrop-filter: blur(12px);
+}
+
+.shadow-soft {
+  box-shadow:
+    0 10px 40px rgb(0 0 0 / 0.05),
+    0 2px 8px rgb(0 0 0 / 0.04);
+}
+
+.rounded-card {
+  border-radius: var(--radius-lg);
+}
