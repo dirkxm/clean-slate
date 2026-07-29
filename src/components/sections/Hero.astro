@@ -2,6 +2,7 @@
 import Button from "../ui/Button.astro";
 import heroImage from "../../assets/images/clean-slate-haul-away.jpg";
 import { site } from "../../config/site";
+import { ArrowRight } from "lucide-astro";
 
 interface Props {
   eyebrow?: string;
@@ -13,32 +14,40 @@ const { eyebrow, title, description } = Astro.props;
 ---
 
 <section>
-  <div class="container grid gap-16 lg:grid-cols-2 lg:items-center">
+  {eyebrow && (
+    <div class="container">
+      <p class="mt-8! mb-10! font-semibold text-primary">
+        {site.tagline}
+      </p>
+    </div>
+  )}
+
+  <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
 
     <div>
 
-      {eyebrow && (
-        <p class="mb-4 font-semibold text-primary">
-          {site.tagline}
-        </p>
-      )}
-
-      <h1 class="mb-6">
-        {title}
-      </h1>
+      <h1 class="mb-6" set:html={title} />
 
       <p class="max-w-xl text-body">
         {description}
       </p>
 
-      <div class="mt-10 flex flex-wrap gap-4">
-        <Button href="/contact">
-          Get Free Quote
+      <div class="mt-10 flex flex-wrap items-center gap-6">
+        <Button href="/contact" size="sm">
+          Get a Free Quote
         </Button>
 
-        <Button href="/pricing" variant="secondary">
+        <a
+          href="/pricing"
+          class="group inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+        >
           View Pricing
-        </Button>
+
+          <ArrowRight
+            class="transition group-hover:translate-x-1"
+            size={18}
+          />
+        </a>
       </div>
 
       ✓ Same-Day Service

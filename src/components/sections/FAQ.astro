@@ -1,0 +1,74 @@
+---
+import { ChevronDown } from "lucide-astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+const faqs = [
+  {
+    question: "How quickly can you schedule a job?",
+    answer:
+      "Placeholder text. Most jobs can be scheduled within a few business days, with same-day service often available depending on your location and project size.",
+  },
+  {
+    question: "What areas do you service?",
+    answer:
+      "Placeholder text. We serve the Des Moines metro and surrounding Central Iowa communities. Contact us to confirm coverage for your address.",
+  },
+  {
+    question: "What size dumpsters are available?",
+    answer:
+      "Placeholder text. We offer a range of dumpster sizes to fit driveways and job sites of any scale, from small residential cleanouts to large commercial projects.",
+  },
+  {
+    question: "Are you licensed and insured?",
+    answer:
+      "Placeholder text. Yes, we are fully licensed and insured for both commercial and residential work.",
+  },
+  {
+    question: "How is pricing determined?",
+    answer:
+      "Placeholder text. Pricing depends on project size, material type, and timeline. We provide a free, no-obligation quote before any work begins.",
+  },
+  {
+    question: "Do you offer same-day junk removal?",
+    answer:
+      "Placeholder text. Same-day and next-day service is often available. Reach out and we'll do our best to accommodate your timeline.",
+  },
+  {
+    question: "What happens to the debris you remove?",
+    answer:
+      "Placeholder text. We sort materials where possible and prioritize responsible disposal and recycling in accordance with local regulations.",
+  },
+  {
+    question: "Can I cancel or reschedule my appointment?",
+    answer:
+      "Placeholder text. Yes, just give us a call as early as possible and we'll work with you to find a new time.",
+  },
+];
+---
+
+<section>
+  <div class="container">
+
+    <SectionHeading title="FAQ" />
+
+    <div class="mx-auto mt-16 max-w-3xl divide-y divide-border">
+      {
+        faqs.map((faq) => (
+          <details class="group py-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-heading">
+              {faq.question}
+
+              <ChevronDown
+                class="shrink-0 transition duration-300 group-open:rotate-180"
+                size={20}
+              />
+            </summary>
+
+            <p class="mt-4 text-body">{faq.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,56 @@
+---
+import { Star } from "lucide-astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+const testimonials = [
+  {
+    quote:
+      "They showed up exactly when they said they would and left the job site spotless.",
+    name: "Mike R.",
+    role: "General Contractor",
+  },
+  {
+    quote:
+      "Communication was clear from the first call to the final walkthrough. No surprises, no delays.",
+    name: "Sarah T.",
+    role: "Property Manager",
+  },
+  {
+    quote:
+      "Our garage was a disaster for years. They cleared it out in an afternoon and hauled everything away.",
+    name: "Dave K.",
+    role: "Homeowner",
+  },
+];
+---
+
+<section>
+  <div class="container">
+
+    <SectionHeading title="Testimonials" />
+
+    <div class="mt-16 grid gap-8 lg:grid-cols-3">
+      {
+        testimonials.map((testimonial) => (
+          <div class="flex flex-col rounded-3xl border border-border bg-white p-10 shadow-soft">
+            <div class="mb-6 flex gap-1 text-primary">
+              {Array.from({ length: 5 }).map(() => (
+                <Star size={20} fill="currentColor" stroke="none" />
+              ))}
+            </div>
+
+            <p class="mb-10 flex-1 text-xl text-heading">
+              &ldquo;{testimonial.quote}&rdquo;
+            </p>
+
+            <div>
+              <p class="font-semibold text-heading">{testimonial.name}</p>
+              <p class="text-sm text-muted">{testimonial.role}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+  </div>
+</section>

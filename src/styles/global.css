@@ -1,11 +1,8 @@
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
+@import "@fontsource/newsreader/500.css";
 
-@import "@fontsource/manrope/600.css";
-@import "@fontsource/manrope/700.css";
-@import "@fontsource/manrope/800.css";
+@import "@fontsource/geist/400.css";
+@import "@fontsource/geist/500.css";
+@import "@fontsource/geist/600.css";
 
 @import "tailwindcss";
 
@@ -29,8 +26,9 @@
   --color-border: #d5dadd;
 
   /* Fonts */
-  --font-heading: "Manrope", sans-serif;
-  --font-body: "Inter", sans-serif;
+  --font-display: "Newsreader", serif;
+  --font-heading: "Geist", sans-serif;
+  --font-body: "Geist", sans-serif;
 }
 
 /* ==========================================================
@@ -78,7 +76,8 @@ body {
   background: var(--background);
   color: var(--body);
   font-family: var(--font-body);
-  font-size: 18px;
+  font-weight: 400;
+  font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -97,20 +96,25 @@ h6 {
   margin: 0;
   color: var(--heading);
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.1;
 }
 
 h1 {
-  font-size: clamp(3rem, 5vw, 4.5rem);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.6775rem, 2.975vw + 1.19rem, 3.2725rem);
+  line-height: 1;
 }
 
 h2 {
-  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(3rem, 3vw + 2rem, 3.5rem);
 }
 
 h3 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: 1.75rem;
 }
 
 p {
@@ -149,7 +153,7 @@ svg {
 }
 
 section {
-  padding-block: clamp(5rem, 10vw, 8rem);
+  padding-block: clamp(3rem, 6vw, 5rem);
 }
 
 /* ==========================================================

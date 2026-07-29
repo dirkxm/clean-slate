@@ -4,6 +4,7 @@ interface Props {
   title: string;
   description?: string;
   align?: "left" | "center";
+  theme?: "light" | "dark";
 }
 
 const {
@@ -11,6 +12,7 @@ const {
   title,
   description,
   align = "center",
+  theme = "light",
 } = Astro.props;
 
 const alignment =
@@ -19,7 +21,7 @@ const alignment =
     : "";
 ---
 
-<div class={`max-w-3xl ${alignment}`}>
+<div class={`max-w-3xl ${alignment} ${theme === "dark" ? "theme-dark" : ""}`}>
 
   {eyebrow && (
     <p class="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
@@ -38,3 +40,17 @@ const alignment =
   )}
 
 </div>
+
+<style>
+  .theme-dark h2 {
+    color: #fff;
+  }
+
+  .theme-dark p.text-body {
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .theme-dark p.text-primary {
+    color: var(--color-accent);
+  }
+</style>

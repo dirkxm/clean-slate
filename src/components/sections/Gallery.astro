@@ -1,0 +1,34 @@
+---
+import { Image as ImageIcon } from "lucide-astro";
+
+const items = [
+  "aspect-[3/4]",
+  "aspect-square",
+  "aspect-[4/5]",
+  "aspect-[4/3]",
+  "aspect-square",
+  "aspect-[3/4]",
+  "aspect-[4/3]",
+  "aspect-[4/5]",
+  "aspect-[3/4]",
+  "aspect-square",
+];
+---
+
+<section class="bg-primary-dark">
+  <div class="container">
+
+    <div class="columns-1 gap-6 sm:columns-2 lg:columns-3">
+      {
+        items.map((aspect) => (
+          <div
+            class={`mb-6 flex w-full break-inside-avoid items-center justify-center rounded-2xl border border-white/10 bg-white/5 ${aspect}`}
+          >
+            <ImageIcon class="text-white/40" size={48} strokeWidth={1.5} />
+          </div>
+        ))
+      }
+    </div>
+
+  </div>
+</section>

@@ -1,6 +1,7 @@
 ---
 import { site } from "../../config/site";
 import Button from "../ui/Button.astro";
+import { Menu, X } from "lucide-astro";
 import "../../styles/components/header.css";
 
 const navigation = [
@@ -73,8 +74,8 @@ const navigation = [
         (515) 202-3593
       </a>
 
-      <Button href="/contact">
-        Start My Project
+      <Button href="/contact" size="sm">
+        Get a Free Quote
       </Button>
     </div>
 
@@ -82,26 +83,158 @@ const navigation = [
       id="mobile-toggle"
       class="mobile-toggle"
       aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
     >
-      ☰
+      <Menu class="icon-menu" size={28} />
+      <X class="icon-close" size={28} />
     </button>
+  </div>
+
+  <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+  <div
+    id="mobile-menu"
+    class="mobile-menu"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Mobile navigation"
+    inert
+  >
+    <div class="mobile-menu-top">
+      <button
+        id="mobile-close"
+        class="mobile-close"
+        aria-label="Close navigation"
+      >
+        <X size={24} />
+      </button>
+    </div>
+
+    <nav class="mobile-nav">
+      {
+        navigation.map((item) => (
+          <a href={item.href}>{item.label}</a>
+        ))
+      }
+    </nav>
+
+    <div class="mobile-menu-actions">
+      <div class="mobile-call">
+        <span class="mobile-call-label">Call Us</span>
+        <a class="phone" href="tel:+15152023593">
+          (515) 202-3593
+        </a>
+      </div>
+
+      <Button href="/contact" size="sm">
+        Get a Free Quote
+      </Button>
+    </div>
   </div>
 </header>
 
 <script>
-const header=document.getElementById("site-header");
+const header = document.getElementById("site-header");
 
-window.addEventListener("scroll",()=>{
+window.addEventListener("scroll", () => {
 
-if(window.scrollY>25){
+if (window.scrollY > 25) {
 
 header?.classList.add("scrolled");
 
-}else{
+} else {
 
 header?.classList.remove("scrolled");
 
 }
 
+});
+
+const toggle = document.getElementById("mobile-toggle") as HTMLButtonElement;
+const closeBtn = document.getElementById("mobile-close") as HTMLButtonElement;
+const menu = document.getElementById("mobile-menu") as HTMLElement;
+const overlay = document.getElementById("mobile-menu-overlay") as HTMLElement;
+
+let lastFocused: HTMLElement | null = null;
+
+function getFocusable(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+  );
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape") {
+    closeMenu();
+    return;
+  }
+
+  if (e.key === "Tab") {
+    const focusable = getFocusable(menu);
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+}
+
+function openMenu() {
+  lastFocused = document.activeElement as HTMLElement;
+
+  menu.classList.add("open");
+  overlay.classList.add("open");
+  menu.removeAttribute("inert");
+
+  toggle.setAttribute("aria-expanded", "true");
+
+  document.body.style.overflow = "hidden";
+
+  const focusable = getFocusable(menu);
+  focusable[0]?.focus();
+
+  document.addEventListener("keydown", onKeydown);
+}
+
+function closeMenu() {
+  if (!menu.classList.contains("open")) return;
+
+  menu.classList.remove("open");
+  overlay.classList.remove("open");
+  menu.setAttribute("inert", "");
+
+  toggle.setAttribute("aria-expanded", "false");
+
+  document.body.style.overflow = "";
+
+  document.removeEventListener("keydown", onKeydown);
+
+  lastFocused?.focus();
+}
+
+toggle.addEventListener("click", () => {
+  if (menu.classList.contains("open")) {
+    closeMenu();
+  } else {
+    openMenu();
+  }
+});
+
+closeBtn.addEventListener("click", closeMenu);
+overlay.addEventListener("click", closeMenu);
+
+const desktopBreakpoint = window.matchMedia("(min-width: 1024px)");
+desktopBreakpoint.addEventListener("change", (e) => {
+  if (e.matches) closeMenu();
 });
 </script>

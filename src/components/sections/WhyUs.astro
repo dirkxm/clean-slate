@@ -1,0 +1,44 @@
+---
+import { Check, Image as ImageIcon } from "lucide-astro";
+
+const checklist = [
+  "Fast Scheduling",
+  "Reliable Communication",
+  "Licensed & Insured",
+  "Commercial & Residential",
+];
+---
+
+<section>
+  <div class="container grid gap-16 lg:grid-cols-2 lg:items-center">
+
+    <div class="flex aspect-[4/3] items-center justify-center rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 lg:order-2">
+      <ImageIcon class="text-primary/40" size={64} strokeWidth={1.5} />
+    </div>
+
+    <div class="lg:order-1">
+
+      <h2 class="mb-6">
+        Built Around Your Schedule.
+      </h2>
+
+      <p class="max-w-xl text-body">
+        We show up when we say we will, communicate clearly, and leave
+        your project ready for what's next.
+      </p>
+
+      <ul class="mt-10 flex flex-col gap-4">
+        {
+          checklist.map((item) => (
+            <li class="flex items-center gap-3">
+              <Check class="shrink-0 text-primary" size={22} />
+              <span class="font-medium text-heading">{item}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,33 @@
+---
+import { HardHat, Trash2, Package } from "lucide-astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+import ServiceCard from "../cards/ServiceCard.astro";
+import { services } from "../../data/services";
+
+const icons: Record<string, typeof HardHat> = {
+  "construction-cleanup": HardHat,
+  "dumpster-rental": Trash2,
+  "portable-storage": Package,
+};
+
+const featured = services.filter((service) => service.slug in icons);
+---
+
+<section class="bg-primary-dark">
+  <div class="container">
+
+    <SectionHeading
+      title="Services"
+      theme="dark"
+    />
+
+    <div class="mt-16 grid gap-8 lg:grid-cols-3">
+      {
+        featured.map((service) => (
+          <ServiceCard service={service} icon={icons[service.slug]} />
+        ))
+      }
+    </div>
+
+  </div>
+</section>

@@ -1,5 +1,6 @@
 ---
 import { ArrowRight } from "lucide-astro";
+import type { ComponentProps } from "astro/types";
 
 interface Props {
   service: {
@@ -7,34 +8,43 @@ interface Props {
     slug: string;
     short: string;
   };
+  icon: (props: ComponentProps<typeof ArrowRight>) => any;
 }
 
-const { service } = Astro.props;
+const { service, icon: Icon } = Astro.props;
 ---
 
 <a
   href={`/${service.slug}`}
-  class="group block rounded-3xl border border-border bg-white p-8 shadow-soft transition duration-300 hover:-translate-y-2 hover:border-primary"
+  class="group block overflow-hidden rounded-3xl border border-border bg-white shadow-soft transition duration-300 hover:-translate-y-2 hover:border-primary"
 >
 
-  <h3 class="mb-4">
-    {service.title}
-  </h3>
+  <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+    <Icon class="text-primary/40" size={56} strokeWidth={1.5} />
+  </div>
 
-  <p class="mb-8 text-body">
-    {service.short}
-  </p>
+  <div class="border-t border-border p-8">
 
-  <span
-    class="inline-flex items-center gap-2 font-semibold text-primary"
-  >
-    Learn More
+    <h3 class="mb-4">
+      {service.title}
+    </h3>
 
-    <ArrowRight
-      class="transition group-hover:translate-x-1"
-      size={18}
-    />
+    <p class="mb-8 text-body">
+      {service.short}
+    </p>
 
-  </span>
+    <span
+      class="inline-flex items-center gap-2 font-semibold text-primary"
+    >
+      Learn More
+
+      <ArrowRight
+        class="transition group-hover:translate-x-1"
+        size={18}
+      />
+
+    </span>
+
+  </div>
 
 </a>

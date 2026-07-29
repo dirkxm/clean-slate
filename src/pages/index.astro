@@ -3,6 +3,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Hero from "../components/sections/Hero.astro";
 import Services from "../components/sections/Services.astro";
+import WhyUs from "../components/sections/WhyUs.astro";
+import Process from "../components/sections/Process.astro";
+import Gallery from "../components/sections/Gallery.astro";
+import Testimonials from "../components/sections/Testimonials.astro";
+import FAQ from "../components/sections/FAQ.astro";
+import CTA from "../components/sections/CTA.astro";
 ---
 
 <BaseLayout>
@@ -13,11 +19,23 @@ import Services from "../components/sections/Services.astro";
 
     <Hero
       eyebrow="Professional Cleanup That Keeps Your Project Moving"
-      title="Construction Cleanup Done Right"
-      description="Professional construction cleanup and haul away services throughout Central Iowa. We help contractors, homeowners, and property managers finish projects faster with dependable cleanup, debris removal, and reliable service."
+      title="When the<br class='hidden lg:inline' /> work is done,<br class='hidden lg:inline' /> we clean up."
+      description="Professional construction cleanup for contractors, homeowners, and property managers across Central Iowa. Fast scheduling, dependable crews, and job sites left ready for the next phase."
     />
 
     <Services />
+
+    <WhyUs />
+
+    <Process />
+
+    <Gallery />
+
+    <Testimonials />
+
+    <FAQ />
+
+    <CTA />
 
   </main>
 
