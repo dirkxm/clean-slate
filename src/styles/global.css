@@ -25,6 +25,12 @@
   --color-muted: #7b878e;
   --color-border: #d5dadd;
 
+  --color-card: #ffffff;
+  --color-success: #3a8a5c;
+  --color-success-bg: #eaf5ee;
+  --color-error: #c1443c;
+  --color-error-bg: #fbeae8;
+
   /* Fonts */
   --font-display: "Newsreader", serif;
   --font-heading: "Geist", sans-serif;
@@ -49,10 +55,16 @@
   --muted: #7b878e;
   --border: #d5dadd;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --card: #ffffff;
+  --success: #3a8a5c;
+  --success-bg: #eaf5ee;
+  --error: #c1443c;
+  --error-bg: #fbeae8;
+
+  --radius-token-sm: 8px;
+  --radius-token-md: 12px;
+  --radius-token-lg: 16px;
+  --radius-token-xl: 24px;
 
   --container: 1280px;
 }
@@ -167,6 +179,76 @@ button {
   font: inherit;
 }
 
+.input,
+.textarea,
+.select {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-token-md);
+  background: var(--surface);
+  color: var(--heading);
+  transition: border-color 0.2s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted);
+}
+
+.input:hover,
+.textarea:hover,
+.select:hover {
+  border-color: var(--muted);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--primary);
+}
+
+.textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7l5 5 5-5' stroke='%2349545a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 44px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--heading);
+}
+
+.field-error {
+  margin-top: 6px;
+  font-size: 0.875rem;
+  color: var(--error);
+}
+
+.input.is-invalid,
+.textarea.is-invalid,
+.select.is-invalid {
+  border-color: var(--error);
+}
+
 /* ==========================================================
    Accessibility
    ========================================================== */
@@ -207,5 +289,5 @@ button {
 }
 
 .rounded-card {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-token-lg);
 }

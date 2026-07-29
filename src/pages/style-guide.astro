@@ -1,0 +1,563 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import Hero from "../components/sections/Hero.astro";
+import Gallery from "../components/sections/Gallery.astro";
+import FAQ from "../components/sections/FAQ.astro";
+import Testimonials from "../components/sections/Testimonials.astro";
+import CTA from "../components/sections/CTA.astro";
+import Button from "../components/ui/Button.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import ServiceCard from "../components/cards/ServiceCard.astro";
+import { HardHat, Star, Check } from "lucide-astro";
+
+const colors = [
+  { name: "Background", token: "--color-background", hex: "#f8f7f4" },
+  { name: "Surface", token: "--color-surface", hex: "#ffffff" },
+  { name: "Card", token: "--color-card", hex: "#ffffff" },
+  { name: "Primary", token: "--color-primary", hex: "#1b6b6e" },
+  { name: "Primary Dark", token: "--color-primary-dark", hex: "#145457" },
+  { name: "Primary Light", token: "--color-primary-light", hex: "#2ba3a8" },
+  { name: "Accent", token: "--color-accent", hex: "#73d8c7" },
+  { name: "Heading", token: "--color-heading", hex: "#1c2427" },
+  { name: "Body", token: "--color-body", hex: "#49545a" },
+  { name: "Muted", token: "--color-muted", hex: "#7b878e" },
+  { name: "Border", token: "--color-border", hex: "#d5dadd" },
+  { name: "Success", token: "--color-success", hex: "#3a8a5c" },
+  { name: "Error", token: "--color-error", hex: "#c1443c" },
+];
+
+const radii = [
+  { name: "sm", token: "--radius-token-sm", value: "8px" },
+  { name: "md", token: "--radius-token-md", value: "12px" },
+  { name: "lg", token: "--radius-token-lg", value: "16px" },
+  { name: "xl", token: "--radius-token-xl", value: "24px" },
+];
+
+const spacing = [1, 2, 4, 6, 8, 10, 12, 16, 20];
+
+const rules = [
+  "Sections use 48–80px fluid vertical spacing — clamp(3rem, 6vw, 5rem), not a fixed value",
+  "Cards use 24px border radius (rounded-3xl)",
+  "Buttons use 12px border radius (rounded-xl) — not pill-shaped",
+  "Image aspect ratio varies by context: 4:3 for single-image cards, intentionally mixed heights in the Gallery masonry",
+  "One soft shadow elevation (.shadow-soft) — no 1–4 elevation scale yet",
+  "Body copy caps around 36rem max-width (roughly 65–70 characters at 16px)",
+  "Headlines (h1, h2) are Newsreader",
+  "UI text — navigation, buttons, body copy — is Geist",
+];
+
+const exampleService = {
+  title: "Construction Cleanup",
+  slug: "construction-cleanup",
+  short:
+    "Fast, reliable post-construction cleanup for contractors, builders, and remodelers.",
+};
+
+const sandboxAreas = [
+  "Font combinations",
+  "Button ideas",
+  "Hero layouts",
+  "New cards",
+  "Animations",
+];
+---
+
+<BaseLayout title="Style Guide — Clean Slate">
+  <meta slot="head" name="robots" content="noindex,nofollow" />
+
+  <Header />
+
+  <main class="bg-background pb-32">
+
+    <!-- ================= Intro ================= -->
+    <div class="container pt-40">
+
+      <p class="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+        Internal Reference — Not Linked Publicly
+      </p>
+
+      <h1 class="mb-4">Style Guide</h1>
+
+      <p class="max-w-2xl text-lg text-body">
+        Every design token and component used on the Clean Slate site,
+        in one place. When you're not sure how much padding a card
+        uses or which teal is "primary," this is where you look —
+        not the last page you happened to build.
+      </p>
+    </div>
+
+    <!-- ================= Rules ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Rules</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        The decisions that keep the site cohesive. If you're adding a
+        new page in six months, start here instead of guessing.
+      </p>
+
+      <ul class="flex max-w-2xl flex-col gap-4">
+        {
+          rules.map((rule) => (
+            <li class="flex items-start gap-3">
+              <Check class="mt-1 shrink-0 text-primary" size={18} />
+              <span class="text-body">{rule}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- ================= Colors ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Color</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Defined once in <code>global.css</code> as both Tailwind theme
+        tokens (<code>--color-*</code>, for utility classes like
+        <code>bg-primary</code>) and plain CSS variables (for use
+        outside Tailwind, e.g. inline styles or non-Tailwind CSS).
+      </p>
+
+      <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+        {
+          colors.map((color) => (
+            <div class="overflow-hidden rounded-2xl border border-border bg-white">
+              <div class="h-24 w-full" style={`background:${color.hex}`} />
+              <div class="p-4">
+                <p class="font-semibold text-heading">{color.name}</p>
+                <p class="text-sm text-muted">{color.hex}</p>
+                <p class="mt-1 font-mono text-xs text-muted">
+                  {color.token}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- ================= Typography ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Typography</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Newsreader for display headings (h1, h2). Geist for
+        everything else — h3, body copy, UI text, links.
+      </p>
+
+      <div class="flex flex-col gap-10">
+
+        <div class="border-b border-border pb-8">
+          <p class="mb-3 font-mono text-xs text-muted">
+            H1 — Newsreader 500 — clamp(2.6775rem, 2.975vw + 1.19rem, 3.2725rem)
+          </p>
+          <h1>When the work is done.</h1>
+        </div>
+
+        <div class="border-b border-border pb-8">
+          <p class="mb-3 font-mono text-xs text-muted">
+            H2 — Newsreader 500 — clamp(3rem, 3vw + 2rem, 3.5rem)
+          </p>
+          <h2>Built around your schedule.</h2>
+        </div>
+
+        <div class="border-b border-border pb-8">
+          <p class="mb-3 font-mono text-xs text-muted">
+            H3 — Geist 600 — 28px
+          </p>
+          <h3>Construction Cleanup</h3>
+        </div>
+
+        <div class="border-b border-border pb-8">
+          <p class="mb-3 font-mono text-xs text-muted">
+            Body Large — Geist 400 — 18px (text-lg)
+          </p>
+          <p class="max-w-xl text-lg text-body">
+            Professional construction cleanup for contractors,
+            homeowners, and property managers across Central Iowa.
+          </p>
+        </div>
+
+        <div class="border-b border-border pb-8">
+          <p class="mb-3 font-mono text-xs text-muted">
+            Body — Geist 400 — 16px
+          </p>
+          <p class="max-w-xl text-body">
+            Professional construction cleanup for contractors,
+            homeowners, and property managers across Central Iowa.
+          </p>
+        </div>
+
+        <div class="border-b border-border pb-8">
+          <p class="mb-3 font-mono text-xs text-muted">
+            Small — Geist 400 — 14px (text-sm)
+          </p>
+          <p class="max-w-xl text-sm text-body">
+            Used for helper text, form hints, and metadata like card
+            timestamps or attribution.
+          </p>
+        </div>
+
+        <div class="border-b border-border pb-8">
+          <p class="mb-3 font-mono text-xs text-muted">
+            Caption / Eyebrow — Geist 600 — 14px, uppercase, 0.25em tracking
+          </p>
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+            Eyebrow Label
+          </p>
+        </div>
+
+        <div>
+          <p class="mb-3 font-mono text-xs text-muted">
+            Links — Geist 500 — inherits size, primary teal, darkens on hover
+          </p>
+          <a href="#" class="font-medium text-primary hover:text-primary-dark">
+            Learn more →
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= Buttons ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Buttons</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Three variants, two sizes, plus disabled and loading states.
+        All via the shared <code>Button.astro</code> component.
+      </p>
+
+      <div class="flex flex-col gap-8">
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Variants</p>
+          <div class="flex flex-wrap items-center gap-4">
+            <Button variant="primary">Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="text">Text</Button>
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Sizes</p>
+          <div class="flex flex-wrap items-center gap-4">
+            <Button variant="primary">Default</Button>
+            <Button variant="primary" size="sm">Small</Button>
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">
+            Disabled / Loading
+          </p>
+          <div class="flex flex-wrap items-center gap-4">
+            <Button variant="primary" disabled>Disabled</Button>
+            <Button variant="secondary" disabled>Disabled</Button>
+            <Button variant="primary" loading>Loading</Button>
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">On dark</p>
+          <div class="flex flex-wrap items-center gap-4 rounded-2xl bg-primary-dark p-8">
+            <Button variant="primary">Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= Cards ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Cards</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Every card style in one place. All share the same base
+        recipe — 24px radius, 1px border, soft shadow.
+      </p>
+
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Base recipe</p>
+          <div class="flex h-full min-h-56 flex-col justify-center rounded-3xl border border-border bg-white p-8 shadow-soft">
+            <p class="font-mono text-xs text-muted">
+              rounded-3xl · border-border · shadow-soft · p-8
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Service Card</p>
+          <ServiceCard service={exampleService} icon={HardHat} />
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Testimonial Card</p>
+          <div class="flex h-full flex-col rounded-3xl border border-border bg-white p-10 shadow-soft">
+            <div class="mb-6 flex gap-1 text-primary">
+              {Array.from({ length: 5 }).map(() => (
+                <Star size={18} fill="currentColor" stroke="none" />
+              ))}
+            </div>
+            <p class="mb-10 flex-1 text-xl text-heading">
+              &ldquo;They showed up exactly when they said they
+              would.&rdquo;
+            </p>
+            <div>
+              <p class="font-semibold text-heading">Mike R.</p>
+              <p class="text-sm text-muted">General Contractor</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= Forms ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Forms</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Shared <code>.input</code>, <code>.textarea</code>, and
+        <code>.select</code> classes in <code>global.css</code> —
+        12px radius, existing border/muted/primary token colors,
+        keyboard focus ring already handled globally.
+      </p>
+
+      <div class="grid max-w-3xl gap-8 sm:grid-cols-2">
+
+        <div>
+          <label class="field-label" for="sg-input">Input</label>
+          <input
+            id="sg-input"
+            class="input"
+            type="text"
+            placeholder="Jane Doe"
+          />
+        </div>
+
+        <div>
+          <label class="field-label" for="sg-select">Select</label>
+          <select id="sg-select" class="select">
+            <option>Construction Cleanup</option>
+            <option>Dumpster Rental</option>
+            <option>Portable Storage</option>
+          </select>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="field-label" for="sg-textarea">Textarea</label>
+          <textarea
+            id="sg-textarea"
+            class="textarea"
+            placeholder="Tell us about your project..."
+          />
+        </div>
+
+        <div>
+          <p class="field-label">Checkbox</p>
+          <label class="flex items-center gap-2 text-body">
+            <input type="checkbox" checked />
+            Licensed & Insured
+          </label>
+        </div>
+
+        <div>
+          <p class="field-label">Radio</p>
+          <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-2 text-body">
+              <input type="radio" name="sg-radio" checked />
+              Residential
+            </label>
+            <label class="flex items-center gap-2 text-body">
+              <input type="radio" name="sg-radio" />
+              Commercial
+            </label>
+          </div>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="field-label" for="sg-invalid">
+            Validation
+          </label>
+          <input
+            id="sg-invalid"
+            class="input is-invalid"
+            type="email"
+            value="not-an-email"
+          />
+          <p class="field-error">Enter a valid email address.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= Navigation ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Navigation</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        The real, live header sits at the top of this page — it's the
+        actual <code>Header.astro</code> component, not a mockup.
+        Resize the viewport below 1024px to see the mobile drawer;
+        scroll to see the sticky/frosted state.
+      </p>
+
+      <div class="flex flex-wrap gap-10">
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">
+            Desktop nav link — Geist 500, 16px
+          </p>
+          <span class="font-medium text-heading">Services</span>
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Dropdown affordance</p>
+          <span class="flex items-center gap-1 font-medium text-heading">
+            Services
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M5 7l5 5 5-5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Mobile</p>
+          <span class="text-body">
+            Slide-in drawer, right-aligned, focus-trapped — see
+            <code>Header.astro</code>
+          </span>
+        </div>
+
+        <div>
+          <p class="mb-4 font-mono text-xs text-muted">Sticky</p>
+          <span class="text-body">
+            Transparent until 25px scroll, then frosted white —
+            <code>#site-header.scrolled</code>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= Radius & Spacing ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Radius</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Border-radius tokens, plain CSS variables.
+      </p>
+
+      <div class="mb-16 flex flex-wrap gap-8">
+        {
+          radii.map((radius) => (
+            <div class="flex flex-col items-center gap-3">
+              <div
+                class="h-20 w-20 border-2 border-primary bg-primary/10"
+                style={`border-radius:${radius.value}`}
+              />
+              <p class="font-mono text-xs text-muted">
+                {radius.token} — {radius.value}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+
+      <h2 class="mb-2 text-2xl!">Spacing</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Tailwind's default 0.25rem (4px) scale, shown here in the
+        multiples used most often across the site.
+      </p>
+
+      <div class="flex flex-col gap-3">
+        {
+          spacing.map((step) => (
+            <div class="flex items-center gap-4">
+              <span class="w-12 font-mono text-xs text-muted">
+                {step * 4}px
+              </span>
+              <div class="h-4 bg-primary" style={`width:${step * 4}px`} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- ================= Components ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Components</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Every real section component, rendered live — not a
+        screenshot. As new sections get built, they get added below.
+      </p>
+
+      <p class="mb-4 font-mono text-xs text-muted">SectionHeading</p>
+      <div class="rounded-2xl border border-border bg-white p-10">
+        <SectionHeading
+          eyebrow="Eyebrow Label"
+          title="Section Heading"
+          description="Optional supporting description text sits below the heading."
+        />
+      </div>
+    </div>
+
+    <div class="border-t border-border">
+      <p class="container pt-10 font-mono text-xs text-muted">Hero</p>
+      <Hero
+        eyebrow="Professional Cleanup That Keeps Your Project Moving"
+        title="When the work is done, we clean up."
+        description="Professional construction cleanup for contractors, homeowners, and property managers across Central Iowa."
+      />
+    </div>
+
+    <div class="border-t border-border">
+      <p class="container pt-10 font-mono text-xs text-muted">Gallery</p>
+      <Gallery />
+    </div>
+
+    <div class="border-t border-border">
+      <p class="container pt-10 font-mono text-xs text-muted">Testimonials</p>
+      <Testimonials />
+    </div>
+
+    <div class="border-t border-border">
+      <p class="container pt-10 font-mono text-xs text-muted">FAQ</p>
+      <FAQ />
+    </div>
+
+    <div class="border-t border-border">
+      <p class="container pt-10 font-mono text-xs text-muted">CTA Banner</p>
+      <CTA />
+    </div>
+
+    <div class="container border-t border-border py-16">
+      <p class="mb-4 font-mono text-xs text-muted">Footer</p>
+      <div class="rounded-2xl border border-dashed border-border p-10 text-center text-muted">
+        Not built yet. Add it here once it exists.
+      </div>
+    </div>
+
+    <!-- ================= Sandbox ================= -->
+    <div class="container border-t border-border py-16">
+      <h2 class="mb-2 text-2xl!">Sandbox</h2>
+      <p class="mb-10 max-w-2xl text-body">
+        Try ideas here first. If it earns its place, it moves into
+        production. If not, delete it — nothing here is load-bearing.
+      </p>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          sandboxAreas.map((area) => (
+            <div class="flex min-h-32 flex-col justify-between rounded-2xl border border-dashed border-border p-6">
+              <p class="font-semibold text-heading">{area}</p>
+              <p class="text-sm text-muted">Nothing here yet.</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+  </main>
+</BaseLayout>
