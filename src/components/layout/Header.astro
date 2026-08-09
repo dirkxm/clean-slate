@@ -1,5 +1,4 @@
 ---
-import { site } from "../../config/site";
 import Button from "../ui/Button.astro";
 import { Menu, X } from "lucide-astro";
 import "../../styles/components/header.css";
@@ -9,13 +8,13 @@ const navigation = [
     label: "Services",
     href: "/services",
     children: [
-      { label: "Construction Cleanup", href: "/construction-cleanup" },
-      { label: "Junk Removal", href: "/junk-removal" },
-      { label: "Dumpster Rental", href: "/dumpster-rental" },
-      { label: "Portable Storage", href: "/portable-storage" },
-      { label: "Estate Cleanouts", href: "/estate-cleanouts" },
-      { label: "Garage Cleanouts", href: "/garage-cleanouts" },
-      { label: "Property Cleanouts", href: "/property-cleanouts" }
+      { label: "Construction Cleanup", href: "/services/construction-cleanup" },
+      { label: "Junk Removal", href: "/services/junk-removal" },
+      { label: "Dumpster Rental", href: "/services/dumpster-rental" },
+      { label: "Portable Storage", href: "/services/portable-storage" },
+      { label: "Estate Cleanouts", href: "/services/estate-cleanouts" },
+      { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
+      { label: "Property Cleanouts", href: "/services/property-cleanouts" }
     ]
   },
   {

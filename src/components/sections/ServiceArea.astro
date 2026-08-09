@@ -1,0 +1,33 @@
+---
+import { site } from "../../config/site";
+import { ArrowRight } from "lucide-astro";
+---
+
+<section>
+  <div class="container text-center">
+
+    <h2 class="mb-4">Serving Central Iowa</h2>
+
+    <p class="mx-auto max-w-2xl text-lg text-body">
+      Clean Slate provides cleanup, removal, dumpster rental, and portable
+      storage throughout the Des Moines metro.
+    </p>
+
+    <ul class="mx-auto mt-8 max-w-md columns-2 gap-x-12 text-xl text-body">
+      {
+        site.serviceArea.map((city) => (
+          <li class="mb-2">{city}</li>
+        ))
+      }
+    </ul>
+
+    <a
+      href="/locations"
+      class="group mt-8 inline-flex items-center gap-2 font-semibold text-primary transition hover:text-primary-dark"
+    >
+      View All Locations
+      <ArrowRight class="transition group-hover:translate-x-1" size={18} />
+    </a>
+
+  </div>
+</section>

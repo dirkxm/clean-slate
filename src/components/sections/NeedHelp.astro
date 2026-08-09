@@ -1,0 +1,83 @@
+---
+import { HardHat, Boxes, Package, ArrowRight } from "lucide-astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+const options = [
+  {
+    icon: HardHat,
+    question: "I have debris that needs to go.",
+    detail:
+      "Construction, remodeling, demolition, roofing, drywall, flooring, etc.",
+    links: [{ label: "Construction Cleanup", href: "/services/construction-cleanup" }],
+  },
+  {
+    icon: Boxes,
+    question: "I have stuff that needs to go.",
+    detail:
+      "Furniture, appliances, household items, garage contents, and general junk.",
+    links: [{ label: "Junk Removal", href: "/services/junk-removal" }],
+  },
+  {
+    icon: Package,
+    question: "I need somewhere to put it.",
+    detail: "You need a container or storage space at your property.",
+    links: [
+      { label: "Dumpster Rental", href: "/services/dumpster-rental" },
+      { label: "Portable Storage", href: "/services/portable-storage" },
+    ],
+  },
+];
+---
+
+<section>
+  <div class="container">
+
+    <SectionHeading
+      title="Not Sure What You Need?"
+      description="Tell us what you're dealing with. We'll help you figure out the best option."
+    />
+
+    <div class="mt-16 grid gap-8 lg:grid-cols-3">
+      {
+        options.map((option) => (
+          <div class="flex flex-col rounded-3xl border border-border bg-white p-8 shadow-soft">
+            <option.icon class="mb-6 text-primary" size={40} strokeWidth={1.5} />
+
+            <h3 class="mb-3">{option.question}</h3>
+
+            <p class="mb-8 flex-1 text-body">{option.detail}</p>
+
+            <div class="flex flex-wrap gap-x-6 gap-y-2">
+              {option.links.map((link) => (
+                <a
+                  href={link.href}
+                  class="group inline-flex items-center gap-2 font-semibold text-primary transition hover:text-primary-dark"
+                >
+                  {link.label}
+                  <ArrowRight
+                    class="transition group-hover:translate-x-1"
+                    size={16}
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="mt-12 text-center text-body">
+      Still not sure?
+      {" "}
+      <a
+        href="tel:+15152023593"
+        class="font-semibold text-primary hover:text-primary-dark"
+      >
+        Call or text us.
+      </a>
+      {" "}
+      You'll talk to a real person.
+    </p>
+
+  </div>
+</section>

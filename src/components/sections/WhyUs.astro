@@ -1,31 +1,61 @@
 ---
-import { Check, Image as ImageIcon } from "lucide-astro";
+import { Check } from "lucide-astro";
+import { Image } from "astro:assets";
+import defaultImage from "../../assets/images/kitchen-cleanup.jpg";
+import type { ImageMetadata } from "astro";
 
-const checklist = [
-  "Real Person — Call or Text",  
-  "Fast Scheduling",
-  "Reliable Communication",
-  "Licensed & Insured",
-  "Commercial & Residential",
-];
+interface Props {
+  title?: string;
+  lead?: string;
+  body?: string;
+  checklist?: string[];
+  image?: ImageMetadata;
+  imageAlt?: string;
+}
+
+const {
+  title = "Built Around Your Schedule",
+  lead = "Your project shouldn't have to wait on cleanup.",
+  body = "We show up when we say we will, communicate clearly, and leave your project ready for what's next. You'll always have a real person you can call or text—no phone trees, chatbots, or waiting days for a response.",
+  checklist = [
+    "Real Person — Call or Text",
+    "Book Online 24/7",
+    "Fast Scheduling",
+    "Licensed & Insured",
+    "Commercial & Residential",
+  ],
+  image = defaultImage,
+  imageAlt = "Kitchen cleanup",
+} = Astro.props;
 ---
 
 <section>
   <div class="container grid gap-16 lg:grid-cols-2 lg:items-center">
 
-    <div class="flex aspect-[4/3] items-center justify-center rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 lg:order-2">
-      <ImageIcon class="text-primary/40" size={64} strokeWidth={1.5} />
+    <div class="aspect-[4/3] overflow-hidden rounded-3xl lg:order-2">
+      <Image
+        src={image}
+        alt={imageAlt}
+        class="h-full w-full object-cover"
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        format="webp"
+        quality={80}
+      />
     </div>
 
     <div class="lg:order-1">
 
       <h2 class="mb-6">
-        Built Around Your Schedule.
+        {title}
       </h2>
 
+      <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+        {lead}
+      </p>
+
       <p class="max-w-xl text-body">
-        We show up when we say we will, communicate clearly, and leave
-        your project ready for what's next. <strong>You'll always have a real person you can call or text—no phone trees, chatbots, or waiting days for a response.</strong>
+        {body}
       </p>
 
       <ul class="mt-10 flex flex-col gap-4">

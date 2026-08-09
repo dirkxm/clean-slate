@@ -1,35 +1,59 @@
 ---
 import { ArrowRight } from "lucide-astro";
+import { Image } from "astro:assets";
 import type { ComponentProps } from "astro/types";
+import type { ImageMetadata } from "astro";
 
 interface Props {
   service: {
     title: string;
     slug: string;
     short: string;
+    hook?: string;
   };
   icon: (props: ComponentProps<typeof ArrowRight>) => any;
+  image?: ImageMetadata;
 }
 
-const { service, icon: Icon } = Astro.props;
+const { service, icon: Icon, image } = Astro.props;
 ---
 
 <a
-  href={`/${service.slug}`}
-  class="group block overflow-hidden rounded-3xl border border-border bg-white shadow-soft transition duration-300 hover:-translate-y-2 hover:border-primary"
+  href={`/services/${service.slug}`}
+  class="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-white shadow-soft transition duration-300 hover:-translate-y-2 hover:border-primary"
 >
 
-  <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-    <Icon class="text-primary/40" size={56} strokeWidth={1.5} />
+  <div class="aspect-[4/3] shrink-0 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
+    {image ? (
+      <Image
+        src={image}
+        alt={service.title}
+        class="h-full w-full object-cover"
+        widths={[320, 480, 640]}
+        sizes="(min-width: 1024px) 33vw, 100vw"
+        format="webp"
+        quality={80}
+      />
+    ) : (
+      <div class="flex h-full items-center justify-center">
+        <Icon class="text-primary/40" size={56} strokeWidth={1.5} />
+      </div>
+    )}
   </div>
 
-  <div class="border-t border-border p-8">
+  <div class="flex flex-1 flex-col border-t border-border p-6">
 
-    <h3 class="mb-4">
+    <h3 class="mb-2">
       {service.title}
     </h3>
 
-    <p class="mb-8 text-body">
+    {service.hook && (
+      <p class="mb-2! font-semibold text-heading">
+        {service.hook}
+      </p>
+    )}
+
+    <p class="mb-4 flex-1 text-body">
       {service.short}
     </p>
 

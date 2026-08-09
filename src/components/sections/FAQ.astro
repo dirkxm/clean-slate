@@ -2,7 +2,18 @@
 import { ChevronDown } from "lucide-astro";
 import SectionHeading from "../ui/SectionHeading.astro";
 
-const faqs = [
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  title?: string;
+  faqs?: FaqItem[];
+  closingNote?: string;
+}
+
+const defaultFaqs: FaqItem[] = [
   {
     question: "How quickly can you schedule a job?",
     answer:
@@ -44,12 +55,18 @@ const faqs = [
       "Placeholder text. Yes, we are fully licensed and insured for both commercial and residential work.",
   },
 ];
+
+const {
+  title = "Questions? We've Got Answers.",
+  faqs = defaultFaqs,
+  closingNote,
+} = Astro.props;
 ---
 
 <section>
   <div class="container">
 
-    <SectionHeading title="Questions? We've Got Answers." />
+    <SectionHeading title={title} />
 
     <div class="mx-auto mt-16 max-w-3xl divide-y divide-border">
       {
@@ -69,6 +86,12 @@ const faqs = [
         ))
       }
     </div>
+
+    {closingNote && (
+      <p class="mx-auto mt-10 max-w-3xl text-center font-medium text-heading">
+        {closingNote}
+      </p>
+    )}
 
   </div>
 </section>

@@ -1,17 +1,26 @@
 ---
 import Button from "../ui/Button.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Ready to get it cleaned up?",
+  description = "Choose your service, pick a time, and book online. Need help deciding? Call or text and talk to a real person.",
+} = Astro.props;
 ---
 
 <section class="bg-primary-dark">
   <div class="container text-center">
 
     <h2 class="mb-4 text-4xl! text-white!">
-      Ready to get it cleaned up?
+      {title}
     </h2>
 
     <p class="mb-10 text-xl text-white/70">
-      Choose your service, pick a time, and book online. Need help
-      deciding? Call or text and talk to a real person.
+      {description}
     </p>
 
     <div class="flex flex-col items-center gap-4">

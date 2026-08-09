@@ -1,0 +1,85 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import Hero from "../components/sections/Hero.astro";
+import ServicesGrid from "../components/sections/ServicesGrid.astro";
+import ServiceArea from "../components/sections/ServiceArea.astro";
+import FAQ from "../components/sections/FAQ.astro";
+import CTA from "../components/sections/CTA.astro";
+import servicesHeroImage from "../assets/images/dumpster-rental.jpg";
+
+const faqs = [
+  {
+    question: "How do I know which service I need?",
+    answer:
+      "Placeholder text. If you're not sure, use the guide below or call/text us — we'll help you figure out the right fit in a couple minutes.",
+  },
+  {
+    question: "Can I book online?",
+    answer:
+      "Placeholder text. Yes. Choose your service, pick a time that works, and you're on the schedule — no phone call required.",
+  },
+  {
+    question: "Do you provide same-day service?",
+    answer:
+      "Placeholder text. Often, yes, depending on your location and what's needed. Same-day and next-day slots are usually available.",
+  },
+  {
+    question: "Do you work with contractors?",
+    answer:
+      "Placeholder text. Regularly. We work directly with contractors, builders, and remodelers on recurring and one-off cleanup needs.",
+  },
+  {
+    question: "What types of materials can you remove?",
+    answer:
+      "Placeholder text. Construction debris, household junk, furniture, appliances, yard waste, and most non-hazardous materials.",
+  },
+  {
+    question: "How much does cleanup or removal cost?",
+    answer:
+      "Placeholder text. Pricing depends on the service, volume, and timeline. Book online for transparent pricing or call for a custom quote.",
+  },
+  {
+    question: "Do you serve my area?",
+    answer:
+      "Placeholder text. We serve the Des Moines metro and surrounding Central Iowa communities — see the service area below to confirm.",
+  },
+];
+---
+
+<BaseLayout
+  title="Services — Clean Slate"
+  description="Construction cleanup, junk removal, dumpster rental, portable storage, and property cleanouts throughout Central Iowa."
+>
+
+  <Header />
+
+  <main>
+
+    <Hero
+      eyebrow="Cleanup, Removal & Rental Services"
+      title="Whatever needs to go, we'll get it out of the way."
+      description="From construction debris and renovation messes to full property cleanouts, Clean Slate helps homeowners, contractors, and property managers clear the space and move the project forward."
+      image={servicesHeroImage}
+      imageAlt="Dumpster and trailer staged for a construction cleanup"
+      showTrustBadges={false}
+    />
+
+    <ServicesGrid />
+
+    <ServiceArea />
+
+    <FAQ
+      title="Frequently Asked Questions"
+      faqs={faqs}
+      closingNote="Have a question we didn't answer? Call or text us."
+    />
+
+    <CTA
+      title="Ready to clear the space?"
+      description="Choose your service, pick a time, and book online."
+    />
+
+  </main>
+
+</BaseLayout>

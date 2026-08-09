@@ -3,11 +3,21 @@ import { HardHat, Trash2, Package } from "lucide-astro";
 import SectionHeading from "../ui/SectionHeading.astro";
 import ServiceCard from "../cards/ServiceCard.astro";
 import { services } from "../../data/services";
+import dumpsterRentalImage from "../../assets/images/dumpster-rental-2.jpg";
+import constructionCleanupImage from "../../assets/images/construction-cleanup.jpg";
+import portableStorageImage from "../../assets/images/temporary-storage.jpg";
+import type { ImageMetadata } from "astro";
 
 const icons: Record<string, typeof HardHat> = {
   "construction-cleanup": HardHat,
   "dumpster-rental": Trash2,
   "portable-storage": Package,
+};
+
+const images: Record<string, ImageMetadata> = {
+  "construction-cleanup": constructionCleanupImage,
+  "dumpster-rental": dumpsterRentalImage,
+  "portable-storage": portableStorageImage,
 };
 
 const featured = services.filter((service) => service.slug in icons);
@@ -24,7 +34,11 @@ const featured = services.filter((service) => service.slug in icons);
     <div class="mt-16 grid gap-8 lg:grid-cols-3">
       {
         featured.map((service) => (
-          <ServiceCard service={service} icon={icons[service.slug]} />
+          <ServiceCard
+            service={service}
+            icon={icons[service.slug]}
+            image={images[service.slug]}
+          />
         ))
       }
     </div>

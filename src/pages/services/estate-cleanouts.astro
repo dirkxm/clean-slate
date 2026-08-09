@@ -1,0 +1,329 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import { Image } from "astro:assets";
+import {
+  Check,
+  Home,
+  Heart,
+  Boxes,
+  Building2,
+  ShieldCheck,
+  ClipboardCheck,
+  MessageCircle,
+  ArrowRight,
+} from "lucide-astro";
+import heroImage from "../../assets/images/estate-cleanout.jpg";
+
+const whatWeRemove = [
+  "Furniture and mattresses",
+  "Couches, chairs and tables",
+  "Appliances",
+  "Boxes and household items",
+  "Clothing and miscellaneous belongings",
+  "Garage and basement contents",
+  "Yard and outdoor items",
+  "Unwanted electronics",
+  "Shelving and cabinets",
+  "General household junk",
+  "Debris and other unwanted items",
+];
+
+const situations = [
+  {
+    icon: Home,
+    title: "Preparing a Home for Sale",
+    description:
+      "Clear out furniture, belongings and accumulated household items so the home is ready for cleaning, staging, or listing.",
+  },
+  {
+    icon: Heart,
+    title: "Handling a Loved One's Estate",
+    description:
+      "When you're already dealing with everything that comes with settling an estate, let us take the physical work off your plate.",
+  },
+  {
+    icon: Boxes,
+    title: "Moving or Downsizing",
+    description:
+      "Getting rid of years of accumulated belongings before a move can be a huge job. We make it easier.",
+  },
+  {
+    icon: Building2,
+    title: "Rental or Investment Properties",
+    description:
+      "Clear out abandoned furniture, household items and unwanted belongings between tenants or before preparing a property for its next use.",
+    href: "/services/property-cleanouts",
+  },
+];
+
+const reasons = [
+  {
+    icon: ShieldCheck,
+    title: "Local and dependable.",
+    description: "We're a local business serving the Des Moines metro.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Clear communication.",
+    description:
+      "We'll explain what to expect, answer your questions, and keep the process straightforward from start to finish.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Straightforward service.",
+    description: "We tell you what the job will cost and what to expect.",
+  },
+  {
+    icon: Check,
+    title: "One less thing to worry about.",
+    description: "From the first item to the last load, we handle the removal.",
+  },
+];
+
+const relatedServices = [
+  { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
+  { label: "Property Cleanouts", href: "/services/property-cleanouts" },
+  { label: "Furniture Removal", href: "/services/junk-removal" },
+  { label: "Construction Cleanup", href: "/services/construction-cleanup" },
+  { label: "Service Areas", href: "/locations" },
+];
+---
+
+<BaseLayout
+  title="Estate Cleanouts in Des Moines, IA | Clean Slate"
+  description="Professional estate cleanout services in Des Moines and surrounding areas. Clean Slate removes furniture, household items, garage contents and more."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <h1 class="mb-6">
+            Estate Cleanouts in Des Moines &amp; Surrounding Areas
+          </h1>
+
+          <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+            A respectful, straightforward way to clear a home.
+          </p>
+
+          <p class="max-w-xl text-body">
+            When an estate needs to be cleared, the last thing you need is
+            another project to manage. Clean Slate handles the heavy
+            lifting, sorting, removal, and hauling so you can focus on
+            what comes next.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/contact" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+          <p class="mt-8 text-sm text-muted">
+            Serving Norwalk, West Des Moines, Waukee, Ankeny, Des Moines
+            and surrounding communities.
+          </p>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="Estate cleanout in progress"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Intro ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">
+          Clearing an Estate Doesn't Have to Be Overwhelming
+        </h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Whether you're preparing a home to sell, handling a loved one's
+          belongings, settling an estate, or simply need everything
+          cleared out, Clean Slate can take the work off your plate.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          You don't need to rent a dumpster, find a truck, or recruit
+          family and friends to do the heavy lifting. Clean Slate handles
+          the loading, hauling, and removal from start to finish.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          We remove furniture, appliances, boxes, household items, garage
+          contents, and general unwanted items—so you can focus on what
+          comes next.
+        </p>
+
+        <p class="mt-8 text-2xl font-semibold text-heading">
+          You point. We lift. We haul it away.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Remove ================= -->
+    <section class="border-t border-border bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-4 text-white!">What We Remove</h2>
+
+        <p class="max-w-2xl text-lg text-white/70">
+          Estate cleanouts can involve a little bit of everything. We can
+          help remove:
+        </p>
+
+        <ul class="mt-12 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          {
+            whatWeRemove.map((item) => (
+              <li class="flex items-center gap-3">
+                <Check class="shrink-0 text-accent" size={20} />
+                <span class="font-medium text-white">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-10 text-white/70">
+          Have something you're not sure about? Just ask. We can let you
+          know if we can take it.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Situations ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Estate Cleanouts for Every Situation</h2>
+
+        <div class="grid gap-8 sm:grid-cols-2">
+          {
+            situations.map((situation) => (
+              <a
+                href={situation.href || "#situations"}
+                aria-disabled={!situation.href}
+                class={`group flex flex-col rounded-3xl border border-border bg-white p-8 shadow-soft ${situation.href ? "transition hover:border-primary" : "pointer-events-none"}`}
+              >
+                <situation.icon
+                  class="mb-6 text-primary"
+                  size={36}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-3">{situation.title}</h3>
+
+                <p class="text-body">{situation.description}</p>
+
+                {situation.href && (
+                  <span class="mt-4 inline-flex items-center gap-2 font-semibold text-primary">
+                    Learn More
+                    <ArrowRight
+                      class="transition group-hover:translate-x-1"
+                      size={16}
+                    />
+                  </span>
+                )}
+              </a>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Why Clean Slate ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-16 max-w-3xl">Why Clean Slate?</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2">
+          {
+            reasons.map((reason) => (
+              <div class="flex gap-4">
+                <reason.icon
+                  class="mt-1 shrink-0 text-primary"
+                  size={24}
+                  strokeWidth={1.5}
+                />
+                <div>
+                  <p class="mt-0! mb-1! font-semibold text-heading">
+                    {reason.title}
+                  </p>
+                  <p class="text-body">{reason.description}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Related Services ================= -->
+    <section class="border-t border-border py-12!">
+      <div class="container">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-muted">
+          Related Services
+        </p>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-3">
+          {
+            relatedServices.map((service) => (
+              <a
+                href={service.href}
+                class="font-medium text-primary hover:text-primary-dark"
+              >
+                {service.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Clear It Out?"
+      description="Whether you're clearing one room or an entire estate, Clean Slate can help."
+    />
+
+  </main>
+
+</BaseLayout>
