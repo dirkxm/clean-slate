@@ -75,7 +75,7 @@ const navigation = [
       </a>
 
       <Button href="/contact" size="sm">
-        Get a Free Quote
+        Book Online
       </Button>
     </div>
 
@@ -90,49 +90,49 @@ const navigation = [
       <X class="icon-close" size={28} />
     </button>
   </div>
-
-  <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
-
-  <div
-    id="mobile-menu"
-    class="mobile-menu"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Mobile navigation"
-    inert
-  >
-    <div class="mobile-menu-top">
-      <button
-        id="mobile-close"
-        class="mobile-close"
-        aria-label="Close navigation"
-      >
-        <X size={24} />
-      </button>
-    </div>
-
-    <nav class="mobile-nav">
-      {
-        navigation.map((item) => (
-          <a href={item.href}>{item.label}</a>
-        ))
-      }
-    </nav>
-
-    <div class="mobile-menu-actions">
-      <div class="mobile-call">
-        <span class="mobile-call-label">Call Us</span>
-        <a class="phone" href="tel:+15152023593">
-          (515) 202-3593
-        </a>
-      </div>
-
-      <Button href="/contact" size="sm">
-        Get a Free Quote
-      </Button>
-    </div>
-  </div>
 </header>
+
+<div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+<div
+  id="mobile-menu"
+  class="mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Mobile navigation"
+  inert
+>
+  <div class="mobile-menu-top">
+    <button
+      id="mobile-close"
+      class="mobile-close"
+      aria-label="Close navigation"
+    >
+      <X size={24} />
+    </button>
+  </div>
+
+  <nav class="mobile-nav">
+    {
+      navigation.map((item) => (
+        <a href={item.href}>{item.label}</a>
+      ))
+    }
+  </nav>
+
+  <div class="mobile-menu-actions">
+    <div class="mobile-call">
+      <span class="mobile-call-label">Call Us</span>
+      <a class="phone" href="tel:+15152023593">
+        (515) 202-3593
+      </a>
+    </div>
+
+    <Button href="/contact" size="sm">
+      Book Online
+    </Button>
+  </div>
+</div>
 
 <script>
 const header = document.getElementById("site-header");

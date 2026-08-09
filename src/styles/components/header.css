@@ -15,9 +15,7 @@
 }
 
 #site-header .container {
-    max-width:1280px;
-    margin:auto;
-    padding:10px 24px;
+    padding-block:10px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -85,7 +83,7 @@
     display:block;
 }
 
-#site-header .mobile-menu-overlay {
+.mobile-menu-overlay {
     position:fixed;
     inset:0;
     z-index:1100;
@@ -95,12 +93,12 @@
     transition:opacity .3s ease;
 }
 
-#site-header .mobile-menu-overlay.open {
+.mobile-menu-overlay.open {
     opacity:1;
     pointer-events:auto;
 }
 
-#site-header .mobile-menu {
+.mobile-menu {
     position:fixed;
     top:0;
     right:0;
@@ -119,17 +117,17 @@
     overflow-y:auto;
 }
 
-#site-header .mobile-menu.open {
+.mobile-menu.open {
     transform:translateX(0);
     opacity:1;
 }
 
-#site-header .mobile-menu-top {
+.mobile-menu-top {
     display:flex;
     justify-content:flex-end;
 }
 
-#site-header .mobile-close {
+.mobile-close {
     display:flex;
     align-items:center;
     justify-content:center;
@@ -140,37 +138,37 @@
     cursor:pointer;
 }
 
-#site-header .mobile-nav {
+.mobile-nav {
     display:flex;
     flex-direction:column;
     gap:1rem;
 }
 
-#site-header .mobile-nav a {
+.mobile-nav a {
     color:var(--color-heading);
     text-decoration:none;
     font-weight:500;
     font-size:20px;
 }
 
-#site-header .mobile-nav a:hover {
+.mobile-nav a:hover {
     color:var(--color-primary);
 }
 
-#site-header .mobile-menu-actions {
+.mobile-menu-actions {
     margin-top:auto;
     display:flex;
     flex-direction:column;
     gap:1rem;
 }
 
-#site-header .mobile-call {
+.mobile-call {
     display:flex;
     flex-direction:column;
     gap:.25rem;
 }
 
-#site-header .mobile-call-label {
+.mobile-call-label {
     font-size:12px;
     font-weight:600;
     letter-spacing:.06em;
@@ -178,12 +176,12 @@
     color:var(--color-muted);
 }
 
-#site-header .mobile-menu-actions .phone {
+.mobile-menu-actions .phone {
     font-size:16px;
     font-weight:500;
 }
 
-#site-header .mobile-menu-actions a.inline-flex {
+.mobile-menu-actions a.inline-flex {
     width:100%;
 }
 
@@ -204,8 +202,8 @@
 }
 
 @media(min-width:1024px) {
-    #site-header .mobile-menu,
-    #site-header .mobile-menu-overlay {
+    .mobile-menu,
+    .mobile-menu-overlay {
         display:none;
     }
 }

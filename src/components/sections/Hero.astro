@@ -2,7 +2,14 @@
 import Button from "../ui/Button.astro";
 import heroImage from "../../assets/images/clean-slate-haul-away.jpg";
 import { site } from "../../config/site";
-import { ArrowRight } from "lucide-astro";
+import { ArrowRight, Check, Star } from "lucide-astro";
+
+const trustBadges = [
+  "Book Online 24/7",
+  "Real Person — Call or Text",
+  "Fast Scheduling",
+  "Licensed & Insured",
+];
 
 interface Props {
   eyebrow?: string;
@@ -34,7 +41,7 @@ const { eyebrow, title, description } = Astro.props;
 
       <div class="mt-10 flex flex-wrap items-center gap-6">
         <Button href="/contact" size="sm">
-          Get a Free Quote
+          Book Online
         </Button>
 
         <a
@@ -50,13 +57,29 @@ const { eyebrow, title, description } = Astro.props;
         </a>
       </div>
 
-      ✓ Same-Day Service
+      <p class="mt-10 mb-3! font-semibold text-heading">
+        Need help first? Call or text us.
+      </p>
 
-✓ Licensed & Insured
+      <ul class="flex flex-wrap items-center gap-x-6 gap-y-3">
+        {
+          trustBadges.map((badge) => (
+            <li class="flex items-center gap-2 text-sm text-body">
+              <Check class="shrink-0 text-primary" size={16} />
+              {badge}
+            </li>
+          ))
+        }
 
-✓ Free Estimates
-
-★★★★★ 5-Star Local Service
+        <li class="flex items-center gap-2 text-sm text-body">
+          <span class="flex gap-0.5 text-primary">
+            {Array.from({ length: 5 }).map(() => (
+              <Star size={14} fill="currentColor" stroke="none" />
+            ))}
+          </span>
+          5-Star Local Service
+        </li>
+      </ul>
 
     </div>
 

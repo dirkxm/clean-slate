@@ -5,17 +5,27 @@ import Button from "../ui/Button.astro";
 <section class="bg-primary-dark">
   <div class="container text-center">
 
-    <h2 class="mb-4 text-white!">
-      Ready for a cleaner finish?
+    <h2 class="mb-4 text-4xl! text-white!">
+      Ready to get it cleaned up?
     </h2>
 
     <p class="mb-10 text-xl text-white/70">
-      Let's talk.
+      Choose your service, pick a time, and book online. Need help
+      deciding? Call or text and talk to a real person.
     </p>
 
-    <Button href="/contact" variant="secondary">
-      Get a Free Quote
-    </Button>
+    <div class="flex flex-col items-center gap-4">
+      <Button href="/contact" variant="secondary">
+        Book Online
+      </Button>
+
+      <a
+        href="tel:+15152023593"
+        class="font-medium text-white/70 transition hover:text-white"
+      >
+        Call (515) 202-3593
+      </a>
+    </div>
 
   </div>
 </section>
