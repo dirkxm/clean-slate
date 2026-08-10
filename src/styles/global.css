@@ -162,8 +162,8 @@ svg {
    ========================================================== */
 
 .container {
-  width: min(var(--container), calc(100% - 48px));
-  margin-inline: auto;
+  width: min(var(--container), calc(100% - 48px)) !important;
+  margin-inline: auto !important;
 }
 
 section {
