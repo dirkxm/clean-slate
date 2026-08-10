@@ -1,0 +1,311 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import { Image } from "astro:assets";
+import {
+  Check,
+  Sofa,
+  Truck,
+  Boxes,
+  Home,
+  KeyRound,
+  Warehouse,
+} from "lucide-astro";
+import heroImage from "../../assets/images/furniture-haul-away.jpg";
+
+const furnitureItems = [
+  "Couches & sofas",
+  "Sectionals",
+  "Recliners & chairs",
+  "Tables & desks",
+  "Dressers & cabinets",
+  "Bed frames",
+  "Mattresses & box springs",
+  "Entertainment centers",
+  "Patio furniture",
+];
+
+const largeItems = [
+  "Refrigerators",
+  "Freezers",
+  "Washers & dryers",
+  "Other unwanted appliances",
+  "Exercise equipment",
+  "Large household items",
+];
+
+const reasons = [
+  {
+    icon: Sofa,
+    title: "Replacing Old Furniture",
+    description:
+      "Getting a new couch, bedroom set, mattress, or dining table? We'll remove the old one.",
+  },
+  {
+    icon: Truck,
+    title: "Moving",
+    description:
+      "Don't take furniture you don't want in the new house. We'll haul it away before you move.",
+  },
+  {
+    icon: Boxes,
+    title: "Downsizing",
+    description:
+      "Clear out bulky furniture that no longer fits your space or lifestyle.",
+  },
+  {
+    icon: Home,
+    title: "Home Sale",
+    description:
+      "Remove unwanted furniture and household items before listing or staging your home.",
+  },
+  {
+    icon: KeyRound,
+    title: "Rental Turnovers",
+    description: "Clear abandoned furniture and belongings between tenants.",
+  },
+  {
+    icon: Warehouse,
+    title: "Garage & Basement Cleanouts",
+    description:
+      "Get oversized furniture and household items out of spaces where they've been sitting for years.",
+  },
+];
+
+const relatedServices = [
+  { label: "Estate Cleanouts", href: "/services/estate-cleanouts" },
+  { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
+  { label: "Property Cleanouts", href: "/services/property-cleanouts" },
+  { label: "Construction Cleanup", href: "/services/construction-cleanup" },
+  { label: "Service Areas", href: "/locations" },
+];
+---
+
+<BaseLayout
+  title="Furniture Removal in Des Moines, IA | Clean Slate"
+  description="Professional furniture removal in Des Moines and surrounding areas. Clean Slate hauls away couches, mattresses, appliances and more."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <h1 class="mb-6">
+            Furniture Removal in Des Moines &amp; Surrounding Areas
+          </h1>
+
+          <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+            Get the old furniture out.
+          </p>
+
+          <p class="max-w-xl text-body">
+            Whether you're replacing a couch, clearing out a bedroom,
+            downsizing, or getting rid of furniture that's been sitting
+            in the basement or garage, Clean Slate will do the lifting
+            and haul it away.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/contact" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+          <p class="mt-8 text-sm text-muted">
+            Serving Norwalk, West Des Moines, Waukee, Ankeny, Des Moines
+            and surrounding communities.
+          </p>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="Crew member carrying furniture out to a trailer"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= No Heavy Lifting ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">
+          Furniture Removal Without the Heavy Lifting
+        </h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Getting rid of furniture sounds simple until you have to move
+          it.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Couches, mattresses, dressers, tables, appliances, and other
+          bulky items can be awkward, heavy, and difficult to get out of
+          the house.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Clean Slate handles the lifting, loading, hauling, and removal.
+          You don't need a truck, trailer, or a few friends willing to
+          help.
+        </p>
+
+        <p class="mt-8 text-2xl font-semibold text-heading">
+          You point. We lift. We haul it away.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Remove ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-12 text-white!">What We Remove</h2>
+
+        <div class="grid gap-12 sm:grid-cols-2">
+          <div>
+            <h3 class="mb-6 text-white!">Furniture</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                furnitureItems.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="mb-6 text-white!">Large Household Items</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                largeItems.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <p class="mt-10 text-white/70">
+          Have something you're not sure about? Just ask.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Common Reasons ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-12 lg:whitespace-nowrap">Common Reasons People Call Us</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            reasons.map((reason) => (
+              <div class="flex flex-col">
+                <reason.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{reason.title}</h3>
+
+                <p class="text-body">{reason.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Why Deal With It Yourself ================= -->
+    <section class="border-t border-border py-16! text-center">
+      <div class="container">
+
+        <p class="text-3xl font-semibold text-heading">No Truck.</p>
+        <p class="text-3xl font-semibold text-heading">No Trailer.</p>
+        <p class="text-3xl font-semibold text-heading">No Heavy Lifting.</p>
+        <p class="text-3xl font-semibold text-heading">No Trip to the Dump.</p>
+
+        <p class="mt-8 text-lg text-body">
+          Book online and let Clean Slate handle the rest.
+        </p>
+
+        <div class="mt-8">
+          <Button href="/contact" size="sm">
+            Book Online
+          </Button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Related Services ================= -->
+    <section class="border-t border-border py-12!">
+      <div class="container">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-muted">
+          Related Services
+        </p>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-3">
+          {
+            relatedServices.map((service) => (
+              <a
+                href={service.href}
+                class="font-medium text-primary hover:text-primary-dark"
+              >
+                {service.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Get It Out?"
+      description="Book your furniture removal online and choose a time that works for you."
+    />
+
+  </main>
+
+</BaseLayout>

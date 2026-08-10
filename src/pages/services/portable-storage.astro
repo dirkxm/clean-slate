@@ -1,0 +1,402 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import FAQ from "../../components/sections/FAQ.astro";
+import { Image } from "astro:assets";
+import {
+  Check,
+  Hammer,
+  Truck,
+  Boxes,
+  Wrench,
+  Home,
+  Package,
+  MapPin,
+  Clock,
+  Repeat,
+} from "lucide-astro";
+import heroImage from "../../assets/images/temporary-storage.jpg";
+
+const perfectFor = [
+  {
+    icon: Hammer,
+    title: "Home Remodeling",
+    description: "Clear furniture and belongings out of the way while your kitchen, bathroom, basement, or other space is being renovated.",
+  },
+  {
+    icon: Truck,
+    title: "Moving",
+    description: "Store your belongings on your property while you're preparing to move, waiting for your next home, or transitioning between spaces.",
+  },
+  {
+    icon: Boxes,
+    title: "Downsizing",
+    description: "Give yourself time to sort through furniture and belongings without having everything crowding your living space.",
+  },
+  {
+    icon: Wrench,
+    title: "Home Projects",
+    description: "Create temporary storage space while you're painting, flooring, organizing, or tackling a larger home project.",
+  },
+  {
+    icon: Home,
+    title: "Staging a Home",
+    description: "Clear furniture and belongings from rooms to help prepare a home for cleaning, staging, photography, or showings.",
+  },
+  {
+    icon: Package,
+    title: "Temporary Storage",
+    description: "Need additional space for a short-term project? Keep your belongings nearby instead of making repeated trips to a storage facility.",
+  },
+];
+
+const steps = [
+  {
+    number: "01",
+    title: "Book Online",
+    description: "Choose your portable storage option and schedule a delivery time that works for you.",
+  },
+  {
+    number: "02",
+    title: "We Deliver",
+    description: "We'll bring the portable storage unit directly to your property and place it where it can be accessed when you need it.",
+  },
+  {
+    number: "03",
+    title: "You Load It",
+    description: "Take your time loading your furniture, boxes, household belongings, and other items.",
+  },
+  {
+    number: "04",
+    title: "Keep It or Move It",
+    description: "Keep the unit at your property while you need the extra space, or arrange for it to be moved or picked up when your project is complete.",
+  },
+];
+
+const benefits = [
+  {
+    icon: MapPin,
+    title: "Keep Your Belongings Close",
+    description: "No driving back and forth to a storage facility every time you need something.",
+  },
+  {
+    icon: Home,
+    title: "Make Room for the Project",
+    description: "Move furniture and belongings out of the way so you can work without navigating around them.",
+  },
+  {
+    icon: Clock,
+    title: "Load at Your Own Pace",
+    description: "You don't have to move everything in one afternoon. Load the unit as your schedule allows.",
+  },
+  {
+    icon: Repeat,
+    title: "Simplify the Move",
+    description: "Keep your belongings in one convenient location while you're between homes or waiting for your next space.",
+  },
+];
+
+const storableItems = [
+  "Furniture",
+  "Boxes",
+  "Clothing",
+  "Household belongings",
+  "Appliances",
+  "Decorations",
+  "Tools",
+  "Seasonal items",
+  "Office furniture",
+  "Remodeling-related belongings",
+];
+
+const storageFaqs = [
+  {
+    question: "How long can I keep the portable storage unit?",
+    answer: "Rental periods depend on the portable storage option you select. Current availability and pricing are available when you book online.",
+  },
+  {
+    question: "Where can the portable storage unit be placed?",
+    answer: "We'll need a suitable location with safe, accessible space for delivery and pickup.",
+  },
+  {
+    question: "Can I access my belongings while the unit is at my property?",
+    answer: "Yes. That's one of the advantages of having portable storage delivered directly to your property.",
+  },
+  {
+    question: "Can you move the unit after delivery?",
+    answer: "Depending on the situation and location, we may be able to relocate the unit. Contact us to discuss your project.",
+  },
+  {
+    question: "Is portable storage the same as a dumpster?",
+    answer: "No. Portable storage is for belongings you want to keep. A dumpster is for items and debris you want to throw away.",
+  },
+];
+---
+
+<BaseLayout
+  title="Temporary Storage & Portable Storage in Des Moines | Clean Slate"
+  description="Portable storage delivered to your driveway for moving, remodeling, renovations, and extra space throughout the Des Moines metro. Book online with Clean Slate."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <h1 class="mb-6">
+            Temporary Storage Delivered to Your Driveway
+          </h1>
+
+          <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+            Extra space, delivered to your driveway.
+          </p>
+
+          <p class="max-w-xl text-body">
+            Need extra space during a move, remodel, renovation, or home
+            project? Clean Slate delivers temporary storage directly to
+            your property, so you can keep your belongings close
+            without making trips to a storage facility.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/contact" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="A portable storage container placed in a residential driveway"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Storage Where You Need It ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">Storage Where You Need It</h2>
+
+        <p class="mb-4! max-w-2xl text-xl font-semibold text-heading">
+          Keep your stuff close while you work.
+        </p>
+
+        <p class="max-w-2xl text-lg text-body">
+          Moving furniture out of the way? Remodeling a room? Between
+          homes? A portable storage unit gives you extra space right
+          where you need it.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Load it at your own pace, keep your belongings nearby, and
+          access them when you need them.
+        </p>
+
+        <p class="mt-8 text-2xl font-semibold text-heading">
+          Extra space without the extra trip.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Perfect For ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Perfect For</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            perfectFor.map((item) => (
+              <div class="flex flex-col">
+                <item.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{item.title}</h3>
+
+                <p class="text-body">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= How Portable Storage Works ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">How Portable Storage Works</h2>
+
+        <div class="grid divide-y divide-border lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+          {
+            steps.map((step) => (
+              <div class="flex flex-col gap-6 px-4 py-12 first:pt-0 last:pb-0 lg:px-10 lg:py-0">
+                <span class="font-display text-7xl font-medium text-primary/20">
+                  {step.number}
+                </span>
+
+                <h3 class="text-2xl">{step.title}</h3>
+
+                <p class="text-body">{step.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Portable Storage vs. Dumpster Rental ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-2 max-w-3xl">Keep It. Don't Throw It Away.</h2>
+
+        <p class="mb-12 text-xl font-semibold text-heading">
+          Portable Storage vs. Dumpster Rental
+        </p>
+
+        <div class="grid gap-8 sm:grid-cols-2">
+          <div class="rounded-3xl border border-border p-8">
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.15em] text-muted">
+              Need to keep your stuff?
+            </p>
+            <h3 class="mb-3">Portable Storage</h3>
+            <p class="text-body">
+              Store furniture, boxes, household belongings, and other
+              items while you work, move, or renovate.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-border p-8">
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.15em] text-muted">
+              Need to get rid of your stuff?
+            </p>
+            <h3 class="mb-3">Dumpster Rental</h3>
+            <p class="mb-4 text-body">
+              Load unwanted items and debris into a dumpster and we'll
+              haul it away when you're finished.
+            </p>
+            <a
+              href="/services/dumpster-rental"
+              class="font-semibold text-primary hover:text-primary-dark"
+            >
+              Dumpster Rental →
+            </a>
+          </div>
+        </div>
+
+        <p class="mt-10 text-center font-medium text-heading">
+          Portable storage is for what you're keeping.
+          <br />
+          A dumpster is for what you're getting rid of.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Why Store It at Home ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-12 text-white!">Why Store It at Home?</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            benefits.map((benefit) => (
+              <div class="flex flex-col">
+                <benefit.icon
+                  class="mb-4 text-accent"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2 text-white!">{benefit.title}</h3>
+
+                <p class="text-white/70">{benefit.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= What Can You Store ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">What Can You Store?</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Portable storage is ideal for many common household and
+          project items, including:
+        </p>
+
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            storableItems.map((item) => (
+              <li class="flex items-center gap-3">
+                <Check class="shrink-0 text-primary" size={20} />
+                <span class="font-medium text-heading">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-10 text-muted">
+          Have something you're not sure about? Ask before loading it.
+        </p>
+
+      </div>
+    </section>
+
+    <FAQ
+      title="Portable Storage FAQ"
+      faqs={storageFaqs}
+    />
+
+    <CTA
+      title="Ready for More Space?"
+      description="Get portable storage delivered to your driveway. Book online and create the extra space you need for your move, remodel, renovation, or home project."
+    />
+
+  </main>
+
+</BaseLayout>

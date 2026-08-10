@@ -1,0 +1,315 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import { Image } from "astro:assets";
+import {
+  Check,
+  ChefHat,
+  Bath,
+  Warehouse,
+  Layers,
+  Hammer,
+  Home,
+} from "lucide-astro";
+import heroImage from "../../assets/images/construction-cleanup-pile.jpg";
+
+const constructionDebris = [
+  "Lumber and scrap wood",
+  "Drywall",
+  "Flooring",
+  "Cabinets",
+  "Countertops",
+  "Doors",
+  "Trim and molding",
+  "Roofing materials",
+  "Concrete & brick*",
+  "Siding",
+  "Fixtures",
+  "General renovation debris",
+];
+
+const jobSiteCleanup = [
+  "Packaging and boxes",
+  "Old fixtures",
+  "Demolition debris",
+  "Unwanted materials",
+  "Remodeling leftovers",
+  "Garage renovation debris",
+  "Basement renovation debris",
+  "General job-site cleanup",
+];
+
+const projects = [
+  {
+    icon: ChefHat,
+    title: "Kitchen Remodels",
+    description:
+      "Remove old cabinets, countertops, flooring, appliances, and renovation debris.",
+  },
+  {
+    icon: Bath,
+    title: "Bathroom Remodels",
+    description:
+      "Clear out old fixtures, flooring, cabinets, drywall, and other unwanted materials.",
+  },
+  {
+    icon: Warehouse,
+    title: "Basement Renovations",
+    description:
+      "Get demolition debris and unwanted materials out of the basement and off the property.",
+  },
+  {
+    icon: Layers,
+    title: "Flooring Projects",
+    description: "Remove old carpet, flooring, padding, trim, and related debris.",
+  },
+  {
+    icon: Hammer,
+    title: "Garage Renovations",
+    description:
+      "Clear the garage before finishing, remodeling, or converting the space.",
+  },
+  {
+    icon: Home,
+    title: "Home Renovations",
+    description:
+      "From small remodeling projects to larger cleanups, we'll haul away the debris.",
+  },
+];
+
+const relatedServices = [
+  { label: "Estate Cleanouts", href: "/services/estate-cleanouts" },
+  { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
+  { label: "Property Cleanouts", href: "/services/property-cleanouts" },
+  { label: "Furniture Removal", href: "/services/furniture-removal" },
+  { label: "Service Areas", href: "/locations" },
+];
+---
+
+<BaseLayout
+  title="Construction Cleanup in Des Moines, IA | Clean Slate"
+  description="Professional construction cleanup in Des Moines and surrounding areas. Clean Slate removes debris, scrap materials, and job site waste."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <h1 class="mb-6">
+            Construction Cleanup in Des Moines &amp; Surrounding Areas
+          </h1>
+
+          <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+            Get the job site cleaned up.
+          </p>
+
+          <p class="max-w-xl text-body">
+            Renovation and construction projects create a lot of debris.
+            Clean Slate handles the loading, hauling, and removal so you
+            can keep the project moving without spending your time
+            making dump runs.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/contact" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+          <p class="mt-8 text-sm text-muted">
+            Serving Norwalk, West Des Moines, Waukee, Ankeny, Des Moines
+            and surrounding communities.
+          </p>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="Construction debris pile inside a residential remodel"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Keep Your Project Moving ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">Keep Your Project Moving</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Construction debris has a way of piling up.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Whether you're remodeling a kitchen, finishing a basement,
+          replacing flooring, or cleaning up after a renovation, Clean
+          Slate can handle the debris and unwanted materials.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          We do the lifting, loading, hauling, and removal so you don't
+          have to stop what you're doing to make dump runs.
+        </p>
+
+        <p class="mt-8 text-2xl font-semibold text-heading">
+          You point. We lift. We haul it away.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Remove ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-12 text-white!">What We Remove</h2>
+
+        <div class="grid gap-12 sm:grid-cols-2">
+          <div>
+            <h3 class="mb-6 text-white!">Construction Debris</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                constructionDebris.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="mb-6 text-white!">Job Site Cleanup</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                jobSiteCleanup.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <p class="mt-10 text-white/70">Not sure if we can take it? Just ask.</p>
+
+      </div>
+    </section>
+
+    <!-- ================= Common Projects ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Common Construction &amp; Remodeling Projects</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            projects.map((project) => (
+              <div class="flex flex-col">
+                <project.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{project.title}</h3>
+
+                <p class="text-body">{project.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Don't Make the Dump Run ================= -->
+    <section class="border-t border-border py-16! text-center">
+      <div class="container">
+
+        <h2 class="mb-8">
+          You Keep Building.<br />We Keep Hauling.
+        </h2>
+
+        <p class="text-2xl font-semibold text-heading">No dumpster rental.</p>
+        <p class="text-2xl font-semibold text-heading">
+          No loading or hauling it yourself.
+        </p>
+        <p class="text-2xl font-semibold text-heading">
+          No wasting your Saturday making dump runs.
+        </p>
+
+        <p class="mt-8 text-lg text-body">
+          Book online and let Clean Slate handle the cleanup.
+        </p>
+
+        <div class="mt-8">
+          <Button href="/contact" size="sm">Book Online</Button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Related Services ================= -->
+    <section class="border-t border-border py-12!">
+      <div class="container">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-muted">
+          Related Services
+        </p>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-3">
+          {
+            relatedServices.map((service) => (
+              <a
+                href={service.href}
+                class="font-medium text-primary hover:text-primary-dark"
+              >
+                {service.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Clear the Job Site?"
+      description="Book your construction cleanup online and choose a time that works for you."
+    />
+
+  </main>
+
+</BaseLayout>

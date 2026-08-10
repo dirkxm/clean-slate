@@ -1,0 +1,246 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import Button from "../components/ui/Button.astro";
+import CTA from "../components/sections/CTA.astro";
+import {
+  ArrowRight,
+  Home,
+  Warehouse,
+  Building2,
+  Sofa,
+  HardHat,
+} from "lucide-astro";
+
+const cities = [
+  {
+    name: "Norwalk",
+    slug: "norwalk",
+    description:
+      "Junk removal, furniture removal, cleanouts, construction cleanup, and more.",
+  },
+  {
+    name: "West Des Moines",
+    slug: "west-des-moines",
+    description:
+      "Professional hauling and cleanout services for homes, rentals, and renovation projects.",
+  },
+  {
+    name: "Waukee",
+    slug: "waukee",
+    description:
+      "Furniture removal, property cleanouts, garage cleanouts, and more.",
+  },
+  {
+    name: "Ankeny",
+    slug: "ankeny",
+    description:
+      "Reliable junk removal and cleanout services without the truck or dump run.",
+  },
+  {
+    name: "Des Moines",
+    slug: "des-moines",
+    description:
+      "Residential and property cleanout services throughout the Des Moines area.",
+  },
+  {
+    name: "Indianola",
+    slug: "indianola",
+    description:
+      "Furniture removal, cleanouts, remodeling debris, and general hauling.",
+  },
+  {
+    name: "Clive",
+    slug: "clive",
+    description:
+      "Professional removal services for homes, rentals, and renovation projects.",
+  },
+  {
+    name: "Urbandale",
+    slug: "urbandale",
+    description: "Clean Slate handles the lifting, loading, hauling, and removal.",
+  },
+];
+
+const services = [
+  {
+    icon: Home,
+    title: "Estate Cleanouts",
+    description: "Clear an entire home or property.",
+    href: "/services/estate-cleanouts",
+  },
+  {
+    icon: Warehouse,
+    title: "Garage Cleanouts",
+    description: "Get years of accumulated stuff out of the garage.",
+    href: "/services/garage-cleanouts",
+  },
+  {
+    icon: Building2,
+    title: "Property Cleanouts",
+    description: "Clear homes, rentals, inherited properties, and more.",
+    href: "/services/property-cleanouts",
+  },
+  {
+    icon: Sofa,
+    title: "Furniture Removal",
+    description: "We lift and haul away unwanted furniture.",
+    href: "/services/furniture-removal",
+  },
+  {
+    icon: HardHat,
+    title: "Construction Cleanup",
+    description: "Keep remodeling and construction projects moving.",
+    href: "/services/construction-cleanup",
+  },
+];
+---
+
+<BaseLayout
+  title="Service Areas | Clean Slate"
+  description="Clean Slate provides junk removal, cleanout, and hauling services throughout the Des Moines metro, including Norwalk, West Des Moines, Waukee, Ankeny, and more."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+
+        <h1 class="mt-12 mb-6 max-w-3xl">
+          Junk Removal &amp; Cleanout Services Throughout the Des Moines
+          Metro
+        </h1>
+
+        <p class="max-w-2xl text-lg text-body">
+          Clean Slate serves homeowners, landlords, contractors, and
+          property owners throughout the Des Moines area.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          From a single piece of furniture to a full property cleanout,
+          we handle the lifting, loading, hauling, and removal.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <Button href="/contact" size="sm">Book Online</Button>
+
+          <a
+            href="tel:+15152023593"
+            class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+          >
+            Call or Text (515) 202-3593
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Areas We Serve ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Areas We Serve</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            cities.map((city) => (
+              <a
+                href={`/locations/${city.slug}`}
+                class="group flex items-center gap-2"
+              >
+                <h3 class="text-xl! text-primary! group-hover:text-primary-dark!">
+                  {city.name}
+                </h3>
+                <ArrowRight
+                  class="text-primary transition group-hover:translate-x-1 group-hover:text-primary-dark"
+                  size={18}
+                />
+              </a>
+            ))
+          }
+        </div>
+
+        <p class="mt-16 text-center text-body">
+          Don't see your city?
+          {" "}
+          <a
+            href="tel:+15152023593"
+            class="font-semibold text-primary hover:text-primary-dark"
+          >
+            Give us a call.
+          </a>
+          {" "}
+          We may still be able to help.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Do ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-12 text-white!">What We Do</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            services.map((service) => (
+              <a href={service.href} class="group flex flex-col">
+                <service.icon
+                  class="mb-4 text-accent"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2 text-white! group-hover:text-accent">
+                  {service.title}
+                </h3>
+
+                <p class="mb-3 text-white/70">{service.description}</p>
+
+                <span class="inline-flex items-center gap-2 font-semibold text-accent">
+                  Learn More
+                  <ArrowRight
+                    class="transition group-hover:translate-x-1"
+                    size={16}
+                  />
+                </span>
+              </a>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Clean Slate Difference ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">
+          You Point. We Lift. We Haul It Away.
+        </h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          You don't need to rent a dumpster, find a truck, or recruit
+          family and friends to do the heavy lifting.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Clean Slate handles the job from start to finish.
+        </p>
+
+      </div>
+    </section>
+
+    <CTA
+      title="Need Something Hauled Away?"
+      description="Book online and let Clean Slate take care of the heavy lifting."
+    />
+
+  </main>
+
+</BaseLayout>

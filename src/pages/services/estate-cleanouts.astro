@@ -4,17 +4,7 @@ import Header from "../../components/layout/Header.astro";
 import Button from "../../components/ui/Button.astro";
 import CTA from "../../components/sections/CTA.astro";
 import { Image } from "astro:assets";
-import {
-  Check,
-  Home,
-  Heart,
-  Boxes,
-  Building2,
-  ShieldCheck,
-  ClipboardCheck,
-  MessageCircle,
-  ArrowRight,
-} from "lucide-astro";
+import { Check, Home, Heart, Boxes, Building2, ArrowRight } from "lucide-astro";
 import heroImage from "../../assets/images/estate-cleanout.jpg";
 
 const whatWeRemove = [
@@ -59,34 +49,10 @@ const situations = [
   },
 ];
 
-const reasons = [
-  {
-    icon: ShieldCheck,
-    title: "Local and dependable.",
-    description: "We're a local business serving the Des Moines metro.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Clear communication.",
-    description:
-      "We'll explain what to expect, answer your questions, and keep the process straightforward from start to finish.",
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Straightforward service.",
-    description: "We tell you what the job will cost and what to expect.",
-  },
-  {
-    icon: Check,
-    title: "One less thing to worry about.",
-    description: "From the first item to the last load, we handle the removal.",
-  },
-];
-
 const relatedServices = [
   { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
   { label: "Property Cleanouts", href: "/services/property-cleanouts" },
-  { label: "Furniture Removal", href: "/services/junk-removal" },
+  { label: "Furniture Removal", href: "/services/furniture-removal" },
   { label: "Construction Cleanup", href: "/services/construction-cleanup" },
   { label: "Service Areas", href: "/locations" },
 ];
@@ -268,35 +234,6 @@ const relatedServices = [
       </div>
     </section>
 
-    <!-- ================= Why Clean Slate ================= -->
-    <section>
-      <div class="container">
-
-        <h2 class="mb-16 max-w-3xl">Why Clean Slate?</h2>
-
-        <div class="grid gap-10 sm:grid-cols-2">
-          {
-            reasons.map((reason) => (
-              <div class="flex gap-4">
-                <reason.icon
-                  class="mt-1 shrink-0 text-primary"
-                  size={24}
-                  strokeWidth={1.5}
-                />
-                <div>
-                  <p class="mt-0! mb-1! font-semibold text-heading">
-                    {reason.title}
-                  </p>
-                  <p class="text-body">{reason.description}</p>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-
-      </div>
-    </section>
-
     <!-- ================= Related Services ================= -->
     <section class="border-t border-border py-12!">
       <div class="container">
@@ -320,8 +257,8 @@ const relatedServices = [
     </section>
 
     <CTA
-      title="Ready to Clear It Out?"
-      description="Whether you're clearing one room or an entire estate, Clean Slate can help."
+      title="Ready to Clear the Estate?"
+      description="Book your estate cleanout online and choose a time that works for you."
     />
 
   </main>

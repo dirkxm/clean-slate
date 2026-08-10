@@ -1,6 +1,7 @@
 ---
 import Button from "../ui/Button.astro";
 import { Menu, X } from "lucide-astro";
+import logo from "../../assets/images/clean-slate-horizontal.svg";
 import "../../styles/components/header.css";
 
 const navigation = [
@@ -39,7 +40,7 @@ const navigation = [
 <header id="site-header">
   <div class="container">
     <a href="/" class="logo">
-      <span class="brand">Clean Slate</span>
+      <img src={logo.src} alt="Clean Slate" class="logo-img" />
     </a>
 
     <nav class="desktop-nav">

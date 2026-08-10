@@ -73,6 +73,8 @@
    Base
    ========================================================== */
 
+@layer base {
+
 *,
 *::before,
 *::after {
@@ -290,4 +292,6 @@ input[type="radio"] {
 
 .rounded-card {
   border-radius: var(--radius-token-lg);
+}
+
 }

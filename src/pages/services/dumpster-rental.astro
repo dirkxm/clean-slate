@@ -1,0 +1,414 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import FAQ from "../../components/sections/FAQ.astro";
+import { Image } from "astro:assets";
+import {
+  Check,
+  Hammer,
+  Warehouse,
+  HardHat,
+  Boxes,
+  Sprout,
+  Wrench,
+} from "lucide-astro";
+import heroImage from "../../assets/images/dumpster-rental.jpg";
+
+const perfectFor = [
+  {
+    icon: Hammer,
+    title: "Home Renovations",
+    description: "Kitchen, bathroom, basement, flooring, roofing, and other remodeling projects.",
+  },
+  {
+    icon: Warehouse,
+    title: "Garage & Property Cleanouts",
+    description: "Clear out unwanted furniture, household items, boxes, and general debris.",
+  },
+  {
+    icon: HardHat,
+    title: "Construction Projects",
+    description: "Keep job-site debris contained and out of the way while work continues.",
+  },
+  {
+    icon: Boxes,
+    title: "Moving & Downsizing",
+    description: "A convenient way to get rid of unwanted items before or after a move.",
+  },
+  {
+    icon: Sprout,
+    title: "Yard & Outdoor Projects",
+    description: "Clean up during landscaping, outdoor renovations, and other property projects.",
+  },
+  {
+    icon: Wrench,
+    title: "DIY Projects",
+    description: "Take your time with a project without making repeated trips to the landfill.",
+  },
+];
+
+const allowedMaterials = [
+  "Furniture",
+  "Household junk",
+  "Wood",
+  "Drywall",
+  "Flooring",
+  "Cabinets",
+  "Countertops",
+  "Remodeling debris",
+  "Cardboard",
+  "General construction debris",
+  "Yard debris",
+];
+
+const steps = [
+  {
+    number: "01",
+    title: "Book Online",
+    description: "Choose your dumpster and schedule a delivery time that works for your project.",
+  },
+  {
+    number: "02",
+    title: "We Deliver",
+    description: "We'll bring the dumpster to your driveway or job site and place it where it works best for you.",
+  },
+  {
+    number: "03",
+    title: "You Load It",
+    description: "Fill the dumpster while you work. No trips to the landfill and no need to rent a truck or trailer.",
+  },
+  {
+    number: "04",
+    title: "We Haul It Away",
+    description: "When you're finished, we'll pick it up and take care of the disposal.",
+  },
+];
+
+const dumpsterFaqs = [
+  {
+    question: "How long can I keep the dumpster?",
+    answer: "Rental periods depend on the option you select. See current availability and pricing when you book online.",
+  },
+  {
+    question: "Where can the dumpster be placed?",
+    answer: "We can typically place the dumpster in a driveway or suitable job-site location. The placement area needs to be accessible to our truck and clear of obstacles.",
+  },
+  {
+    question: "Do I need to be home for delivery?",
+    answer: "Not necessarily. As long as we've agreed on the placement location and have safe access, delivery may be completed while you're away.",
+  },
+  {
+    question: "What can't go in the dumpster?",
+    answer: "Certain materials may be prohibited or require special handling. If you're unsure about something, contact us before putting it in the dumpster.",
+  },
+  {
+    question: "How do I schedule pickup?",
+    answer: "You can schedule your pickup online or contact us when you're finished.",
+  },
+];
+---
+
+<BaseLayout
+  title="Dumpster Rental in Des Moines & Central Iowa | Clean Slate"
+  description="Affordable dumpster rentals for remodels, cleanouts, construction projects, and home projects throughout the Des Moines metro. Book online with Clean Slate."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <h1 class="mb-6">
+            Dumpster Rental in Des Moines &amp; Surrounding Areas
+          </h1>
+
+          <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+            A dumpster delivered when you need it.
+          </p>
+
+          <p class="max-w-xl text-body">
+            Whether you're remodeling a kitchen, cleaning out a garage,
+            tackling a home project, or managing a construction job,
+            Clean Slate delivers a dumpster to your property so you can
+            load it at your own pace.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/contact" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="A roll-off dumpster staged in a driveway for a home renovation project"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= The Dumpster Comes to You ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">The Dumpster Comes to You</h2>
+
+        <p class="mb-4! max-w-2xl text-xl font-semibold text-heading">
+          Keep the project moving without the dump runs.
+        </p>
+
+        <p class="max-w-2xl text-lg text-body">
+          You shouldn't have to stop working every time your debris
+          starts piling up.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          We'll deliver the dumpster to your driveway or job site, you
+          fill it, and we'll come back to haul it away when you're
+          finished.
+        </p>
+
+        <p class="mt-8 text-2xl font-semibold text-heading">
+          You load it. We haul it.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Perfect For ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Perfect For</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            perfectFor.map((item) => (
+              <div class="flex flex-col">
+                <item.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{item.title}</h3>
+
+                <p class="text-body">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= What Can Go in the Dumpster ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-6 text-white!">What Can Go in the Dumpster?</h2>
+
+        <p class="max-w-2xl text-lg text-white/70">
+          Dumpsters are great for many common household, renovation, and
+          construction materials, including:
+        </p>
+
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            allowedMaterials.map((item) => (
+              <li class="flex items-center gap-3">
+                <Check class="shrink-0 text-accent" size={20} />
+                <span class="font-medium text-white">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-10 text-white/70">
+          Have something you're not sure about? Ask before you load it.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Simple From Start to Finish ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Simple From Start to Finish</h2>
+
+        <div class="grid divide-y divide-border lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+          {
+            steps.map((step) => (
+              <div class="flex flex-col gap-6 px-4 py-12 first:pt-0 last:pb-0 lg:px-10 lg:py-0">
+                <span class="font-display text-7xl font-medium text-primary/20">
+                  {step.number}
+                </span>
+
+                <h3 class="text-2xl">{step.title}</h3>
+
+                <p class="text-body">{step.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= You Load It. We Haul It. ================= -->
+    <section class="border-t border-border py-16! text-center">
+      <div class="container">
+
+        <h2 class="mb-8">You Load It. We Haul It.</h2>
+
+        <p class="text-2xl font-semibold text-heading">No truck.</p>
+        <p class="text-2xl font-semibold text-heading">No trailer.</p>
+        <p class="text-2xl font-semibold text-heading">No dump runs.</p>
+
+        <p class="mx-auto mt-8 max-w-2xl text-lg text-body">
+          A dumpster gives you a convenient place to put your debris
+          while you work. Instead of stopping your project to haul
+          everything away, keep working and let us handle the
+          transportation.
+        </p>
+
+        <div class="mt-8">
+          <Button href="/contact" size="sm">Book Online</Button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Pricing ================= -->
+    <section class="border-t border-border">
+      <div class="container text-center">
+
+        <h2 class="mb-4">Dumpster Rental Pricing</h2>
+
+        <p class="mb-4! text-xl font-semibold text-heading">
+          Simple, straightforward pricing.
+        </p>
+
+        <p class="mx-auto max-w-2xl text-lg text-body">
+          Your rental price depends on the dumpster size, rental period,
+          and type of material being disposed of.
+        </p>
+
+        <div class="mt-8 flex flex-col items-center justify-center gap-6 sm:flex-row sm:gap-8">
+          <a
+            href="/pricing"
+            class="inline-flex items-center gap-2 font-semibold text-primary hover:text-primary-dark"
+          >
+            View Pricing →
+          </a>
+
+          <span class="hidden text-muted sm:inline">or</span>
+
+          <Button href="/contact" size="sm">Book Online</Button>
+        </div>
+
+        <p class="mt-8 text-body">
+          We'll make sure you choose the right option for your project
+          before you schedule.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Dumpster Rental vs. Full-Service Cleanup ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">
+          Dumpster Rental vs. Full-Service Cleanup
+        </h2>
+
+        <div class="grid gap-8 sm:grid-cols-2">
+          <div class="rounded-3xl border border-border p-8">
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.15em] text-muted">
+              Want to load it yourself?
+            </p>
+            <h3 class="mb-3">Dumpster Rental</h3>
+            <p class="text-body">
+              We'll deliver the dumpster, you load it, and we'll haul it
+              away.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-border p-8">
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.15em] text-muted">
+              Want someone else to do the work?
+            </p>
+            <h3 class="mb-3">Construction Cleanup / Junk Removal</h3>
+            <p class="mb-4 text-body">
+              Clean Slate handles the lifting, loading, hauling, and
+              removal for you.
+            </p>
+            <div class="flex flex-wrap gap-x-6 gap-y-2">
+              <a
+                href="/services/construction-cleanup"
+                class="font-semibold text-primary hover:text-primary-dark"
+              >
+                Construction Cleanup →
+              </a>
+              <a
+                href="/services/junk-removal"
+                class="font-semibold text-primary hover:text-primary-dark"
+              >
+                Junk Removal →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-10 text-center font-medium text-heading">
+          You choose the option that fits your project.
+        </p>
+
+      </div>
+    </section>
+
+    <FAQ
+      title="Dumpster Rental FAQ"
+      faqs={dumpsterFaqs}
+    />
+
+    <CTA
+      title="Ready to Get Started?"
+      description="Book your dumpster online. Choose your rental, pick a date, and get your project moving."
+    />
+
+  </main>
+
+</BaseLayout>

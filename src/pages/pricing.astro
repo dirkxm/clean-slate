@@ -1,0 +1,143 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import Button from "../components/ui/Button.astro";
+import CTA from "../components/sections/CTA.astro";
+import { ArrowRight, Truck, Sofa, Building2, HardHat } from "lucide-astro";
+
+const pricingCategories = [
+  {
+    icon: Truck,
+    title: "Dumpster Rental",
+    tagline: "You load it. We haul it.",
+    description: "Choose your dumpster and rental options online.",
+    cta: "View Pricing",
+    href: "/contact",
+  },
+  {
+    icon: Sofa,
+    title: "Junk & Furniture Removal",
+    tagline: "We lift it. We load it. We haul it away.",
+    description: "Pricing is based on the amount and type of items being removed.",
+    cta: "Get Your Price",
+    href: "/contact",
+  },
+  {
+    icon: Building2,
+    title: "Cleanouts",
+    tagline: "One room or an entire property.",
+    description: "Pricing depends on the size and scope of the cleanout.",
+    cta: "Get Your Price",
+    href: "/contact",
+  },
+  {
+    icon: HardHat,
+    title: "Construction Cleanup",
+    tagline: "Keep your project moving.",
+    description: "Pricing depends on the size of the cleanup and amount of debris.",
+    cta: "Get Your Price",
+    href: "/contact",
+  },
+];
+---
+
+<BaseLayout
+  title="Dumpster & Junk Removal Pricing in Des Moines | Clean Slate"
+  description="See how Clean Slate pricing works for dumpster rentals, junk removal, furniture removal, and cleanout services throughout the Des Moines metro. Book online."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+
+        <h1 class="mt-12 mb-6 max-w-3xl">Simple, Straightforward Pricing</h1>
+
+        <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+          See your options, get your price, and book online.
+        </p>
+
+        <p class="max-w-2xl text-lg text-body">
+          Clean Slate pricing depends on the service, size of the
+          project, materials, and location. For services available
+          online, you'll see current pricing during the booking process.
+        </p>
+
+        <div class="mt-10">
+          <Button href="/contact" size="sm">Book Online</Button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Offer ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">What We Offer</h2>
+
+        <div class="grid gap-6 sm:grid-cols-2">
+          {
+            pricingCategories.map((category) => (
+              <a
+                href={category.href}
+                class="group flex flex-col rounded-3xl border border-border p-5 transition duration-300 hover:-translate-y-1 hover:border-primary"
+              >
+                <category.icon
+                  class="mb-1 text-primary"
+                  size={20}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-1 text-xl! group-hover:text-primary!">{category.title}</h3>
+
+                <p class="mt-0! mb-1 text-heading">{category.tagline}</p>
+
+                <p class="mt-0! mb-2 text-muted">{category.description}</p>
+
+                <span class="mt-auto inline-flex items-center gap-2 font-semibold text-primary">
+                  {category.cta}
+                  <ArrowRight
+                    class="transition group-hover:translate-x-1"
+                    size={16}
+                  />
+                </span>
+              </a>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Need Help ================= -->
+    <section class="border-t border-border py-16! text-center">
+      <div class="container">
+
+        <h2 class="mb-6">Need Help?</h2>
+
+        <p class="mx-auto max-w-2xl text-lg text-body">
+          Call or text us. You'll talk to a real person.
+        </p>
+
+        <a
+          href="tel:+15152023593"
+          class="mt-6 inline-block text-2xl font-semibold text-primary hover:text-primary-dark"
+        >
+          (515) 202-3593
+        </a>
+
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Get Started?"
+      description="See your price and book online."
+    />
+
+  </main>
+
+</BaseLayout>

@@ -1,0 +1,258 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import { Image } from "astro:assets";
+import {
+  Check,
+  Home,
+  KeyRound,
+  Boxes,
+  Heart,
+  DoorClosed,
+  Hammer,
+} from "lucide-astro";
+import heroImage from "../../assets/images/property-cleanout.jpg";
+
+const propertyTypes = [
+  {
+    icon: Home,
+    title: "Preparing a Home for Sale",
+    description:
+      "Clear furniture, household belongings, basement contents, garage items, and other unwanted property so the home is ready for cleaning, staging, or listing.",
+  },
+  {
+    icon: KeyRound,
+    title: "Rental Property Turnovers",
+    description:
+      "Get a property cleared between tenants without spending your time hauling furniture, appliances, trash, and abandoned belongings.",
+  },
+  {
+    icon: Boxes,
+    title: "Moving & Downsizing",
+    description:
+      "When you're moving or downsizing, we can remove the items you don't want to take with you.",
+  },
+  {
+    icon: Heart,
+    title: "Inherited & Estate Properties",
+    description:
+      "Help clear an entire property when you're dealing with the belongings left behind after a move or loss.",
+  },
+  {
+    icon: DoorClosed,
+    title: "Abandoned or Neglected Properties",
+    description:
+      "Remove accumulated household items, furniture, debris, and general unwanted materials from properties that need a fresh start.",
+  },
+  {
+    icon: Hammer,
+    title: "Renovation & Property Projects",
+    description:
+      "Clear unwanted contents before remodeling, renovating, selling, or putting a property back into use.",
+  },
+];
+
+const whatWeRemove = [
+  "Furniture",
+  "Appliances",
+  "Household belongings",
+  "Boxes and miscellaneous items",
+  "Garage and basement contents",
+  "Outdoor items",
+  "Shelving and cabinets",
+  "Yard debris",
+  "General unwanted items",
+  "Property debris",
+];
+
+const relatedServices = [
+  { label: "Estate Cleanouts", href: "/services/estate-cleanouts" },
+  { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
+  { label: "Furniture Removal", href: "/services/furniture-removal" },
+  { label: "Construction Cleanup", href: "/services/construction-cleanup" },
+  { label: "Service Areas", href: "/locations" },
+];
+---
+
+<BaseLayout
+  title="Property Cleanouts in Des Moines, IA | Clean Slate"
+  description="Professional property cleanout services in Des Moines and surrounding areas. Clean Slate removes furniture, household items, debris and more."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <h1 class="mb-6">
+            Property Cleanouts in Des Moines &amp; Surrounding Areas
+          </h1>
+
+          <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+            Clear the whole property.
+          </p>
+
+          <p class="max-w-xl text-body">
+            Whether you're cleaning up a rental, preparing a home for
+            sale, dealing with an inherited property, or clearing out a
+            property that has accumulated years of unwanted items, Clean
+            Slate handles the lifting, loading, hauling, and removal.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/contact" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+          <p class="mt-8 text-sm text-muted">
+            Serving Norwalk, West Des Moines, Waukee, Ankeny, Des Moines
+            and surrounding communities.
+          </p>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="Residential property with unwanted items being removed"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Property Types ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">
+          Property Cleanouts for More Than Just the Garage
+        </h2>
+
+        <div class="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            propertyTypes.map((item) => (
+              <div class="flex flex-col">
+                <item.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{item.title}</h3>
+
+                <p class="text-body">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Remove ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-4 text-white!">What We Remove</h2>
+
+        <ul class="mt-12 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          {
+            whatWeRemove.map((item) => (
+              <li class="flex items-center gap-3">
+                <Check class="shrink-0 text-accent" size={20} />
+                <span class="font-medium text-white">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-10 text-white/70">
+          Have something you're not sure about? Just ask. We can let you
+          know if we can take it.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= One Pickup ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">One Property. One Pickup. Done.</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Clearing a property can mean dozens of individual items,
+          multiple rooms, and more trips than you want to make.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Clean Slate handles the loading and hauling so you don't have
+          to rent a truck, find a trailer, make multiple dump runs, or
+          spend your weekend moving heavy stuff.
+        </p>
+
+        <p class="mt-8 text-2xl font-semibold text-heading">
+          You point. We lift. We haul it away.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Related Services ================= -->
+    <section class="border-t border-border py-12!">
+      <div class="container">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-muted">
+          Related Services
+        </p>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-3">
+          {
+            relatedServices.map((service) => (
+              <a
+                href={service.href}
+                class="font-medium text-primary hover:text-primary-dark"
+              >
+                {service.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Clear the Property?"
+      description="Book your property cleanout online and choose a time that works for you."
+    />
+
+  </main>
+
+</BaseLayout>

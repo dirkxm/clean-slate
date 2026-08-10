@@ -1,0 +1,266 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import { Check, Sofa, Warehouse, Building2, Home, HardHat, Truck, ArrowRight } from "lucide-astro";
+
+const services = [
+  {
+    icon: Sofa,
+    title: "Furniture Removal",
+    description: "Couches, mattresses, tables, dressers, appliances, and other bulky items removed without the hassle of moving them yourself.",
+    href: "/services/furniture-removal",
+  },
+  {
+    icon: Warehouse,
+    title: "Garage Cleanouts",
+    description: "Clear out boxes, furniture, tools, household items, and years of accumulated clutter.",
+    href: "/services/garage-cleanouts",
+  },
+  {
+    icon: Building2,
+    title: "Property Cleanouts",
+    description: "Remove unwanted items from homes, garages, basements, rental properties, and other spaces.",
+    href: "/services/property-cleanouts",
+  },
+  {
+    icon: Home,
+    title: "Estate Cleanouts",
+    description: "Get help clearing furniture, household belongings, and other items from a property after a move, downsizing, or loss.",
+    href: "/services/estate-cleanouts",
+  },
+  {
+    icon: HardHat,
+    title: "Construction Cleanup",
+    description: "Remove remodeling debris and unwanted materials so your project can keep moving.",
+    href: "/services/construction-cleanup",
+  },
+  {
+    icon: Truck,
+    title: "Junk Removal",
+    description: "Have unwanted stuff taking up space? We'll load it up and haul it away.",
+    href: "/services/junk-removal",
+  },
+];
+
+const furnitureItems = [
+  "Couches & sofas",
+  "Sectionals",
+  "Recliners & chairs",
+  "Tables & desks",
+  "Dressers & cabinets",
+  "Bed frames",
+  "Mattresses & box springs",
+  "Entertainment centers",
+  "Patio furniture",
+];
+
+const largeItems = [
+  "Refrigerators",
+  "Freezers",
+  "Washers & dryers",
+  "Exercise equipment",
+  "Other unwanted household items",
+];
+
+const debrisItems = [
+  "Garage and basement contents",
+  "Boxes and miscellaneous items",
+  "Remodeling debris",
+  "Yard debris",
+  "Property debris",
+  "General unwanted items",
+];
+---
+
+<BaseLayout
+  title="Junk Removal & Cleanout Services in Ankeny, IA | Clean Slate"
+  description="Clean Slate provides junk removal, furniture removal, garage cleanouts, property cleanouts, estate cleanouts, and construction cleanup in Ankeny, IA."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+
+        <h1 class="mt-12 mb-6 max-w-3xl">
+          Junk Removal &amp; Cleanout Services in Ankeny, IA
+        </h1>
+
+        <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+          Clear the clutter. We'll handle the heavy lifting.
+        </p>
+
+        <p class="max-w-2xl text-lg text-body">
+          Whether you're cleaning out a garage, replacing old furniture,
+          preparing a property for sale, or dealing with renovation
+          debris, Clean Slate takes care of the lifting, loading,
+          hauling, and removal.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <Button href="/contact" size="sm">Book Online</Button>
+
+          <a
+            href="tel:+15152023593"
+            class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+          >
+            Call or Text (515) 202-3593
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Services ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-4 max-w-3xl">
+          Junk Removal &amp; Cleanout Services in Ankeny
+        </h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Clean Slate provides full-service junk removal and cleanout
+          services throughout Ankeny. From a few bulky items to a
+          larger property cleanout, we'll do the heavy lifting and
+          haul it away.
+        </p>
+
+        <div class="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            services.map((service) => (
+              <a href={service.href} class="group flex flex-col">
+                <service.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2 text-xl! group-hover:text-primary!">
+                  {service.title}
+                </h3>
+
+                <p class="mb-3 text-body">{service.description}</p>
+
+                <span class="inline-flex items-center gap-2 font-semibold text-primary">
+                  Learn More
+                  <ArrowRight
+                    class="transition group-hover:translate-x-1"
+                    size={16}
+                  />
+                </span>
+              </a>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= No Truck. No Trailer. ================= -->
+    <section class="border-t border-border py-16! text-center">
+      <div class="container">
+
+        <h2 class="mb-8">No Truck. No Trailer. No Dump Run.</h2>
+
+        <p class="mx-auto max-w-2xl text-lg text-body">
+          You don't need to rent a truck or trailer, load everything
+          yourself, or spend your weekend making trips to the dump.
+        </p>
+
+        <p class="mx-auto mt-6 max-w-2xl text-2xl font-semibold text-heading">
+          Clean Slate handles the lifting, loading, hauling, and removal.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Remove ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-12 text-white!">What We Remove</h2>
+
+        <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <h3 class="mb-6 text-white!">Furniture</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                furnitureItems.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="mb-6 text-white!">Large Household Items</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                largeItems.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="mb-6 text-white!">Property &amp; Cleanup Debris</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                debrisItems.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <p class="mt-10 text-white/70">Not sure if we can take it? Just ask.</p>
+
+      </div>
+    </section>
+
+    <!-- ================= Local ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">Serving Ankeny &amp; Surrounding Areas</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Clean Slate provides junk removal, furniture removal, and
+          cleanout services for homeowners, landlords, contractors, and
+          property owners throughout Ankeny and the surrounding Des
+          Moines metro.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Whether you have a few unwanted items or an entire space to
+          clear, we'll handle the heavy lifting and haul it away.
+        </p>
+
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Clear It Out?"
+      description="Skip the truck rental, trailer, and dump run. Let Clean Slate do the heavy lifting."
+    />
+
+  </main>
+
+</BaseLayout>
