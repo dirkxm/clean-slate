@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import CTA from "../components/sections/CTA.astro";
+---
+
+<BaseLayout
+  title="About Clean Slate | Des Moines Junk Removal & Cleanouts"
+  description="Clean Slate has 10+ years of experience providing junk removal, furniture removal, and cleanout services throughout the Des Moines metro and Central Iowa."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+
+        <h1 class="mt-12 mb-6 max-w-3xl">About Clean Slate</h1>
+
+        <p class="max-w-2xl text-lg text-body">
+          With 10+ years of experience, we know how to get the job done
+          efficiently, communicate clearly, and treat your property
+          with care. Whether we're clearing out a garage, hauling away
+          furniture, cleaning up after a renovation, or helping with a
+          larger property cleanout, we handle the heavy lifting from
+          start to finish.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          We serve homeowners, contractors, landlords, and property
+          owners throughout the Des Moines metro and Central Iowa.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Simple. Reliable. Straightforward. ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">Simple. Reliable. Straightforward.</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          You can book online 24/7, or call or text and talk to a real
+          person. No complicated process. No wondering when someone
+          will get back to you.
+        </p>
+
+
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Clear the Space?"
+      description="Book online and let Clean Slate take care of the heavy lifting."
+    />
+
+  </main>
+
+</BaseLayout>

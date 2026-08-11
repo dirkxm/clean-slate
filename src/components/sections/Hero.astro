@@ -19,6 +19,7 @@ interface Props {
   image?: ImageMetadata;
   imageAlt?: string;
   showTrustBadges?: boolean;
+  showImage?: boolean;
 }
 
 const {
@@ -28,6 +29,7 @@ const {
   image = defaultHeroImage,
   imageAlt = "Construction cleanup",
   showTrustBadges = true,
+  showImage = true,
 } = Astro.props;
 ---
 
@@ -40,18 +42,18 @@ const {
     </div>
   )}
 
-  <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+  <div class={showImage ? "container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start" : "container"}>
 
     <div>
 
       <h1 class="mb-6" set:html={title} />
 
-      <p class="max-w-xl text-body">
+      <p class={showImage ? "max-w-xl text-body" : "max-w-2xl text-body"}>
         {description}
       </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-6">
-        <Button href="/contact" size="sm">
+        <Button href="/book-online" size="sm">
           Book Online
         </Button>
 
@@ -98,17 +100,19 @@ const {
 
     </div>
 
-    <div class="rounded-3xl overflow-hidden">
-      <Image
-        src={image}
-        alt={imageAlt}
-        class="w-full object-cover"
-        widths={[480, 800, 1200, 1400]}
-        sizes="(min-width: 1024px) 66vw, 100vw"
-        format="webp"
-        quality={80}
-      />
-    </div>
+    {showImage && (
+      <div class="rounded-3xl overflow-hidden">
+        <Image
+          src={image}
+          alt={imageAlt}
+          class="w-full object-cover"
+          widths={[480, 800, 1200, 1400]}
+          sizes="(min-width: 1024px) 66vw, 100vw"
+          format="webp"
+          quality={80}
+        />
+      </div>
+    )}
 
   </div>
 </section>

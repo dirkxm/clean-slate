@@ -1,0 +1,115 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import Button from "../components/ui/Button.astro";
+import { Phone, MapPin } from "lucide-astro";
+
+const contactInfo = [
+  {
+    icon: Phone,
+    title: "Call or Text",
+    description: "Have a quick question? Give us a call or send us a text.",
+  },
+  {
+    icon: MapPin,
+    title: "Service Area",
+    description: "We proudly serve the Des Moines metro and surrounding communities.",
+  },
+];
+---
+
+<BaseLayout
+  title="Contact Clean Slate | Des Moines Junk Removal & Cleanouts"
+  description="Have a question about junk removal, dumpster rentals, temporary storage, or one of our cleanout services? Contact Clean Slate — call, text, or book online."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+
+        <h1 class="mt-12 mb-6 max-w-3xl">Contact Clean Slate</h1>
+
+        <p class="max-w-2xl text-lg text-body">
+          Have a question about junk removal, dumpster rentals,
+          temporary storage, or one of our cleanout services? We're
+          here to help.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Tell us what you need and we'll help you figure out the best
+          option for your project.
+        </p>
+
+        <div class="mt-12 grid max-w-2xl gap-10 sm:grid-cols-2">
+          {
+            contactInfo.map((item) => (
+              <div class="flex flex-col">
+                <item.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{item.title}</h3>
+
+                {item.title === "Call or Text" ? (
+                  <p class="text-body">
+                    {item.description}{" "}
+                    <a
+                      href="tel:+15152023593"
+                      class="font-semibold text-primary hover:text-primary-dark"
+                    >
+                      (515) 202-3593
+                    </a>
+                  </p>
+                ) : (
+                  <p class="text-body">{item.description}</p>
+                )}
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Book Online or Request a Free Quote ================= -->
+    <section class="border-t border-border py-16!">
+      <div class="container">
+
+        <h2 class="mb-6 text-4xl!">Book Online or Request a Free Quote</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Ready to get started? Tell us a little about your project,
+          what needs to be removed, or what you need to store. We'll
+          take it from there.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <Button href="/book-online" size="sm">Book Online</Button>
+
+          <Button href="/free-quote" variant="secondary" size="sm">
+            Get a Free Quote
+          </Button>
+        </div>
+
+        <p class="mt-8 text-sm text-muted">
+          Or call or text us directly at{" "}
+          <a
+            href="tel:+15152023593"
+            class="font-semibold text-primary hover:text-primary-dark"
+          >
+            (515) 202-3593
+          </a>
+        </p>
+
+      </div>
+    </section>
+
+  </main>
+
+</BaseLayout>

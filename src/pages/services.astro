@@ -6,7 +6,6 @@ import ServicesGrid from "../components/sections/ServicesGrid.astro";
 import ServiceArea from "../components/sections/ServiceArea.astro";
 import FAQ from "../components/sections/FAQ.astro";
 import CTA from "../components/sections/CTA.astro";
-import servicesHeroImage from "../assets/images/dumpster-rental.jpg";
 
 const faqs = [
   {
@@ -60,9 +59,8 @@ const faqs = [
       eyebrow="Cleanup, Removal & Rental Services"
       title="Whatever needs to go, we'll get it out of the way."
       description="From construction debris and renovation messes to full property cleanouts, Clean Slate helps homeowners, contractors, and property managers clear the space and move the project forward."
-      image={servicesHeroImage}
-      imageAlt="Dumpster and trailer staged for a construction cleanup"
       showTrustBadges={false}
+      showImage={false}
     />
 
     <ServicesGrid />

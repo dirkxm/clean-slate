@@ -1,0 +1,171 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import { Image } from "astro:assets";
+import { Check } from "lucide-astro";
+import heroImage from "../../assets/images/clean-slate-haul-away.jpg";
+
+const whatWeRemove = [
+  "Furniture",
+  "Appliances",
+  "Mattresses",
+  "Garage clutter",
+  "Yard and outdoor items",
+  "Household junk",
+  "Old equipment",
+  "Construction and remodeling debris",
+  "General unwanted items",
+];
+---
+
+<BaseLayout
+  title="Junk Removal in Des Moines & Central Iowa | Clean Slate"
+  description="Clean Slate makes junk removal simple. We handle the lifting, loading, hauling, and cleanup for homes and properties throughout the Des Moines metro."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <h1 class="mb-6">
+            Junk Removal in Des Moines &amp; Central Iowa
+          </h1>
+
+          <p class="mb-4! max-w-xl text-xl font-semibold text-heading">
+            Get Rid of the Junk. We'll Handle the Heavy Lifting.
+          </p>
+
+          <p class="max-w-xl text-body">
+            Got unwanted stuff taking up space? Clean Slate makes junk
+            removal simple. We'll do the lifting, loading, hauling, and
+            cleanup so you don't have to.
+          </p>
+
+          <p class="mt-6 max-w-xl text-body">
+            From a few bulky items to a full load of household junk,
+            we'll clear it out and leave you with a cleaner, more
+            usable space.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/book-online" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="Crew hauling away unwanted furniture and junk"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Remove ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-6 text-white!">What We Remove</h2>
+
+        <p class="max-w-2xl text-lg text-white/70">
+          We can help with a wide variety of unwanted household and
+          property items, including:
+        </p>
+
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            whatWeRemove.map((item) => (
+              <li class="flex items-center gap-3">
+                <Check class="shrink-0 text-accent" size={20} />
+                <span class="font-medium text-white">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-10 text-white/70">
+          Not sure if we can take it? <span class="font-semibold text-white">Just ask.</span>
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= We Do the Heavy Lifting ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">We Do the Heavy Lifting</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Whether you're clearing out a room, preparing for a move,
+          cleaning up after a project, or just ready to get rid of
+          unwanted stuff, Clean Slate handles the job from start to
+          finish. We'll do the lifting, loading, hauling, and cleanup
+          so you don't have to rent a truck, find a trailer, or
+          recruit family and friends. We serve homeowners, landlords,
+          property managers, and businesses throughout the Des Moines
+          metro.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Junk Removal for Homes & Properties ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">Junk Removal for Homes &amp; Properties</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Whether you're clearing out a room, getting ready to move,
+          cleaning up after a project, or simply tired of looking at
+          the pile in the garage, Clean Slate can help.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          We serve homeowners, landlords, property managers, and
+          businesses throughout the Des Moines metro.
+        </p>
+
+      </div>
+    </section>
+
+    <CTA
+      title="Ready to Clear It Out?"
+      description="Get rid of the junk without doing all the work yourself."
+    />
+
+  </main>
+
+</BaseLayout>
