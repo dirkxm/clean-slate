@@ -1,0 +1,319 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import Button from "../components/ui/Button.astro";
+import {
+  Check,
+  Home,
+  HouseHeart,
+  KeyRound,
+  Warehouse,
+  Boxes,
+  Building2,
+  Truck,
+  MapPin,
+  CheckCircle2,
+  Award,
+} from "lucide-astro";
+
+const cleanoutTypes = [
+  {
+    icon: Home,
+    title: "House Cleanouts",
+    description: "Clear unwanted furniture, household belongings, boxes, appliances, and other items from an entire home or individual rooms.",
+  },
+  {
+    icon: HouseHeart,
+    title: "Estate Cleanouts",
+    description: "We can help clear furniture, household contents, garage items, and other belongings from an inherited or estate property.",
+  },
+  {
+    icon: KeyRound,
+    title: "Rental Property Cleanouts",
+    description: "Get a rental property ready for the next tenant. We'll remove abandoned furniture, appliances, household items, and general debris.",
+  },
+  {
+    icon: Warehouse,
+    title: "Garage Cleanouts",
+    description: "Take back your garage. We'll remove unwanted furniture, tools, boxes, equipment, and other items taking up valuable space.",
+  },
+  {
+    icon: Boxes,
+    title: "Moving & Downsizing",
+    description: "Moving or downsizing? Let us handle the items you don't want to take with you.",
+  },
+  {
+    icon: Building2,
+    title: "Property Cleanouts",
+    description: "For larger jobs involving multiple rooms, garages, basements, outdoor areas, or an entire property, we'll handle the loading and hauling.",
+  },
+];
+
+const whatWeCanRemove = [
+  "Furniture",
+  "Appliances",
+  "Household belongings",
+  "Boxes and miscellaneous items",
+  "Garage and basement contents",
+  "Outdoor items",
+  "Shelving and cabinets",
+  "Yard debris",
+  "General junk and unwanted items",
+  "Property debris",
+];
+
+const steps = [
+  {
+    number: "01",
+    title: "Tell Us About the Job",
+    description: "Request a free quote online or call/text us. Tell us what you're looking to have removed and where you're located.",
+  },
+  {
+    number: "02",
+    title: "Get Your Quote",
+    description: "We'll review the job and provide pricing based on the amount and type of material that needs to be removed.",
+  },
+  {
+    number: "03",
+    title: "Pick a Time",
+    description: "Choose a convenient time for your cleanout.",
+  },
+  {
+    number: "04",
+    title: "We Do the Work",
+    description: "Our team handles the lifting, loading, hauling, and cleanup.",
+  },
+  {
+    number: "05",
+    title: "Enjoy Your Clean Slate",
+    description: "Your unwanted items are gone and your property is ready for whatever comes next.",
+  },
+];
+
+const whyChooseUs = [
+  {
+    icon: Truck,
+    title: "Full-Service Removal",
+    description: "You don't have to lift, load, haul, or make dump runs.",
+  },
+  {
+    icon: MapPin,
+    title: "Local Service",
+    description: "We serve homeowners, landlords, property managers, and businesses throughout the Des Moines metro.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Simple Process",
+    description: "Request a quote, schedule your service, and let us handle the rest.",
+  },
+  {
+    icon: Award,
+    title: "10+ Years of Experience",
+    description: "You can trust an experienced team to handle your property and your belongings professionally.",
+  },
+];
+---
+
+<BaseLayout
+  title="House & Property Cleanouts in the Des Moines Metro | Clean Slate"
+  description="Full-service house, estate, rental, and property cleanouts throughout the Des Moines metro. Clean Slate handles the lifting, loading, and hauling. Get a free quote."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+
+        <h1 class="mt-12 mb-6 max-w-3xl">
+          House &amp; Property Cleanouts in the Des Moines Metro
+        </h1>
+
+        <h2 class="mb-6 text-4xl!">We Do the Heavy Lifting</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Clearing out a house or property can be a huge job. You
+          don't need to rent a dumpster, find a truck, make multiple
+          dump runs, or recruit family and friends.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          <span class="font-semibold text-heading">Clean Slate handles the job from start to finish.</span>{" "}
+          We'll load, haul away, and clean up your unwanted items so
+          you can get your property cleared without doing the heavy
+          lifting.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <Button href="/free-quote" size="sm">Get a Free Quote</Button>
+
+          <a
+            href="tel:+15152023593"
+            class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+          >
+            Call or Text (515) 202-3593
+          </a>
+        </div>
+
+        <p class="mt-8 text-sm text-muted">
+          Serving Des Moines, West Des Moines, Waukee, Norwalk, Ankeny,
+          Urbandale, Clive, Johnston, Grimes, Indianola, Pleasant Hill,
+          Altoona and surrounding communities.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Full-Service Cleanouts ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            cleanoutTypes.map((item) => (
+              <div class="flex flex-col">
+                <item.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{item.title}</h3>
+
+                <p class="text-body">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Can Remove ================= -->
+    <section class="bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-6 text-white!">What We Can Remove</h2>
+
+        <p class="max-w-2xl text-lg text-white/70">
+          We handle a wide range of unwanted items, including:
+        </p>
+
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            whatWeCanRemove.map((item) => (
+              <li class="flex items-center gap-3">
+                <Check class="shrink-0 text-accent" size={20} />
+                <span class="font-medium text-white">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-10 font-semibold text-white">
+          Not sure if we can take something? Ask us.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= How It Works ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">How It Works</h2>
+
+        <div class="grid divide-y divide-border lg:grid-cols-5 lg:divide-x lg:divide-y-0">
+          {
+            steps.map((step) => (
+              <div class="flex flex-col gap-6 px-4 py-12 first:pt-0 last:pb-0 lg:px-6 lg:py-0">
+                <span class="font-display text-6xl font-medium text-primary/20">
+                  {step.number}
+                </span>
+
+                <h3 class="text-xl">{step.title}</h3>
+
+                <p class="text-body">
+                  {step.title === "Tell Us About the Job" ? (
+                    <>
+                      Request a free quote online or call/text us at{" "}
+                      <a
+                        href="tel:+15152023593"
+                        class="font-semibold text-primary hover:text-primary-dark"
+                      >
+                        (515) 202-3593
+                      </a>
+                      . Tell us what you're looking to have removed and
+                      where you're located.
+                    </>
+                  ) : (
+                    step.description
+                  )}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= Why Choose Clean Slate ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Why Choose Clean Slate?</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            whyChooseUs.map((item) => (
+              <div class="flex flex-col">
+                <item.icon
+                  class="mb-4 text-primary"
+                  size={32}
+                  strokeWidth={1.5}
+                />
+
+                <h3 class="mb-2">{item.title}</h3>
+
+                <p class="text-body">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="mt-16 max-w-2xl text-lg text-body">
+          Tell us what you need removed and we'll help you figure out
+          the best way to get it done.
+        </p>
+
+        <div class="mt-6">
+          <Button href="/free-quote" size="sm">
+            Get a Free Quote
+          </Button>
+        </div>
+
+        <p class="mt-6 text-body">
+          Questions? Call or text{" "}
+          <a
+            href="tel:+15152023593"
+            class="font-semibold text-primary hover:text-primary-dark"
+          >
+            (515) 202-3593
+          </a>
+        </p>
+
+        <p class="mt-12 text-sm text-muted">
+          Clean Slate Professional Clean Up Services
+          <br />
+          Des Moines Metro &bull; Iowa
+        </p>
+
+      </div>
+    </section>
+
+  </main>
+
+</BaseLayout>
