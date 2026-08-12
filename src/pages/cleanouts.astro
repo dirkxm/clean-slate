@@ -2,6 +2,8 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Button from "../components/ui/Button.astro";
+import { Image } from "astro:assets";
+import heroImage from "../assets/images/clean-slate-haul-away.jpg";
 import {
   Check,
   Home,
@@ -62,34 +64,6 @@ const whatWeCanRemove = [
   "Property debris",
 ];
 
-const steps = [
-  {
-    number: "01",
-    title: "Tell Us About the Job",
-    description: "Request a free quote online or call/text us. Tell us what you're looking to have removed and where you're located.",
-  },
-  {
-    number: "02",
-    title: "Get Your Quote",
-    description: "We'll review the job and provide pricing based on the amount and type of material that needs to be removed.",
-  },
-  {
-    number: "03",
-    title: "Pick a Time",
-    description: "Choose a convenient time for your cleanout.",
-  },
-  {
-    number: "04",
-    title: "We Do the Work",
-    description: "Our team handles the lifting, loading, hauling, and cleanup.",
-  },
-  {
-    number: "05",
-    title: "Enjoy Your Clean Slate",
-    description: "Your unwanted items are gone and your property is ready for whatever comes next.",
-  },
-];
-
 const whyChooseUs = [
   {
     icon: Truck,
@@ -125,43 +99,59 @@ const whyChooseUs = [
 
     <!-- ================= Hero ================= -->
     <section>
-      <div class="container">
+      <div class="container grid gap-16 lg:grid-cols-2 lg:items-start">
 
-        <h1 class="mt-12 mb-6 max-w-3xl">
-          House &amp; Property Cleanouts in the Des Moines Metro
-        </h1>
+        <div>
 
-        <h2 class="mb-6 text-4xl!">We Do the Heavy Lifting</h2>
+          <h1 class="mt-12 mb-6 lg:mt-0">
+            House &amp; Property Cleanouts in the Des Moines Metro
+          </h1>
 
-        <p class="max-w-2xl text-lg text-body">
-          Clearing out a house or property can be a huge job. You
-          don't need to rent a dumpster, find a truck, make multiple
-          dump runs, or recruit family and friends.
-        </p>
+          <h2 class="mb-6 text-4xl!">We Do the Heavy Lifting</h2>
 
-        <p class="mt-6 max-w-2xl text-lg text-body">
-          <span class="font-semibold text-heading">Clean Slate handles the job from start to finish.</span>{" "}
-          We'll load, haul away, and clean up your unwanted items so
-          you can get your property cleared without doing the heavy
-          lifting.
-        </p>
+          <p class="text-lg text-body">
+            Clearing out a house or property can be a huge job. You
+            don't need to rent a dumpster, find a truck, make multiple
+            dump runs, or recruit family and friends.
+          </p>
 
-        <div class="mt-10 flex flex-wrap items-center gap-4">
-          <Button href="/free-quote" size="sm">Get a Free Quote</Button>
+          <p class="mt-6 text-lg text-body">
+            <span class="font-semibold text-heading">Clean Slate handles the job from start to finish.</span>{" "}
+            We'll load, haul away, and clean up your unwanted items so
+            you can get your property cleared without doing the heavy
+            lifting.
+          </p>
 
-          <a
-            href="tel:+15152023593"
-            class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
-          >
-            Call or Text (515) 202-3593
-          </a>
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/book-online" size="sm">Book Online</Button>
+
+            <a
+              href="/free-quote"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Get a Free Quote
+            </a>
+          </div>
+
+          <p class="mt-8 text-sm text-muted">
+            Serving Des Moines, West Des Moines, Waukee, Norwalk, Ankeny,
+            Urbandale, Clive, Johnston, Grimes, Indianola, Pleasant Hill,
+            Altoona and surrounding communities.
+          </p>
+
         </div>
 
-        <p class="mt-8 text-sm text-muted">
-          Serving Des Moines, West Des Moines, Waukee, Norwalk, Ankeny,
-          Urbandale, Clive, Johnston, Grimes, Indianola, Pleasant Hill,
-          Altoona and surrounding communities.
-        </p>
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="Clean Slate crew hauling away unwanted items"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
 
       </div>
     </section>
@@ -219,47 +209,6 @@ const whyChooseUs = [
       </div>
     </section>
 
-    <!-- ================= How It Works ================= -->
-    <section class="border-t border-border">
-      <div class="container">
-
-        <h2 class="mb-12 max-w-3xl">How It Works</h2>
-
-        <div class="grid divide-y divide-border lg:grid-cols-5 lg:divide-x lg:divide-y-0">
-          {
-            steps.map((step) => (
-              <div class="flex flex-col gap-6 px-4 py-12 first:pt-0 last:pb-0 lg:px-6 lg:py-0">
-                <span class="font-display text-6xl font-medium text-primary/20">
-                  {step.number}
-                </span>
-
-                <h3 class="text-xl">{step.title}</h3>
-
-                <p class="text-body">
-                  {step.title === "Tell Us About the Job" ? (
-                    <>
-                      Request a free quote online or call/text us at{" "}
-                      <a
-                        href="tel:+15152023593"
-                        class="font-semibold text-primary hover:text-primary-dark"
-                      >
-                        (515) 202-3593
-                      </a>
-                      . Tell us what you're looking to have removed and
-                      where you're located.
-                    </>
-                  ) : (
-                    step.description
-                  )}
-                </p>
-              </div>
-            ))
-          }
-        </div>
-
-      </div>
-    </section>
-
     <!-- ================= Why Choose Clean Slate ================= -->
     <section class="border-t border-border">
       <div class="container">
@@ -284,26 +233,35 @@ const whyChooseUs = [
           }
         </div>
 
-        <p class="mt-16 max-w-2xl text-lg text-body">
-          Tell us what you need removed and we'll help you figure out
-          the best way to get it done.
-        </p>
+        <div class="mt-12 max-w-xl rounded-3xl bg-primary-dark p-8">
 
-        <div class="mt-6">
-          <Button href="/free-quote" size="sm">
-            Get a Free Quote
-          </Button>
+          <p class="mt-0! text-lg font-semibold text-white">
+            Tell us what you need removed and we'll help you figure out
+            the best way to get it done.
+          </p>
+
+          <div class="mt-6 flex flex-wrap items-center gap-4">
+            <Button href="/book-online" variant="secondary" size="sm">Book Online</Button>
+
+            <a
+              href="/free-quote"
+              class="inline-flex items-center gap-2 font-medium text-white transition hover:text-accent"
+            >
+              Get a Free Quote
+            </a>
+          </div>
+
+          <p class="mt-6 mb-0! text-white/70">
+            Questions? Call or text{" "}
+            <a
+              href="tel:+15152023593"
+              class="font-semibold text-white hover:text-accent"
+            >
+              (515) 202-3593
+            </a>
+          </p>
+
         </div>
-
-        <p class="mt-6 text-body">
-          Questions? Call or text{" "}
-          <a
-            href="tel:+15152023593"
-            class="font-semibold text-primary hover:text-primary-dark"
-          >
-            (515) 202-3593
-          </a>
-        </p>
 
         <p class="mt-12 text-sm text-muted">
           Clean Slate Professional Clean Up Services
