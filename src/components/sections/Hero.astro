@@ -20,6 +20,9 @@ interface Props {
   imageAlt?: string;
   showTrustBadges?: boolean;
   showImage?: boolean;
+  buttonLabel?: string;
+  showViewPricing?: boolean;
+  helpText?: string;
 }
 
 const {
@@ -30,6 +33,9 @@ const {
   imageAlt = "Construction cleanup",
   showTrustBadges = true,
   showImage = true,
+  buttonLabel = "Book Online",
+  showViewPricing = true,
+  helpText,
 } = Astro.props;
 ---
 
@@ -54,23 +60,29 @@ const {
 
       <div class="mt-10 flex flex-wrap items-center gap-6">
         <Button href="/book-online" size="sm">
-          Book Online
+          {buttonLabel}
         </Button>
 
-        <a
-          href="/pricing"
-          class="group inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
-        >
-          View Pricing
+        {showViewPricing && (
+          <a
+            href="/pricing"
+            class="group inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+          >
+            View Pricing
 
-          <ArrowRight
-            class="transition group-hover:translate-x-1"
-            size={18}
-          />
-        </a>
+            <ArrowRight
+              class="transition group-hover:translate-x-1"
+              size={18}
+            />
+          </a>
+        )}
       </div>
 
-      {showTrustBadges && (
+      {helpText ? (
+        <p class="mt-10 max-w-xl text-body">
+          {helpText}
+        </p>
+      ) : showTrustBadges && (
         <>
           <p class="mt-10 mb-3! font-semibold text-heading">
             Need help first? Call or text us.

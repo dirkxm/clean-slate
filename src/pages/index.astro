@@ -15,9 +15,11 @@ import CTA from "../components/sections/CTA.astro";
   <main>
 
     <Hero
-      eyebrow="Professional Cleanup That Keeps Your Project Moving"
-      title="When your<br class='hidden lg:inline' /> work is done,<br class='hidden lg:inline' /> we clean up."
-      description="Professional construction cleanup for contractors, homeowners, and property managers across Central Iowa. Fast scheduling, dependable crews, and job sites left ready for the next phase."
+      title="Experience You Can Trust. Service Made Easy."
+      description="Quality junk removal from an experienced local team, with the convenience of getting your price and booking online in just a few minutes."
+      buttonLabel="Get Your Price & Book Online"
+      showViewPricing={false}
+      helpText="Have a question? You'll talk to a real person. We respond quickly and are here to help."
     />
 
     <Services />
@@ -26,7 +28,13 @@ import CTA from "../components/sections/CTA.astro";
 
     <FAQ />
 
-    <CTA />
+    <CTA
+      title="Real People. Fast Replies."
+      description="Online booking makes things easy, but you can always reach a real person when you need us. Questions about your job? Need help booking? Just give us a call or send us a message. We'll get back to you quickly."
+      buttonLabel="Get Your Price & Book Online"
+      secondaryLabel="Contact Us"
+      secondaryHref="/contact"
+    />
 
   </main>
 

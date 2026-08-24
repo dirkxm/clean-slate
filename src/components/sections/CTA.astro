@@ -5,12 +5,16 @@ interface Props {
   title?: string;
   description?: string;
   buttonLabel?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
 }
 
 const {
   title = "Ready to get it cleaned up?",
   description = "Choose your service, pick a time, and book online. Need help deciding? Call or text and talk to a real person.",
   buttonLabel = "Book Online",
+  secondaryLabel,
+  secondaryHref,
 } = Astro.props;
 ---
 
@@ -30,12 +34,21 @@ const {
         {buttonLabel}
       </Button>
 
-      <a
-        href="tel:+15152023593"
-        class="font-medium text-white/70 transition hover:text-white"
-      >
-        Call (515) 202-3593
-      </a>
+      {secondaryLabel && secondaryHref ? (
+        <a
+          href={secondaryHref}
+          class="font-medium text-white/70 transition hover:text-white"
+        >
+          {secondaryLabel}
+        </a>
+      ) : (
+        <a
+          href="tel:+15152023593"
+          class="font-medium text-white/70 transition hover:text-white"
+        >
+          Call (515) 202-3593
+        </a>
+      )}
     </div>
 
   </div>
