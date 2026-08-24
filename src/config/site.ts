@@ -10,7 +10,7 @@ export const site = {
   tagline: "Construction Cleanup & Haul Away • Commercial & Residential",
 
   description:
-    "Professional construction cleanup, junk removal, dumpster rental, and portable storage throughout the Des Moines metro and Central Iowa.",
+    "Professional construction cleanup, junk removal, and portable storage throughout the Des Moines metro and Central Iowa.",
 
   url: "https://cleanslate.services",
 
@@ -68,10 +68,6 @@ export const site = {
       href: "/services",
     },
     {
-      label: "Dumpster Rental",
-      href: "/dumpster-rental",
-    },
-    {
       label: "Construction Cleanup",
       href: "/construction-cleanup",
     },
@@ -105,13 +101,11 @@ export const site = {
 
   keywords: [
     "Construction Cleanup",
-    "Dumpster Rental",
     "Junk Removal",
     "Property Cleanup",
     "Garage Cleanout",
     "Estate Cleanout",
     "Portable Storage",
-    "Des Moines Dumpster Rental",
     "Construction Cleanup Des Moines",
     "Junk Removal Des Moines",
   ],

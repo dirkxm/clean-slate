@@ -1,26 +1,81 @@
 ---
-import { HardHat, Trash2, Package } from "lucide-astro";
+import { HardHat, Truck, Home, Warehouse, Building2, Hammer, Package } from "lucide-astro";
 import SectionHeading from "../ui/SectionHeading.astro";
 import ServiceCard from "../cards/ServiceCard.astro";
-import { services } from "../../data/services";
-import dumpsterRentalImage from "../../assets/images/dumpster-rental-2.jpg";
+import junkRemovalImage from "../../assets/images/furniture-haul-away.jpg";
+import estateCleanoutImage from "../../assets/images/estate-cleanout.jpg";
+import garageCleanoutImage from "../../assets/images/garage-cleanout.jpg";
+import propertyCleanoutImage from "../../assets/images/property-cleanout.jpg";
 import constructionCleanupImage from "../../assets/images/construction-cleanup.jpg";
 import portableStorageImage from "../../assets/images/temporary-storage.jpg";
-import type { ImageMetadata } from "astro";
+import smallDemolitionImage from "../../assets/images/small-demolition.jpg";
 
-const icons: Record<string, typeof HardHat> = {
-  "construction-cleanup": HardHat,
-  "dumpster-rental": Trash2,
-  "portable-storage": Package,
-};
-
-const images: Record<string, ImageMetadata> = {
-  "construction-cleanup": constructionCleanupImage,
-  "dumpster-rental": dumpsterRentalImage,
-  "portable-storage": portableStorageImage,
-};
-
-const featured = services.filter((service) => service.slug in icons);
+const featured = [
+  {
+    service: {
+      title: "Junk Removal",
+      slug: "junk-removal",
+      short: "Furniture, appliances, household items, debris, and more.",
+    },
+    icon: Truck,
+    image: junkRemovalImage,
+  },
+  {
+    service: {
+      title: "Estate Cleanouts",
+      slug: "estate-cleanouts",
+      short: "Complete cleanouts to help clear a home quickly and efficiently.",
+    },
+    icon: Home,
+    image: estateCleanoutImage,
+  },
+  {
+    service: {
+      title: "Garage Cleanouts",
+      slug: "garage-cleanouts",
+      short: "Reclaim your space by clearing out unwanted items, clutter, and debris.",
+    },
+    icon: Warehouse,
+    image: garageCleanoutImage,
+  },
+  {
+    service: {
+      title: "Vacant Property Cleanup & Maintenance",
+      slug: "property-cleanouts-vacant-maintenance",
+      short: "Cleanouts, lawn care, overgrowth removal, volunteer trees, brush, and basic property maintenance for vacant and bank-owned properties.",
+    },
+    icon: Building2,
+    image: propertyCleanoutImage,
+    href: "/services",
+  },
+  {
+    service: {
+      title: "Small Demolition",
+      slug: "small-demolition",
+      short: "Small tear-outs and demolition projects that don't require heavy equipment.",
+    },
+    icon: Hammer,
+    image: smallDemolitionImage,
+  },
+  {
+    service: {
+      title: "Construction Cleanup",
+      slug: "construction-cleanup",
+      short: "Cleanup and debris removal after construction, remodeling, and renovation projects.",
+    },
+    icon: HardHat,
+    image: constructionCleanupImage,
+  },
+  {
+    service: {
+      title: "Portable Storage",
+      slug: "portable-storage",
+      short: "Convenient storage delivered directly to your property.",
+    },
+    icon: Package,
+    image: portableStorageImage,
+  },
+];
 ---
 
 <section class="bg-primary-dark">
@@ -31,13 +86,15 @@ const featured = services.filter((service) => service.slug in icons);
       theme="dark"
     />
 
-    <div class="mt-16 grid gap-8 lg:grid-cols-3">
+    <div class="mt-16 grid gap-8 md:grid-cols-2">
       {
-        featured.map((service) => (
+        featured.map(({ service, icon, image, href }) => (
           <ServiceCard
             service={service}
-            icon={icons[service.slug]}
-            image={images[service.slug]}
+            icon={icon}
+            image={image}
+            href={href}
+            layout="horizontal"
           />
         ))
       }

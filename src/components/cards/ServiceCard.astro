@@ -13,24 +13,27 @@ interface Props {
   };
   icon: (props: ComponentProps<typeof ArrowRight>) => any;
   image?: ImageMetadata;
+  href?: string;
+  layout?: "vertical" | "horizontal";
 }
 
-const { service, icon: Icon, image } = Astro.props;
+const { service, icon: Icon, image, href, layout = "vertical" } = Astro.props;
+const isHorizontal = layout === "horizontal";
 ---
 
 <a
-  href={`/services/${service.slug}`}
-  class="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-white shadow-soft transition duration-300 hover:-translate-y-2 hover:border-primary"
+  href={href ?? `/services/${service.slug}`}
+  class={`group flex h-full overflow-hidden rounded-3xl border border-border bg-white shadow-soft transition duration-300 hover:-translate-y-2 hover:border-primary ${isHorizontal ? "flex-col sm:flex-row" : "flex-col"}`}
 >
 
-  <div class="aspect-[4/3] shrink-0 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
+  <div class={`shrink-0 overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 ${isHorizontal ? "aspect-[4/3] sm:aspect-auto sm:w-2/5" : "aspect-[4/3]"}`}>
     {image ? (
       <Image
         src={image}
         alt={service.title}
         class="h-full w-full object-cover"
         widths={[320, 480, 640]}
-        sizes="(min-width: 1024px) 33vw, 100vw"
+        sizes={isHorizontal ? "(min-width: 640px) 40vw, 100vw" : "(min-width: 1024px) 33vw, 100vw"}
         format="webp"
         quality={80}
       />
@@ -41,7 +44,7 @@ const { service, icon: Icon, image } = Astro.props;
     )}
   </div>
 
-  <div class="flex flex-1 flex-col border-t border-border p-6">
+  <div class={`flex flex-1 flex-col justify-center p-6 border-border ${isHorizontal ? "border-t sm:border-t-0 sm:border-l" : "border-t"}`}>
 
     <h3 class="mb-2">
       {service.title}

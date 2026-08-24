@@ -1,0 +1,215 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/layout/Header.astro";
+import Button from "../../components/ui/Button.astro";
+import CTA from "../../components/sections/CTA.astro";
+import { Image } from "astro:assets";
+import { Check } from "lucide-astro";
+import heroImage from "../../assets/images/small-demolition.jpg";
+
+const whatWeCanDemolish = [
+  "Sheds and small outbuildings",
+  "Decks and porches",
+  "Playsets",
+  "Fences",
+  "Cabinets and built-ins",
+  "Flooring",
+  "Drywall and interior walls",
+  "Small structures and fixtures",
+  "Other small tear-out projects",
+];
+
+const relatedServices = [
+  { label: "Junk Removal", href: "/services/junk-removal" },
+  { label: "Construction Cleanup", href: "/services/construction-cleanup" },
+  { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
+  { label: "Property Cleanouts", href: "/services/property-cleanouts" },
+  { label: "Service Areas", href: "/locations" },
+];
+---
+
+<BaseLayout
+  title="Small Demolition in Des Moines, IA | Clean Slate"
+  description="Small demolition and tear-out services in Des Moines and surrounding areas. Clean Slate handles the demolition, cleanup, and hauling in one job."
+>
+
+  <Header />
+
+  <main>
+
+    <!-- ================= Hero ================= -->
+    <section>
+      <div class="container">
+        <a
+          href="/services"
+          class="mb-6 inline-block text-sm font-semibold text-primary hover:text-primary-dark"
+        >
+          ← Back to Services
+        </a>
+      </div>
+
+      <div class="container grid gap-16 lg:grid-cols-[1fr_2fr] lg:items-start">
+
+        <div>
+
+          <p class="mb-3! font-semibold text-primary">Small Demolition</p>
+
+          <h1 class="mb-6">
+            Small Demolition Without the Heavy Equipment
+          </h1>
+
+          <p class="max-w-xl text-body">
+            Need something torn out before it can be hauled away? Clean
+            Slate handles small demolition and tear-out projects that can
+            be completed with hand tools and manageable equipment.
+          </p>
+
+          <p class="mt-4 max-w-xl text-body">
+            We can take care of the demolition, cleanup, and hauling so
+            you don't have to figure out what to do with the debris.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <Button href="/book-online" size="sm">Book Online</Button>
+
+            <a
+              href="tel:+15152023593"
+              class="inline-flex items-center gap-2 font-medium text-primary transition hover:text-primary-dark"
+            >
+              Call or Text (515) 202-3593
+            </a>
+          </div>
+
+          <p class="mt-8 text-sm text-muted">
+            Serving Norwalk, West Des Moines, Waukee, Ankeny, Des Moines
+            and surrounding communities.
+          </p>
+
+        </div>
+
+        <div class="rounded-3xl overflow-hidden">
+          <Image
+            src={heroImage}
+            alt="Small demolition and tear-out project"
+            class="w-full object-cover"
+            widths={[480, 800, 1200, 1400]}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            format="webp"
+            quality={80}
+          />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Can Demolish ================= -->
+    <section class="border-t border-border bg-primary-dark">
+      <div class="container">
+
+        <h2 class="mb-4 text-white!">What We Can Demolish</h2>
+
+        <p class="max-w-2xl text-lg text-white/70">
+          We handle a variety of smaller demolition projects, including:
+        </p>
+
+        <ul class="mt-12 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          {
+            whatWeCanDemolish.map((item) => (
+              <li class="flex items-center gap-3">
+                <Check class="shrink-0 text-accent" size={20} />
+                <span class="font-medium text-white">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-10 text-white/70">
+          If you're not sure whether your project is something we can
+          handle,
+          {" "}
+          <a href="/contact" class="font-semibold text-white underline hover:no-underline">
+            contact us
+          </a>
+          {" "}
+          and we'll take a look.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Demolition + Cleanup + Hauling ================= -->
+    <section>
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">Demolition + Cleanup + Hauling</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          You don't have to coordinate multiple companies. We can tear
+          out the unwanted structure or materials, clean up the
+          resulting debris, and haul it away.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-xl font-semibold text-heading">
+          One job. One company. One less thing to worry about.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= What We Don't Do ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h6 class="mb-6 max-w-3xl">Projects That Require Heavy Equipment</h6>
+
+        <p class="max-w-2xl text-lg text-body">
+          We focus on smaller demolition projects that can be completed
+          without excavators, skid steers, or other heavy equipment. We
+          don't take on major structural demolition or large-scale
+          building removal.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          Not sure if your project qualifies?
+          {" "}
+          <a href="/contact" class="font-semibold text-primary hover:text-primary-dark">
+            Contact us.
+          </a>
+          {" "}
+          We're happy to talk it through.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Related Services ================= -->
+    <section class="border-t border-border py-12!">
+      <div class="container">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-muted">
+          Related Services
+        </p>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-3">
+          {
+            relatedServices.map((service) => (
+              <a
+                href={service.href}
+                class="font-medium text-primary hover:text-primary-dark"
+              >
+                {service.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <CTA
+      title="Need Help With a Small Demolition Project?"
+      description="Tell us what you need removed and get your price online."
+      buttonLabel="Get Your Price & Book Online"
+    />
+
+  </main>
+
+</BaseLayout>

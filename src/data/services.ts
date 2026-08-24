@@ -18,15 +18,6 @@ export const services = [
   },
 
   {
-    title: "Dumpster Rental",
-    slug: "dumpster-rental",
-    hook: "A dumpster when you need it.",
-    short:
-      "Driveway-friendly dumpster rentals for renovations, cleanouts, construction projects, and more.",
-    heroImage: "/images/services/dumpster-rental.jpg",
-  },
-
-  {
     title: "Portable Storage",
     slug: "portable-storage",
     hook: "Extra space delivered to your driveway.",
@@ -60,5 +51,14 @@ export const services = [
     short:
       "Interior and exterior cleanouts for homes, rentals, commercial properties, and other spaces.",
     heroImage: "/images/services/property-cleanout.jpg",
+  },
+
+  {
+    title: "Small Demolition",
+    slug: "small-demolition",
+    hook: "Tear-outs without the heavy equipment.",
+    short:
+      "Small demolition and tear-out projects, plus the cleanup and hauling that follows.",
+    heroImage: "/images/services/small-demolition.jpg",
   },
 ];
