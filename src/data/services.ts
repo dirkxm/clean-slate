@@ -1,29 +1,11 @@
 export const services = [
   {
-    title: "Construction Cleanup",
-    slug: "construction-cleanup",
-    hook: "Leave the job site ready for what's next.",
-    short:
-      "Post-construction and renovation cleanup for contractors, builders, remodelers, and homeowners.",
-    heroImage: "/images/services/construction-cleanup.jpg",
-  },
-
-  {
     title: "Junk Removal",
     slug: "junk-removal",
     hook: "Get rid of the stuff taking up space.",
     short:
       "Furniture, household junk, appliances, debris, and other unwanted items hauled away.",
     heroImage: "/images/services/junk-removal.jpg",
-  },
-
-  {
-    title: "Portable Storage",
-    slug: "portable-storage",
-    hook: "Extra space delivered to your driveway.",
-    short:
-      "Secure portable storage for renovations, moves, remodeling projects, and temporary storage needs.",
-    heroImage: "/images/services/storage.jpg",
   },
 
   {
@@ -45,11 +27,11 @@ export const services = [
   },
 
   {
-    title: "Property Cleanouts",
+    title: "Property Cleanouts & Vacant Property Maintenance",
     slug: "property-cleanouts",
     hook: "Clear the whole property.",
     short:
-      "Interior and exterior cleanouts for homes, rentals, commercial properties, and other spaces.",
+      "Cleanouts, lawn care, overgrowth removal, volunteer trees, brush, and basic property maintenance for vacant and bank-owned properties.",
     heroImage: "/images/services/property-cleanout.jpg",
   },
 
@@ -60,5 +42,23 @@ export const services = [
     short:
       "Small demolition and tear-out projects, plus the cleanup and hauling that follows.",
     heroImage: "/images/services/small-demolition.jpg",
+  },
+
+  {
+    title: "Construction Cleanup",
+    slug: "construction-cleanup",
+    hook: "Leave the job site ready for what's next.",
+    short:
+      "Post-construction and renovation cleanup for contractors, builders, remodelers, and homeowners.",
+    heroImage: "/images/services/construction-cleanup.jpg",
+  },
+
+  {
+    title: "Portable Storage",
+    slug: "portable-storage",
+    hook: "Extra space delivered to your driveway.",
+    short:
+      "Secure portable storage for renovations, moves, remodeling projects, and temporary storage needs.",
+    heroImage: "/images/services/storage.jpg",
   },
 ];

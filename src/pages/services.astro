@@ -9,39 +9,39 @@ import CTA from "../components/sections/CTA.astro";
 
 const faqs = [
   {
-    question: "How do I know which service I need?",
+    question: "Can I get a price and book online?",
     answer:
-      "Placeholder text. If you're not sure, use the guide below or call/text us — we'll help you figure out the right fit in a couple minutes.",
+      "Yes. Tell us what you need, provide the job details, choose a time, and we'll calculate your price before you book.",
   },
   {
-    question: "Can I book online?",
+    question: "How accurate is the online price?",
     answer:
-      "Placeholder text. Yes. Choose your service, pick a time that works, and you're on the schedule — no phone call required.",
+      "We use the details you provide to calculate your price. We work hard to make the online price accurate. If the job is smaller than described, we'll refund the difference. If it's larger, we'll talk with you before adjusting the price.",
   },
   {
-    question: "Do you provide same-day service?",
+    question: "Can I talk to someone if I have a question?",
     answer:
-      "Placeholder text. Often, yes, depending on your location and what's needed. Same-day and next-day slots are usually available.",
+      "Absolutely. Call or text us and you'll reach a real person. We respond as quickly as we can and can help you determine the best option for your project.",
   },
   {
-    question: "Do you work with contractors?",
+    question: "What types of junk do you remove?",
     answer:
-      "Placeholder text. Regularly. We work directly with contractors, builders, and remodelers on recurring and one-off cleanup needs.",
+      "We remove furniture, appliances, household items, yard debris, construction debris, and many other unwanted items. If you're unsure, contact us.",
   },
   {
-    question: "What types of materials can you remove?",
+    question: "Do you handle small demolition?",
     answer:
-      "Placeholder text. Construction debris, household junk, furniture, appliances, yard waste, and most non-hazardous materials.",
+      "Yes. We handle smaller demolition and tear-out projects that don't require heavy equipment.",
   },
   {
-    question: "How much does cleanup or removal cost?",
+    question: "Do you clean up vacant properties?",
     answer:
-      "Placeholder text. Pricing depends on the service, volume, and timeline. Book online for transparent pricing or call for a custom quote.",
+      "Yes. We provide property cleanouts and basic vacant-property maintenance, including mowing, overgrowth removal, volunteer trees, brush, and yard debris.",
   },
   {
-    question: "Do you serve my area?",
+    question: "Do you work with contractors and property professionals?",
     answer:
-      "Placeholder text. We serve the Des Moines metro and surrounding Central Iowa communities — see the service area below to confirm.",
+      "Yes. We work with homeowners, contractors, property managers, investors, and others who need reliable cleanup and removal services.",
   },
 ];
 ---
@@ -56,14 +56,59 @@ const faqs = [
   <main>
 
     <Hero
-      eyebrow="Cleanup, Removal & Rental Services"
+      eyebrow="Junk Removal, Cleanup & Portable Storage"
       title="Whatever needs to go, we'll get it out of the way."
-      description="From construction debris and renovation messes to full property cleanouts, Clean Slate helps homeowners, contractors, and property managers clear the space and move the project forward."
+      description="From unwanted items and complete cleanouts to property cleanup and small demolition, Clean Slate makes it easy to get the job done."
       showTrustBadges={false}
       showImage={false}
     />
 
     <ServicesGrid />
+
+    <!-- ================= Know Your Price ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-6 max-w-3xl">Know Your Price Before You Book</h2>
+
+        <p class="max-w-2xl text-lg text-body">
+          Tell us exactly what you need removed, choose a time that
+          works for you, and get your price online. Our booking system
+          uses the details you provide to calculate an accurate price
+          before you schedule.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-lg text-body">
+          We work hard to make the price you see the price you pay. If
+          the job is smaller than described, we'll refund the
+          difference. If we find that the job is larger than described,
+          we'll talk with you before making any adjustment.
+        </p>
+
+        <p class="mt-6 max-w-2xl text-xl font-semibold text-heading">
+          Clear pricing. Easy booking. No surprises.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ================= Real People ================= -->
+    <section class="bg-primary-dark">
+      <div class="container text-center">
+
+        <h2 class="mb-4 text-4xl! text-white!">
+          Online When You Want It. Real People When You Need Us.
+        </h2>
+
+        <p class="mx-auto max-w-2xl text-xl text-white/70">
+          Book online whenever it's convenient. Have a question? Call or
+          text us and you'll talk with a real person. We respond
+          quickly and are happy to help you figure out the right
+          service for your job.
+        </p>
+
+      </div>
+    </section>
 
     <ServiceArea />
 
@@ -74,8 +119,9 @@ const faqs = [
     />
 
     <CTA
-      title="Ready to clear the space?"
-      description="Choose your service, pick a time, and book online."
+      title="Ready to Get It Done?"
+      description="Tell us what you need, get your price, and choose a time that works for you."
+      buttonLabel="Get Your Price & Book Online"
     />
 
   </main>
