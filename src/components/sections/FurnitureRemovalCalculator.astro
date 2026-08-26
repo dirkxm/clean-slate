@@ -1,0 +1,942 @@
+---
+import {
+  ACCESS_FEES_CENTS,
+  ACCESS_LABELS,
+  ADDITIONAL_LOCATION_FEE_CENTS,
+  DISASSEMBLY_FEES_CENTS,
+  FURNITURE_ITEMS,
+  HEAVY_OVERSIZED_FEE_CENTS,
+} from "../../lib/pricing/furniture";
+import type {
+  AccessType,
+  DisassemblyType,
+  FurnitureItemKey,
+} from "../../lib/pricing/furniture";
+import { ChevronLeft, Check, Minus, Plus, Upload } from "lucide-astro";
+
+function formatUsd(cents: number): string {
+  return (cents / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
+
+function feeLabel(cents: number): string {
+  return cents === 0 ? "Included" : `+${formatUsd(cents)}`;
+}
+
+const furnitureEntries = Object.entries(FURNITURE_ITEMS) as [
+  FurnitureItemKey,
+  (typeof FURNITURE_ITEMS)[FurnitureItemKey],
+][];
+
+const accessOptions = (Object.keys(ACCESS_LABELS) as AccessType[]).map(
+  (value) => ({
+    value,
+    label: ACCESS_LABELS[value],
+    feeCents: ACCESS_FEES_CENTS[value],
+  }),
+);
+
+const disassemblyOptions: { value: DisassemblyType; label: string; feeCents: number }[] = [
+  { value: "none", label: "No", feeCents: DISASSEMBLY_FEES_CENTS.none },
+  { value: "simple", label: "Yes - Simple Disassembly", feeCents: DISASSEMBLY_FEES_CENTS.simple },
+  { value: "difficult", label: "Yes - Difficult Disassembly", feeCents: DISASSEMBLY_FEES_CENTS.difficult },
+];
+
+const heavyOptions = [
+  { value: "no", label: "No", feeCents: 0 },
+  { value: "yes", label: "Yes", feeCents: HEAVY_OVERSIZED_FEE_CENTS },
+];
+
+const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
+---
+
+<section id="furniture-calculator" class="border-t border-border">
+  <div class="container">
+
+    <div class="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+      <p class="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+        Instant Price
+      </p>
+      <h2 class="mb-4 text-4xl!">Price Your Furniture Removal</h2>
+      <p class="mx-auto max-w-2xl text-lg text-body lg:mx-0">
+        Answer a few quick questions and see your price update in real
+        time.
+      </p>
+    </div>
+
+    <noscript>
+      <p class="mt-8 rounded-2xl border border-border bg-white p-6 text-body">
+        Please enable JavaScript to use the price calculator, or
+        <a href="/contact" class="font-semibold text-primary hover:text-primary-dark">contact us</a>
+        for a quote.
+      </p>
+    </noscript>
+
+    <div
+      id="fc-app"
+      class="mt-12 grid gap-8 pb-24 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-12 lg:pb-0"
+    >
+
+      <!-- ================= Wizard ================= -->
+      <div class="rounded-3xl border border-border bg-white p-6 shadow-soft sm:p-8">
+
+        <!-- Progress -->
+        <div class="mb-8">
+          <p class="mb-2 text-sm font-semibold text-muted" data-role="step-label">
+            Step 1 of 6
+          </p>
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <div
+              class="fc-progress-bar h-full rounded-full bg-primary transition-all duration-300"
+              style="width: 16.6667%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Step 1: Furniture -->
+        <div class="fc-step" data-step="1">
+          <h3 id="fc-step1-heading" class="mb-6 text-2xl!">
+            What furniture do you need removed?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="fc-step1-heading">
+            <legend class="sr-only">What furniture do you need removed?</legend>
+
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {
+                furnitureEntries.map(([key, item]) => (
+                  <label
+                    class="fc-furniture-card relative flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition"
+                    data-item-key={key}
+                  >
+                    <input
+                      type="checkbox"
+                      class="sr-only"
+                      data-role="furniture-toggle"
+                      data-item-key={key}
+                    />
+
+                    <span
+                      class="fc-check absolute right-3 top-3 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-white"
+                      data-role="check"
+                      aria-hidden="true"
+                    >
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+
+                    <span class="pr-6 font-semibold text-heading">
+                      {item.label}
+                    </span>
+                    <span class="mt-1 text-sm text-muted">
+                      {formatUsd(item.priceCents)}
+                    </span>
+
+                    <div
+                      class="mt-3 hidden items-center justify-between gap-2 border-t border-border pt-3"
+                      data-role="stepper"
+                    >
+                      <button
+                        type="button"
+                        class="fc-stepper-btn"
+                        data-action="decrement"
+                        aria-label={`Decrease ${item.label} quantity`}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span
+                        class="font-semibold text-heading"
+                        data-role="quantity"
+                        aria-live="polite"
+                      >
+                        1
+                      </span>
+                      <button
+                        type="button"
+                        class="fc-stepper-btn"
+                        data-action="increment"
+                        aria-label={`Increase ${item.label} quantity`}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 2: Access -->
+        <div class="fc-step" data-step="2" hidden>
+          <h3 id="fc-step2-heading" class="mb-6 text-2xl!">
+            Where is the furniture located?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="fc-step2-heading">
+            <legend class="sr-only">Where is the furniture located?</legend>
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {
+                accessOptions.map((option) => (
+                  <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input
+                      type="radio"
+                      name="fc-access"
+                      value={option.value}
+                      class="sr-only"
+                    />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                    <span class="mt-1 text-sm text-muted">
+                      {feeLabel(option.feeCents)}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 3: Disassembly -->
+        <div class="fc-step" data-step="3" hidden>
+          <h3 id="fc-step3-heading" class="mb-6 text-2xl!">
+            Does anything need to be disassembled?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="fc-step3-heading">
+            <legend class="sr-only">Does anything need to be disassembled?</legend>
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {
+                disassemblyOptions.map((option) => (
+                  <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input
+                      type="radio"
+                      name="fc-disassembly"
+                      value={option.value}
+                      class="sr-only"
+                    />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                    <span class="mt-1 text-sm text-muted">
+                      {feeLabel(option.feeCents)}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 4: Heavy / Oversized -->
+        <div class="fc-step" data-step="4" hidden>
+          <h3 id="fc-step4-heading" class="mb-2 text-2xl!">
+            Is anything unusually heavy or oversized?
+          </h3>
+          <p class="mb-6 text-sm text-muted">
+            Examples include very large, solid-wood, or unusually heavy
+            furniture.
+          </p>
+
+          <fieldset class="contents" aria-labelledby="fc-step4-heading">
+            <legend class="sr-only">Is anything unusually heavy or oversized?</legend>
+
+            <div class="grid max-w-sm grid-cols-2 gap-3">
+              {
+                heavyOptions.map((option) => (
+                  <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input
+                      type="radio"
+                      name="fc-heavy"
+                      value={option.value}
+                      class="sr-only"
+                    />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                    <span class="mt-1 text-sm text-muted">
+                      {feeLabel(option.feeCents)}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 5: Locations -->
+        <div class="fc-step" data-step="5" hidden>
+          <h3 id="fc-step5-heading" class="mb-6 text-2xl!">
+            Are all of the items at the same location?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="fc-step5-heading">
+            <legend class="sr-only">Are all of the items at the same location?</legend>
+
+            <div class="grid max-w-sm grid-cols-2 gap-3">
+              <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="fc-same-location" value="yes" class="sr-only" />
+                <span class="font-semibold text-heading">Yes</span>
+                <span class="mt-1 text-sm text-muted">One location</span>
+              </label>
+              <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="fc-same-location" value="no" class="sr-only" />
+                <span class="font-semibold text-heading">No</span>
+                <span class="mt-1 text-sm text-muted">Multiple locations</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div
+            id="fc-additional-locations"
+            class="mt-6 hidden items-center justify-between rounded-2xl border border-border bg-background p-4"
+          >
+            <div>
+              <p class="font-semibold text-heading">Additional locations</p>
+              <p class="text-sm text-muted">
+                {additionalLocationFeeLabel} each, beyond the first
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="fc-location-decrement"
+                class="fc-stepper-btn"
+                aria-label="Decrease additional locations"
+              >
+                <Minus size={14} />
+              </button>
+              <span
+                class="w-6 text-center font-semibold text-heading"
+                data-role="location-count"
+                aria-live="polite"
+              >
+                1
+              </span>
+              <button
+                type="button"
+                id="fc-location-increment"
+                class="fc-stepper-btn"
+                aria-label="Increase additional locations"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 6: Photos -->
+        <div class="fc-step" data-step="6" hidden>
+          <h3 id="fc-step6-heading" class="mb-1 text-2xl!">
+            Want us to confirm the items?
+          </h3>
+          <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
+            Optional
+          </p>
+          <p class="mb-6 text-body">
+            Upload photos of the furniture so we can make sure we're
+            prepared for the job.
+          </p>
+
+          <label
+            id="fc-photo-dropzone"
+            for="fc-photo-input"
+            class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border p-8 text-center transition hover:border-primary"
+          >
+            <Upload class="text-muted" size={28} strokeWidth={1.5} />
+            <span class="font-medium text-heading">Click to upload photos</span>
+            <span class="text-sm text-muted">Up to 5 images &middot; optional</span>
+            <input
+              id="fc-photo-input"
+              type="file"
+              accept="image/*"
+              multiple
+              class="sr-only"
+            />
+          </label>
+
+          <p class="mt-2 text-sm text-muted" data-role="photo-hint"></p>
+
+          <div
+            id="fc-photo-grid"
+            class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5"
+          ></div>
+
+          <div
+            id="fc-booking-placeholder"
+            class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center"
+            role="status"
+          >
+            <p class="font-semibold text-heading">Booking will be connected next.</p>
+            <p class="mt-2 text-sm text-body">
+              Your estimate is saved below. We'll follow up to finish
+              scheduling once online booking is live &mdash; or call or text
+              us at
+              <a href="tel:+15152023593" class="font-semibold text-primary hover:text-primary-dark">
+                (515) 202-3593
+              </a>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <div class="mt-8 flex items-center justify-between border-t border-border pt-6">
+          <button
+            type="button"
+            id="fc-back"
+            class="inline-flex items-center gap-1 rounded-xl px-4 py-2 text-[16px] font-medium text-muted transition hover:text-heading disabled:pointer-events-none disabled:opacity-0"
+            disabled
+          >
+            <ChevronLeft size={18} />
+            Back
+          </button>
+
+          <button
+            type="button"
+            id="fc-continue"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-[16px] font-medium text-white transition hover:bg-primary-dark disabled:pointer-events-none disabled:opacity-50"
+          >
+            Continue
+          </button>
+        </div>
+
+        <!-- Mobile breakdown (compact, expandable) -->
+        <details class="fc-mobile-details mt-6 rounded-2xl border border-border lg:hidden">
+          <summary class="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-primary">
+            View price breakdown
+          </summary>
+          <div class="border-t border-border px-4 py-4">
+            <dl class="flex flex-col gap-2 text-sm">
+              <div class="flex items-center justify-between" data-row="furniture">
+                <dt class="text-muted">Furniture</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="access" hidden>
+                <dt class="text-muted">Access</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="disassembly" hidden>
+                <dt class="text-muted">Disassembly</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="heavy" hidden>
+                <dt class="text-muted">Heavy / Oversized</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="locations" hidden>
+                <dt class="text-muted">Additional Locations</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="minimum" hidden>
+                <dt class="text-muted">Minimum Service Adjustment</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="mt-2 flex items-center justify-between border-t border-border pt-2 font-semibold text-heading">
+                <dt>Total</dt>
+                <dd class="js-total">$0.00</dd>
+              </div>
+            </dl>
+          </div>
+        </details>
+      </div>
+
+      <!-- ================= Summary (desktop) ================= -->
+      <aside class="hidden rounded-3xl border border-border bg-primary-dark p-6 text-white shadow-soft lg:sticky lg:top-24 lg:block sm:p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-white/70">
+          Your Furniture Removal Price
+        </p>
+        <p class="js-total mt-2 text-4xl font-semibold text-white">$0.00</p>
+        <p class="mt-2 text-sm text-white/70">
+          A $99 minimum applies to every job.
+        </p>
+
+        <dl class="mt-6 flex flex-col gap-2 border-t border-white/15 pt-6 text-sm">
+          <div class="flex items-center justify-between" data-row="furniture">
+            <dt class="text-white/70">Furniture</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="access" hidden>
+            <dt class="text-white/70">Access</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="disassembly" hidden>
+            <dt class="text-white/70">Disassembly</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="heavy" hidden>
+            <dt class="text-white/70">Heavy / Oversized</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="locations" hidden>
+            <dt class="text-white/70">Additional Locations</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="minimum" hidden>
+            <dt class="text-white/70">Minimum Service Adjustment</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+        </dl>
+
+        <div class="mt-6 flex items-center justify-between border-t border-white/15 pt-6 text-lg font-semibold text-white">
+          <span>Total</span>
+          <span class="js-total">$0.00</span>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- ================= Summary (mobile, sticky) ================= -->
+    <div class="sticky bottom-0 z-30 -mx-6 mt-6 flex items-center justify-between border-t border-border bg-surface/95 px-6 py-2.5 shadow-soft backdrop-blur lg:hidden">
+      <div>
+        <p class="text-[11px] font-semibold uppercase leading-tight tracking-wide text-muted">
+          Your Price
+        </p>
+        <p class="js-total text-lg font-semibold leading-tight text-heading">$0.00</p>
+      </div>
+      <p class="text-[11px] leading-tight text-muted">$99 minimum</p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .fc-stepper-btn {
+    display: flex;
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    transition: all 0.2s ease;
+  }
+
+  .fc-stepper-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .fc-mobile-details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
+
+<script>
+  import { calculateFurnitureRemovalPrice } from "../../lib/pricing/furniture";
+  import type {
+    AccessType,
+    DisassemblyType,
+    FurnitureItemKey,
+    FurnitureRemovalInput,
+    FurnitureRemovalPricingResult,
+    FurnitureSelection,
+  } from "../../lib/pricing/furniture";
+
+  const TOTAL_STEPS = 6;
+  const MAX_PHOTOS = 5;
+  const MAX_ADDITIONAL_LOCATIONS = 20;
+
+  const app = document.getElementById("fc-app");
+  if (app) {
+    const root = app.closest("section") as HTMLElement;
+
+    const state: {
+      items: Map<FurnitureItemKey, number>;
+      access: AccessType | null;
+      disassembly: DisassemblyType | null;
+      heavyOversized: boolean | null;
+      sameLocation: boolean | null;
+      additionalLocations: number;
+    } = {
+      items: new Map(),
+      access: null,
+      disassembly: null,
+      heavyOversized: null,
+      sameLocation: null,
+      additionalLocations: 1,
+    };
+
+    let currentStep = 1;
+    let bookingRequested = false;
+
+    const backBtn = root.querySelector<HTMLButtonElement>("#fc-back")!;
+    const continueBtn = root.querySelector<HTMLButtonElement>("#fc-continue")!;
+    const bookingPlaceholder = root.querySelector<HTMLElement>(
+      "#fc-booking-placeholder",
+    )!;
+
+    function formatCents(cents: number): string {
+      return (cents / 100).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+
+    function setCardSelected(card: HTMLElement, selected: boolean) {
+      card.classList.toggle("border-primary", selected);
+      card.classList.toggle("bg-primary/5", selected);
+      card.classList.toggle("ring-2", selected);
+      card.classList.toggle("ring-primary/20", selected);
+      card.classList.toggle("border-border", !selected);
+    }
+
+    function showStepError(step: number, message: string) {
+      const el = root.querySelector<HTMLElement>(
+        `.fc-step[data-step="${step}"] [data-role="step-error"]`,
+      );
+      if (!el) return;
+      el.textContent = message;
+      el.hidden = false;
+    }
+
+    function clearStepError(step: number) {
+      const el = root.querySelector<HTMLElement>(
+        `.fc-step[data-step="${step}"] [data-role="step-error"]`,
+      );
+      if (!el) return;
+      el.hidden = true;
+    }
+
+    const stepValidators: Record<number, () => string | null> = {
+      1: () => {
+        const total = Array.from(state.items.values()).reduce(
+          (sum, qty) => sum + qty,
+          0,
+        );
+        return total > 0
+          ? null
+          : "Please select at least one item to continue.";
+      },
+      2: () =>
+        state.access ? null : "Please choose where the furniture is located.",
+      3: () =>
+        state.disassembly
+          ? null
+          : "Let us know if anything needs to be disassembled.",
+      4: () =>
+        state.heavyOversized === null
+          ? "Let us know if anything is heavy or oversized."
+          : null,
+      5: () =>
+        state.sameLocation === null
+          ? "Let us know if all of the items are at the same location."
+          : null,
+      6: () => null,
+    };
+
+    function showStep(step: number) {
+      root.querySelectorAll<HTMLElement>(".fc-step").forEach((el) => {
+        el.hidden = Number(el.dataset.step) !== step;
+      });
+
+      root
+        .querySelectorAll<HTMLElement>('[data-role="step-label"]')
+        .forEach((el) => {
+          el.textContent = `Step ${step} of ${TOTAL_STEPS}`;
+        });
+
+      root.querySelectorAll<HTMLElement>(".fc-progress-bar").forEach((bar) => {
+        bar.style.width = `${(step / TOTAL_STEPS) * 100}%`;
+      });
+
+      backBtn.disabled = step === 1;
+      continueBtn.textContent =
+        step === TOTAL_STEPS ? "Continue to Booking" : "Continue";
+
+      const heading = root.querySelector<HTMLElement>(
+        `.fc-step[data-step="${step}"] h3`,
+      );
+      if (heading) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus();
+      }
+    }
+
+    function buildInput(): FurnitureRemovalInput {
+      const items: FurnitureSelection[] = Array.from(state.items.entries())
+        .filter(([, quantity]) => quantity > 0)
+        .map(([itemKey, quantity]) => ({ itemKey, quantity }));
+
+      return {
+        items,
+        access: state.access ?? "garage",
+        disassembly: state.disassembly ?? "none",
+        heavyOversized: state.heavyOversized ?? false,
+        additionalLocations:
+          state.sameLocation === false ? state.additionalLocations : 0,
+      };
+    }
+
+    function setRow(key: string, cents: number, alwaysShow = false) {
+      root.querySelectorAll<HTMLElement>(`[data-row="${key}"]`).forEach((row) => {
+        row.hidden = !alwaysShow && cents <= 0;
+        const valueEl = row.querySelector<HTMLElement>(".js-value");
+        if (valueEl) valueEl.textContent = formatCents(cents);
+      });
+    }
+
+    function renderSummary(result: FurnitureRemovalPricingResult) {
+      root.querySelectorAll<HTMLElement>(".js-total").forEach((el) => {
+        el.textContent = formatCents(result.finalTotalCents);
+      });
+
+      setRow("furniture", result.itemSubtotalCents, true);
+      setRow("access", result.accessFeeCents);
+      setRow("disassembly", result.disassemblyFeeCents);
+      setRow("heavy", result.heavyOversizedFeeCents);
+      setRow("locations", result.additionalLocationFeeCents);
+      setRow("minimum", result.minimumAdjustmentCents);
+    }
+
+    function recalculate() {
+      renderSummary(calculateFurnitureRemovalPrice(buildInput()));
+    }
+
+    // ---- Step 1: furniture selection ----
+    root
+      .querySelectorAll<HTMLInputElement>('[data-role="furniture-toggle"]')
+      .forEach((checkbox) => {
+        const itemKey = checkbox.dataset.itemKey as FurnitureItemKey;
+        const card = checkbox.closest<HTMLElement>(".fc-furniture-card")!;
+        const stepper = card.querySelector<HTMLElement>(
+          '[data-role="stepper"]',
+        )!;
+        const check = card.querySelector<HTMLElement>('[data-role="check"]')!;
+        const quantityEl = card.querySelector<HTMLElement>(
+          '[data-role="quantity"]',
+        )!;
+
+        function setSelected(selected: boolean, quantity: number) {
+          checkbox.checked = selected;
+          setCardSelected(card, selected);
+          stepper.classList.toggle("hidden", !selected);
+          stepper.classList.toggle("flex", selected);
+          check.classList.toggle("hidden", !selected);
+          check.classList.toggle("flex", selected);
+          quantityEl.textContent = String(quantity);
+        }
+
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            state.items.set(itemKey, 1);
+            setSelected(true, 1);
+          } else {
+            state.items.set(itemKey, 0);
+            setSelected(false, 0);
+          }
+          clearStepError(1);
+          recalculate();
+        });
+
+        card
+          .querySelector('[data-action="increment"]')
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const qty = (state.items.get(itemKey) ?? 0) + 1;
+            state.items.set(itemKey, qty);
+            quantityEl.textContent = String(qty);
+            recalculate();
+          });
+
+        card
+          .querySelector('[data-action="decrement"]')
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const qty = Math.max(0, (state.items.get(itemKey) ?? 0) - 1);
+            state.items.set(itemKey, qty);
+            if (qty === 0) {
+              setSelected(false, 0);
+            } else {
+              quantityEl.textContent = String(qty);
+            }
+            recalculate();
+          });
+      });
+
+    // ---- Steps 2-5: radio option cards ----
+    function wireRadioGroup(name: string, onChange: (value: string) => void) {
+      const inputs = root.querySelectorAll<HTMLInputElement>(
+        `input[name="${name}"]`,
+      );
+      inputs.forEach((input) => {
+        input.addEventListener("change", () => {
+          inputs.forEach((i) => {
+            const card = i.closest<HTMLElement>(".fc-option-card");
+            if (card) setCardSelected(card, i.checked);
+          });
+          if (input.checked) onChange(input.value);
+        });
+      });
+    }
+
+    wireRadioGroup("fc-access", (value) => {
+      state.access = value as AccessType;
+      clearStepError(2);
+      recalculate();
+    });
+
+    wireRadioGroup("fc-disassembly", (value) => {
+      state.disassembly = value as DisassemblyType;
+      clearStepError(3);
+      recalculate();
+    });
+
+    wireRadioGroup("fc-heavy", (value) => {
+      state.heavyOversized = value === "yes";
+      clearStepError(4);
+      recalculate();
+    });
+
+    const additionalLocationsPanel = root.querySelector<HTMLElement>(
+      "#fc-additional-locations",
+    )!;
+    const locationCountEls = root.querySelectorAll<HTMLElement>(
+      '[data-role="location-count"]',
+    );
+
+    function updateLocationCount() {
+      locationCountEls.forEach((el) => {
+        el.textContent = String(state.additionalLocations);
+      });
+    }
+
+    wireRadioGroup("fc-same-location", (value) => {
+      state.sameLocation = value === "yes";
+      if (state.sameLocation) {
+        additionalLocationsPanel.classList.add("hidden");
+        additionalLocationsPanel.classList.remove("flex");
+      } else {
+        additionalLocationsPanel.classList.remove("hidden");
+        additionalLocationsPanel.classList.add("flex");
+        if (state.additionalLocations < 1) state.additionalLocations = 1;
+        updateLocationCount();
+      }
+      clearStepError(5);
+      recalculate();
+    });
+
+    root
+      .querySelector("#fc-location-decrement")
+      ?.addEventListener("click", () => {
+        state.additionalLocations = Math.max(1, state.additionalLocations - 1);
+        updateLocationCount();
+        recalculate();
+      });
+
+    root
+      .querySelector("#fc-location-increment")
+      ?.addEventListener("click", () => {
+        state.additionalLocations = Math.min(
+          MAX_ADDITIONAL_LOCATIONS,
+          state.additionalLocations + 1,
+        );
+        updateLocationCount();
+        recalculate();
+      });
+
+    // ---- Step 6: photos ----
+    const photoInput = root.querySelector<HTMLInputElement>("#fc-photo-input")!;
+    const photoDropzone = root.querySelector<HTMLElement>(
+      "#fc-photo-dropzone",
+    )!;
+    const photoGrid = root.querySelector<HTMLElement>("#fc-photo-grid")!;
+    const photoHint = root.querySelector<HTMLElement>(
+      '[data-role="photo-hint"]',
+    )!;
+
+    let photos: { file: File; url: string }[] = [];
+
+    function renderPhotos() {
+      photoGrid.innerHTML = "";
+
+      photos.forEach((photo, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className =
+          "relative aspect-square overflow-hidden rounded-xl border border-border";
+
+        const img = document.createElement("img");
+        img.src = photo.url;
+        img.alt = `Uploaded furniture photo ${index + 1}`;
+        img.className = "h-full w-full object-cover";
+        wrapper.appendChild(img);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className =
+          "absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-heading/80 text-sm font-semibold leading-none text-white transition hover:bg-heading";
+        removeBtn.setAttribute("aria-label", `Remove photo ${index + 1}`);
+        removeBtn.textContent = "×";
+        removeBtn.addEventListener("click", () => {
+          URL.revokeObjectURL(photo.url);
+          photos.splice(index, 1);
+          renderPhotos();
+        });
+        wrapper.appendChild(removeBtn);
+
+        photoGrid.appendChild(wrapper);
+      });
+
+      photoDropzone.hidden = photos.length >= MAX_PHOTOS;
+      photoHint.textContent =
+        photos.length > 0 ? `${photos.length} of ${MAX_PHOTOS} photos added` : "";
+    }
+
+    photoInput.addEventListener("change", () => {
+      const files = Array.from(photoInput.files ?? []);
+      const remaining = MAX_PHOTOS - photos.length;
+      files.slice(0, remaining).forEach((file) => {
+        photos.push({ file, url: URL.createObjectURL(file) });
+      });
+      photoInput.value = "";
+      renderPhotos();
+    });
+
+    // ---- Navigation ----
+    function showBookingPlaceholder() {
+      bookingRequested = true;
+      bookingPlaceholder.hidden = false;
+      continueBtn.disabled = true;
+    }
+
+    continueBtn.addEventListener("click", () => {
+      if (bookingRequested) return;
+
+      const error = stepValidators[currentStep]?.();
+      if (error) {
+        showStepError(currentStep, error);
+        return;
+      }
+      clearStepError(currentStep);
+
+      if (currentStep === TOTAL_STEPS) {
+        showBookingPlaceholder();
+        return;
+      }
+
+      currentStep += 1;
+      showStep(currentStep);
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (currentStep === 1) return;
+      currentStep -= 1;
+      showStep(currentStep);
+    });
+
+    // ---- Init ----
+    showStep(currentStep);
+    recalculate();
+  }
+</script>
