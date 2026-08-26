@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header.astro";
+import Button from "../components/ui/Button.astro";
+import { Check } from "lucide-astro";
+---
+
+<BaseLayout
+  title="Jobber Connected | Clean Slate"
+  description="Your Jobber account has been connected to Clean Slate."
+>
+  <meta slot="head" name="robots" content="noindex,nofollow" />
+
+  <Header />
+
+  <main>
+
+    <section class="py-24!">
+      <div class="container max-w-xl text-center">
+
+        <div class="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Check size={28} strokeWidth={2.5} />
+        </div>
+
+        <h1 class="mb-4 text-4xl!">Jobber Connected</h1>
+
+        <p class="mb-10 text-lg text-body">
+          Your Jobber account is now connected to Clean Slate.
+        </p>
+
+        <Button href="/">Back to Home</Button>
+
+      </div>
+    </section>
+
+  </main>
+
+</BaseLayout>
