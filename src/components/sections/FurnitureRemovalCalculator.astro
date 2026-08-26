@@ -52,19 +52,8 @@ const heavyOptions = [
 const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
 ---
 
-<section id="furniture-calculator" class="border-t border-border">
+<section id="furniture-calculator" hidden>
   <div class="container">
-
-    <div class="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
-      <p class="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
-        Instant Price
-      </p>
-      <h2 class="mb-4 text-4xl!">Price Your Furniture Removal</h2>
-      <p class="mx-auto max-w-2xl text-lg text-body lg:mx-0">
-        Answer a few quick questions and see your price update in real
-        time.
-      </p>
-    </div>
 
     <noscript>
       <p class="mt-8 rounded-2xl border border-border bg-white p-6 text-body">
@@ -393,7 +382,6 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
             type="button"
             id="fc-back"
             class="inline-flex items-center gap-1 rounded-xl px-4 py-2 text-[16px] font-medium text-muted transition hover:text-heading disabled:pointer-events-none disabled:opacity-0"
-            disabled
           >
             <ChevronLeft size={18} />
             Back
@@ -649,7 +637,9 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
         bar.style.width = `${(step / TOTAL_STEPS) * 100}%`;
       });
 
-      backBtn.disabled = step === 1;
+      // Always enabled: at step 1, Back exits to service selection instead
+      // of moving to a previous step (see the click handler below).
+      backBtn.disabled = false;
       continueBtn.textContent =
         step === TOTAL_STEPS ? "Continue to Booking" : "Continue";
 
@@ -930,7 +920,12 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
     });
 
     backBtn.addEventListener("click", () => {
-      if (currentStep === 1) return;
+      if (currentStep === 1) {
+        root.dispatchEvent(
+          new CustomEvent("furniture-flow:back-to-selection", { bubbles: true }),
+        );
+        return;
+      }
       currentStep -= 1;
       showStep(currentStep);
     });

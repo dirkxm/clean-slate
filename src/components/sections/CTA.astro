@@ -5,6 +5,7 @@ interface Props {
   title?: string;
   description?: string;
   buttonLabel?: string;
+  buttonHref?: string;
   secondaryLabel?: string;
   secondaryHref?: string;
 }
@@ -13,6 +14,7 @@ const {
   title = "Ready to get it cleaned up?",
   description = "Choose your service, pick a time, and book online. Need help deciding? Call or text and talk to a real person.",
   buttonLabel = "Book Online",
+  buttonHref = "/book-online",
   secondaryLabel,
   secondaryHref,
 } = Astro.props;
@@ -30,7 +32,7 @@ const {
     </p>
 
     <div class="flex flex-col items-center gap-4">
-      <Button href="/book-online" variant="secondary">
+      <Button href={buttonHref} variant="secondary">
         {buttonLabel}
       </Button>
 

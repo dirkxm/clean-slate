@@ -3,7 +3,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/layout/Header.astro";
 import Button from "../../components/ui/Button.astro";
 import CTA from "../../components/sections/CTA.astro";
-import FurnitureRemovalCalculator from "../../components/sections/FurnitureRemovalCalculator.astro";
 import { Image } from "astro:assets";
 import {
   Check,
@@ -124,7 +123,7 @@ const relatedServices = [
           </p>
 
           <div class="mt-10 flex flex-wrap items-center gap-4">
-            <Button href="/book-online" size="sm">Book Online</Button>
+            <Button href="/online-ordering" size="sm">Get Your Price</Button>
 
             <a
               href="tel:+15152023593"
@@ -228,8 +227,6 @@ const relatedServices = [
       </div>
     </section>
 
-    <FurnitureRemovalCalculator />
-
     <!-- ================= Common Reasons ================= -->
     <section>
       <div class="container">
@@ -267,12 +264,12 @@ const relatedServices = [
         <p class="text-3xl font-semibold text-heading">No Trip to the Dump.</p>
 
         <p class="mt-8 text-lg text-body">
-          Book online and let Clean Slate handle the rest.
+          Get your price online and let Clean Slate handle the rest.
         </p>
 
         <div class="mt-8">
-          <Button href="/book-online" size="sm">
-            Book Online
+          <Button href="/online-ordering" size="sm">
+            Get Your Price
           </Button>
         </div>
 
@@ -303,7 +300,9 @@ const relatedServices = [
 
     <CTA
       title="Ready to Get It Out?"
-      description="Book your furniture removal online and choose a time that works for you."
+      description="Get your price for furniture removal online in just a few minutes."
+      buttonLabel="Get Your Price"
+      buttonHref="/online-ordering"
     />
 
   </main>
