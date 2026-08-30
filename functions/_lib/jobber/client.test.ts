@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { jobberGraphQL } from "./client";
-import { JOBBER_API_VERSION, JOBBER_GRAPHQL_ENDPOINT } from "./config";
+import {
+  JOBBER_API_VERSION,
+  JOBBER_GRAPHQL_ENDPOINT,
+  JOBBER_THROTTLE_MAX_ATTEMPTS,
+} from "./config";
 
 function mockFetchOnce(options: {
   ok?: boolean;
@@ -30,6 +34,43 @@ function mockFetchOnce(options: {
     json: async () => jsonBody,
     text: async () => textBody,
   } as Response);
+}
+
+function jsonResponse(body: unknown): Response {
+  return {
+    ok: true,
+    status: 200,
+    statusText: "OK",
+    json: async () => body,
+    text: async () => "",
+  } as Response;
+}
+
+function throttledResponse(message = "Throttled"): Response {
+  return jsonResponse({ errors: [{ message }] });
+}
+
+function mockFetchSequence(responses: Response[]) {
+  const fn = vi.fn();
+  for (const r of responses) fn.mockResolvedValueOnce(r);
+  global.fetch = fn;
+  return fn;
+}
+
+/**
+ * Runs `work` with fake timers so the retry loop's backoff `setTimeout`
+ * calls resolve instantly instead of adding real wall-clock delay to the
+ * test run, then restores real timers afterward.
+ */
+async function withFakeTimers<T>(work: () => Promise<T>): Promise<T> {
+  vi.useFakeTimers();
+  try {
+    const resultPromise = work();
+    await vi.runAllTimersAsync();
+    return await resultPromise;
+  } finally {
+    vi.useRealTimers();
+  }
 }
 
 describe("jobberGraphQL", () => {
@@ -63,12 +104,12 @@ describe("jobberGraphQL", () => {
     );
   });
 
-  it("returns a structured error for top-level GraphQL errors", async () => {
-    mockFetchOnce({
-      jsonBody: {
+  it("returns a structured error for top-level GraphQL errors, without retrying", async () => {
+    const fetchMock = mockFetchSequence([
+      jsonResponse({
         errors: [{ message: "Field 'foo' doesn't exist", path: ["query", "foo"] }],
-      },
-    });
+      }),
+    ]);
 
     const result = await jobberGraphQL({
       query: "query { foo }",
@@ -82,6 +123,123 @@ describe("jobberGraphQL", () => {
     } else {
       throw new Error("expected a graphql_errors result");
     }
+    // A non-throttled GraphQL error is not throttling — must not retry.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  describe("throttling", () => {
+    it("retries once and succeeds when Jobber throttles the first attempt", async () => {
+      const fetchMock = mockFetchSequence([
+        throttledResponse(),
+        jsonResponse({ data: { account: { id: "123" } } }),
+      ]);
+
+      const result = await withFakeTimers(() =>
+        jobberGraphQL<{ account: { id: string } }>({
+          query: "query { account { id } }",
+          accessToken: "test-token",
+        }),
+      );
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data.account.id).toBe("123");
+      }
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("detects throttling via extensions.code as well as message text", async () => {
+      const fetchMock = mockFetchSequence([
+        jsonResponse({ errors: [{ message: "Too many requests", extensions: { code: "THROTTLED" } }] }),
+        jsonResponse({ data: { account: { id: "123" } } }),
+      ]);
+
+      const result = await withFakeTimers(() =>
+        jobberGraphQL({ query: "query { account { id } }", accessToken: "test-token" }),
+      );
+
+      expect(result.ok).toBe(true);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("gives up after a bounded number of attempts and returns the throttled error, never retrying indefinitely", async () => {
+      const fetchMock = mockFetchSequence([
+        throttledResponse(),
+        throttledResponse(),
+        throttledResponse(),
+        // If the retry were unbounded, this would be consumed too —
+        // it deliberately never runs.
+        jsonResponse({ data: { account: { id: "should-not-be-reached" } } }),
+      ]);
+
+      const result = await withFakeTimers(() =>
+        jobberGraphQL({ query: "query { account { id } }", accessToken: "test-token" }),
+      );
+
+      expect(result.ok).toBe(false);
+      if (!result.ok && result.error.type === "graphql_errors") {
+        expect(result.error.errors[0].message).toBe("Throttled");
+      } else {
+        throw new Error("expected a graphql_errors result");
+      }
+      expect(fetchMock).toHaveBeenCalledTimes(JOBBER_THROTTLE_MAX_ATTEMPTS);
+    });
+
+    it("does not retry a non-throttled GraphQL error even once", async () => {
+      const fetchMock = mockFetchSequence([
+        jsonResponse({ errors: [{ message: "Something else went wrong" }] }),
+      ]);
+
+      const result = await jobberGraphQL({
+        query: "query { account { id } }",
+        accessToken: "test-token",
+      });
+
+      expect(result.ok).toBe(false);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not retry HTTP-level failures", async () => {
+      const fetchMock = mockFetchSequence([
+        {
+          ok: false,
+          status: 500,
+          statusText: "Internal Server Error",
+          json: async () => ({}),
+          text: async () => "server exploded",
+        } as Response,
+      ]);
+
+      const result = await jobberGraphQL({
+        query: "query { account { id } }",
+        accessToken: "test-token",
+      });
+
+      expect(result.ok).toBe(false);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not retry a mutation's userErrors", async () => {
+      const fetchMock = mockFetchSequence([
+        jsonResponse({
+          data: {
+            clientCreate: {
+              client: null,
+              userErrors: [{ message: "Email has already been taken", path: ["email"] }],
+            },
+          },
+        }),
+      ]);
+
+      const result = await jobberGraphQL({
+        query: "mutation { clientCreate(input: {}) { client { id } userErrors { message path } } }",
+        accessToken: "test-token",
+        userErrorsPath: ["clientCreate"],
+      });
+
+      expect(result.ok).toBe(false);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("returns a structured error for HTTP-level failures", async () => {

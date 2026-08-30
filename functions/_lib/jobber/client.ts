@@ -1,4 +1,9 @@
-import { JOBBER_API_VERSION, JOBBER_GRAPHQL_ENDPOINT } from "./config";
+import {
+  JOBBER_API_VERSION,
+  JOBBER_GRAPHQL_ENDPOINT,
+  JOBBER_THROTTLE_MAX_ATTEMPTS,
+  JOBBER_THROTTLE_RETRY_BASE_DELAY_MS,
+} from "./config";
 import type { GraphQLError, JobberResult, JobberUserError } from "./types";
 
 export interface JobberGraphQLOptions {
@@ -20,19 +25,79 @@ interface RawGraphQLResponse<T> {
 }
 
 /**
+ * True when a top-level GraphQL error list represents Jobber rejecting
+ * the request for being throttled (cost/rate limited), as opposed to any
+ * other kind of GraphQL error. Detection is necessarily heuristic — the
+ * only confirmed data point is a real throttled response whose error
+ * message contained "Throttled" — so this matches that text case-
+ * insensitively. It also checks the conventional `extensions.code ===
+ * "THROTTLED"` shape used by other cost-based GraphQL APIs, in case
+ * Jobber's follows the same convention, but that half is unverified.
+ */
+function isThrottledGraphQLError(errors: GraphQLError[]): boolean {
+  return errors.some((error) => {
+    const code = error.extensions?.code;
+    if (typeof code === "string" && code.toUpperCase() === "THROTTLED") {
+      return true;
+    }
+    return /throttl/i.test(error.message);
+  });
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
  * Sends a single GraphQL request to Jobber's API and normalizes every
  * failure mode — network failure, HTTP-level failure, top-level GraphQL
  * `errors`, and mutation-level `userErrors` — into one structured result.
  * Never throws.
+ *
+ * Retries a bounded number of times, with backoff, but ONLY when the
+ * response is specifically a throttled rejection (see
+ * `isThrottledGraphQLError`) — never for any other error. Jobber's
+ * cost-based throttling rejects a request before it executes (the
+ * response carries no `data`), so retrying the identical request is safe
+ * and cannot create a duplicate Client/Property/Request/Quote — nothing
+ * was created by the throttled attempt in the first place. All other
+ * error types (network, HTTP, non-throttled GraphQL errors, userErrors)
+ * are returned immediately, unretried, exactly as before.
  */
 export async function jobberGraphQL<T = unknown>(
   options: JobberGraphQLOptions,
 ): Promise<JobberResult<T>> {
-  const { query, variables, accessToken, userErrorsPath } = options;
-
-  if (!accessToken) {
+  if (!options.accessToken) {
     return { ok: false, error: { type: "missing_access_token" } };
   }
+
+  let result: JobberResult<T>;
+  for (let attempt = 1; attempt <= JOBBER_THROTTLE_MAX_ATTEMPTS; attempt++) {
+    result = await sendJobberGraphQLOnce<T>(options);
+
+    if (result.ok) return result;
+
+    const throttled =
+      result.error.type === "graphql_errors" &&
+      isThrottledGraphQLError(result.error.errors);
+    const attemptsRemain = attempt < JOBBER_THROTTLE_MAX_ATTEMPTS;
+
+    if (!throttled || !attemptsRemain) {
+      return result;
+    }
+
+    await sleep(JOBBER_THROTTLE_RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
+  }
+
+  // Unreachable (the loop always returns), but keeps TypeScript satisfied
+  // that every path returns a value.
+  return result!;
+}
+
+async function sendJobberGraphQLOnce<T>(
+  options: JobberGraphQLOptions,
+): Promise<JobberResult<T>> {
+  const { query, variables, accessToken, userErrorsPath } = options;
 
   let response: Response;
   try {

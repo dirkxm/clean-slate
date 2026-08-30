@@ -28,3 +28,16 @@ export const JOBBER_OAUTH_STATE_TTL_SECONDS = 600;
  * and proactively refresh it, rather than waiting for a request to fail.
  */
 export const JOBBER_TOKEN_EXPIRY_SAFETY_WINDOW_MS = 5 * 60 * 1000;
+
+/**
+ * Bounded retry for Jobber's request-throttling (cost-based rate limiting)
+ * only — never for any other GraphQL error. `3` means one initial attempt
+ * plus up to 2 retries; never indefinite.
+ */
+export const JOBBER_THROTTLE_MAX_ATTEMPTS = 3;
+
+/**
+ * Backoff base, in milliseconds, between throttled retries. Attempt N's
+ * wait is `JOBBER_THROTTLE_RETRY_BASE_DELAY_MS * 2^(N-1)` (500ms, 1000ms, ...).
+ */
+export const JOBBER_THROTTLE_RETRY_BASE_DELAY_MS = 500;

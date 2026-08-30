@@ -465,6 +465,44 @@ describe("syncFurnitureRemovalOrderToJobber — auto-priced path (unchanged)", (
     }
   });
 
+  it("recovers from a throttled Client search and creates exactly one Client — no duplicate", async () => {
+    const env = await makeConnectedJobberEnv();
+    // Email search is throttled once, then succeeds (empty) on retry —
+    // the retry lives inside jobberGraphQL itself, transparent to this
+    // orchestration, so the rest of the sequence is unaffected.
+    const fetchMock = mockFetchSequence([
+      jsonResponse({ errors: [{ message: "Throttled" }] }),
+      clientsResult([]),
+      clientsResult([]),
+      clientCreateResult("client-1", "property-1"),
+      requestCreateResult("request-1"),
+    ]);
+
+    vi.useFakeTimers();
+    let result;
+    try {
+      const resultPromise = syncFurnitureRemovalOrderToJobber(env, baseRecord());
+      await vi.runAllTimersAsync();
+      result = await resultPromise;
+    } finally {
+      vi.useRealTimers();
+    }
+
+    expect(result).toEqual({
+      ok: true,
+      clientId: "client-1",
+      requestId: "request-1",
+      propertyId: "property-1",
+    });
+    // 1 throttled email search + 1 retried email search + phone search +
+    // clientCreate + requestCreate — exactly one Client created, never two.
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+    const clientCreateCalls = fetchMock.mock.calls.filter((call) =>
+      JSON.parse(call[1].body).query.includes("ClientCreate"),
+    );
+    expect(clientCreateCalls).toHaveLength(1);
+  });
+
   it("fails gracefully (without throwing) when Jobber isn't connected", async () => {
     const disconnectedEnv = {
       JOBBER_CLIENT_ID: "client-123",
