@@ -1268,13 +1268,13 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
     // ---- Navigation ----
     function showBookingPlaceholder() {
       bookingRequested = true;
-      bookingPlaceholder.hidden = false;
+      bookingPlaceholder.classList.remove("hidden");
       continueBtn.textContent = "Request Submitted";
     }
 
     function showReviewPlaceholder() {
       bookingRequested = true;
-      reviewPlaceholder.hidden = false;
+      reviewPlaceholder.classList.remove("hidden");
       continueBtn.textContent = "Request Submitted";
     }
 
