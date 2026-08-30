@@ -1,5 +1,5 @@
 import { JOBBER_API_VERSION, JOBBER_GRAPHQL_ENDPOINT } from "./config";
-import type { GraphQLError, JobberGraphQLResult, JobberUserError } from "./types";
+import type { GraphQLError, JobberResult, JobberUserError } from "./types";
 
 export interface JobberGraphQLOptions {
   query: string;
@@ -27,7 +27,7 @@ interface RawGraphQLResponse<T> {
  */
 export async function jobberGraphQL<T = unknown>(
   options: JobberGraphQLOptions,
-): Promise<JobberGraphQLResult<T>> {
+): Promise<JobberResult<T>> {
   const { query, variables, accessToken, userErrorsPath } = options;
 
   if (!accessToken) {

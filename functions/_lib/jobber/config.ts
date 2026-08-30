@@ -28,16 +28,3 @@ export const JOBBER_OAUTH_STATE_TTL_SECONDS = 600;
  * and proactively refresh it, rather than waiting for a request to fail.
  */
 export const JOBBER_TOKEN_EXPIRY_SAFETY_WINDOW_MS = 5 * 60 * 1000;
-
-/**
- * Scopes requested during OAuth authorization.
- *
- * IMPORTANT: Jobber's exact scope identifiers could not be confirmed
- * against their live docs while building this (developer.getjobber.com
- * returned 403 to automated fetches). These are placeholders reflecting
- * the eventual workflow (customers, jobs, line items) so the connection
- * won't need re-authorizing later — verify and correct them against the
- * scopes shown for this app in the Jobber Developer Center before this
- * is used against a real Jobber account.
- */
-export const JOBBER_REQUESTED_SCOPES = ["clients:write", "jobs:write"];

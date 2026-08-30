@@ -45,7 +45,8 @@ export interface FurnitureRemovalInput {
   items: FurnitureSelection[];
   access: AccessType;
   disassembly: DisassemblyType;
-  heavyOversized: boolean;
+  /** Count of items the customer identifies as heavy/oversized — charged per item, not per job. */
+  heavyOversizedItemCount: number;
   /** Number of locations beyond the first (first location is always free). */
   additionalLocations: number;
 }
@@ -70,5 +71,12 @@ export interface FurnitureRemovalPricingResult {
   preMinimumTotalCents: number;
   minimumAdjustmentCents: number;
   finalTotalCents: number;
+  /**
+   * True once `finalTotalCents` exceeds `LARGE_JOB_REVIEW_THRESHOLD_CENTS`.
+   * `finalTotalCents` is still the real calculated amount — this flag
+   * only signals that it should be presented as needing review rather
+   * than as a guaranteed bookable price.
+   */
+  requiresReview: boolean;
   lineItems: JobberLineItem[];
 }

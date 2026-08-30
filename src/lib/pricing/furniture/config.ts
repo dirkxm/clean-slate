@@ -15,9 +15,23 @@ import type {
 
 export const MINIMUM_JOB_CHARGE_CENTS = 9900;
 
+/**
+ * Charged per qualifying heavy/oversized item (not a flat per-job fee).
+ * The customer declares how many items are heavy/oversized; there is no
+ * per-catalog-item "this item is always heavy" classification — see
+ * `FurnitureItemConfig` in types.ts, which only carries a label and price.
+ */
 export const HEAVY_OVERSIZED_FEE_CENTS = 5000;
 
 export const ADDITIONAL_LOCATION_FEE_CENTS = 2500;
+
+/**
+ * If the calculated total exceeds this amount, the job is flagged for
+ * manual review instead of being presented as a guaranteed online price.
+ * The calculated amount itself is never discarded — see `requiresReview`
+ * on FurnitureRemovalPricingResult.
+ */
+export const LARGE_JOB_REVIEW_THRESHOLD_CENTS = 100000;
 
 export const FURNITURE_ITEMS: Record<FurnitureItemKey, FurnitureItemConfig> = {
   chair: { label: "Chair", priceCents: 3500 },

@@ -44,10 +44,7 @@ const disassemblyOptions: { value: DisassemblyType; label: string; feeCents: num
   { value: "difficult", label: "Yes - Difficult Disassembly", feeCents: DISASSEMBLY_FEES_CENTS.difficult },
 ];
 
-const heavyOptions = [
-  { value: "no", label: "No", feeCents: 0 },
-  { value: "yes", label: "Yes", feeCents: HEAVY_OVERSIZED_FEE_CENTS },
-];
+const heavyItemFeeLabel = formatUsd(HEAVY_OVERSIZED_FEE_CENTS);
 
 const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
 ---
@@ -230,31 +227,40 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
           </h3>
           <p class="mb-6 text-sm text-muted">
             Examples include very large, solid-wood, or unusually heavy
-            furniture.
+            furniture. Heavy / Oversized Items &mdash; {heavyItemFeeLabel} each.
           </p>
 
-          <fieldset class="contents" aria-labelledby="fc-step4-heading">
-            <legend class="sr-only">Is anything unusually heavy or oversized?</legend>
-
-            <div class="grid max-w-sm grid-cols-2 gap-3">
-              {
-                heavyOptions.map((option) => (
-                  <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
-                    <input
-                      type="radio"
-                      name="fc-heavy"
-                      value={option.value}
-                      class="sr-only"
-                    />
-                    <span class="font-semibold text-heading">{option.label}</span>
-                    <span class="mt-1 text-sm text-muted">
-                      {feeLabel(option.feeCents)}
-                    </span>
-                  </label>
-                ))
-              }
+          <div class="flex max-w-sm items-center justify-between rounded-2xl border border-border bg-background p-4">
+            <div>
+              <p class="font-semibold text-heading">Heavy / oversized items</p>
+              <p class="text-sm text-muted">{heavyItemFeeLabel} each</p>
             </div>
-          </fieldset>
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="fc-heavy-decrement"
+                class="fc-stepper-btn"
+                aria-label="Decrease heavy/oversized item count"
+              >
+                <Minus size={14} />
+              </button>
+              <span
+                class="w-6 text-center font-semibold text-heading"
+                data-role="heavy-count"
+                aria-live="polite"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                id="fc-heavy-increment"
+                class="fc-stepper-btn"
+                aria-label="Increase heavy/oversized item count"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
 
           <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
         </div>
@@ -358,17 +364,168 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
             id="fc-photo-grid"
             class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5"
           ></div>
+        </div>
+
+        <!-- Step 7: Customer Information -->
+        <div class="fc-step" data-step="7" hidden>
+          <h3 id="fc-step7-heading" class="mb-2 text-2xl!">
+            Your Contact Information
+          </h3>
+          <p id="fc-step7-intro" class="mb-6 text-sm text-muted">
+            Almost done! We just need a few details to confirm your booking.
+          </p>
+
+          <div id="fc-customer-form">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label class="field-label" for="fc-first-name">First Name</label>
+                <input
+                  id="fc-first-name"
+                  class="input"
+                  type="text"
+                  autocomplete="given-name"
+                  data-field="firstName"
+                />
+                <p class="field-error" data-field-error="firstName" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="fc-last-name">Last Name</label>
+                <input
+                  id="fc-last-name"
+                  class="input"
+                  type="text"
+                  autocomplete="family-name"
+                  data-field="lastName"
+                />
+                <p class="field-error" data-field-error="lastName" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="fc-phone">Phone</label>
+                <input
+                  id="fc-phone"
+                  class="input"
+                  type="tel"
+                  autocomplete="tel"
+                  data-field="phone"
+                />
+                <p class="field-error" data-field-error="phone" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="fc-email">Email</label>
+                <input
+                  id="fc-email"
+                  class="input"
+                  type="email"
+                  autocomplete="email"
+                  data-field="email"
+                />
+                <p class="field-error" data-field-error="email" hidden></p>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="field-label" for="fc-address">Service Address</label>
+                <input
+                  id="fc-address"
+                  class="input"
+                  type="text"
+                  autocomplete="street-address"
+                  data-field="serviceAddress"
+                />
+                <p class="field-error" data-field-error="serviceAddress" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="fc-city">City</label>
+                <input
+                  id="fc-city"
+                  class="input"
+                  type="text"
+                  autocomplete="address-level2"
+                  data-field="city"
+                />
+                <p class="field-error" data-field-error="city" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="fc-zip">ZIP Code</label>
+                <input
+                  id="fc-zip"
+                  class="input"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="postal-code"
+                  data-field="zip"
+                />
+                <p class="field-error" data-field-error="zip" hidden></p>
+              </div>
+            </div>
+
+            <fieldset class="contents" aria-labelledby="fc-customer-type-heading">
+              <legend class="sr-only">Residential or Commercial?</legend>
+              <p id="fc-customer-type-heading" class="mb-2 mt-6 font-semibold text-heading">
+                Residential or Commercial?
+              </p>
+
+              <div class="grid max-w-sm grid-cols-2 gap-3">
+                <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                  <input
+                    type="radio"
+                    name="fc-customer-type"
+                    value="residential"
+                    class="sr-only"
+                  />
+                  <span class="font-semibold text-heading">Residential</span>
+                  <span class="mt-1 text-sm text-muted">Home or personal property</span>
+                </label>
+                <label class="fc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                  <input
+                    type="radio"
+                    name="fc-customer-type"
+                    value="commercial"
+                    class="sr-only"
+                  />
+                  <span class="font-semibold text-heading">Commercial</span>
+                  <span class="mt-1 text-sm text-muted">Business or commercial property</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <p class="field-error" data-field-error="customerType" hidden></p>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+          <p class="field-error mt-4" id="fc-submit-error" role="alert" hidden></p>
 
           <div
             id="fc-booking-placeholder"
             class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center"
             role="status"
           >
-            <p class="font-semibold text-heading">Booking will be connected next.</p>
+            <p class="font-semibold text-heading">Booking Request Received</p>
             <p class="mt-2 text-sm text-body">
-              Your estimate is saved below. We'll follow up to finish
-              scheduling once online booking is live &mdash; or call or text
-              us at
+              Thanks! We've received your booking request and will
+              follow up shortly to confirm scheduling &mdash; or call
+              or text us at
+              <a href="tel:+15152023593" class="font-semibold text-primary hover:text-primary-dark">
+                (515) 202-3593
+              </a>.
+            </p>
+          </div>
+
+          <div
+            id="fc-review-placeholder"
+            class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center"
+            role="status"
+          >
+            <p class="font-semibold text-heading">Quote Request Received</p>
+            <p class="mt-2 text-sm text-body">
+              Thanks! Your project includes enough items or complexity
+              that we want to double-check the details before
+              confirming a final price. We'll review it and follow up
+              shortly with a formal quote &mdash; or call or text us at
               <a href="tel:+15152023593" class="font-semibold text-primary hover:text-primary-dark">
                 (515) 202-3593
               </a>.
@@ -442,7 +599,7 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
           Your Furniture Removal Price
         </p>
         <p class="js-total mt-2 text-4xl font-semibold text-white">$0.00</p>
-        <p class="mt-2 text-sm text-white/70">
+        <p id="fc-desktop-price-note" class="mt-2 text-sm text-white/70">
           A $99 minimum applies to every job.
         </p>
 
@@ -489,7 +646,7 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
         </p>
         <p class="js-total text-lg font-semibold leading-tight text-heading">$0.00</p>
       </div>
-      <p class="text-[11px] leading-tight text-muted">$99 minimum</p>
+      <p id="fc-mobile-price-note" class="text-[11px] leading-tight text-muted">$99 minimum</p>
     </div>
 
   </div>
@@ -530,9 +687,20 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
     FurnitureSelection,
   } from "../../lib/pricing/furniture";
 
-  const TOTAL_STEPS = 6;
+  const TOTAL_STEPS = 7;
   const MAX_PHOTOS = 5;
   const MAX_ADDITIONAL_LOCATIONS = 20;
+  const CUSTOMER_TEXT_FIELDS = [
+    "firstName",
+    "lastName",
+    "phone",
+    "email",
+    "serviceAddress",
+    "city",
+    "zip",
+  ] as const;
+  type CustomerTextField = (typeof CUSTOMER_TEXT_FIELDS)[number];
+  type CustomerType = "residential" | "commercial";
 
   const app = document.getElementById("fc-app");
   if (app) {
@@ -542,26 +710,59 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
       items: Map<FurnitureItemKey, number>;
       access: AccessType | null;
       disassembly: DisassemblyType | null;
-      heavyOversized: boolean | null;
+      heavyOversizedCount: number;
       sameLocation: boolean | null;
       additionalLocations: number;
+      customer: Record<CustomerTextField, string> & { customerType: CustomerType | null };
+      /**
+       * Generated once, on the first submit attempt, and reused for any
+       * retry within this page session — the idempotency key the server
+       * uses to avoid creating duplicate Jobber Clients/Requests if a
+       * submission is retried after a failed/dropped request.
+       */
+      orderId: string | null;
     } = {
       items: new Map(),
       access: null,
       disassembly: null,
-      heavyOversized: null,
+      heavyOversizedCount: 0,
       sameLocation: null,
       additionalLocations: 1,
+      customer: {
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        serviceAddress: "",
+        city: "",
+        zip: "",
+        customerType: null,
+      },
+      orderId: null,
     };
 
     let currentStep = 1;
     let bookingRequested = false;
+    let submitting = false;
+    let lastResult: FurnitureRemovalPricingResult | null = null;
 
     const backBtn = root.querySelector<HTMLButtonElement>("#fc-back")!;
     const continueBtn = root.querySelector<HTMLButtonElement>("#fc-continue")!;
     const bookingPlaceholder = root.querySelector<HTMLElement>(
       "#fc-booking-placeholder",
     )!;
+    const reviewPlaceholder = root.querySelector<HTMLElement>(
+      "#fc-review-placeholder",
+    )!;
+    const desktopPriceNote = root.querySelector<HTMLElement>(
+      "#fc-desktop-price-note",
+    );
+    const mobilePriceNote = root.querySelector<HTMLElement>(
+      "#fc-mobile-price-note",
+    );
+    const customerForm = root.querySelector<HTMLElement>("#fc-customer-form")!;
+    const step7Intro = root.querySelector<HTMLElement>("#fc-step7-intro")!;
+    const submitError = root.querySelector<HTMLElement>("#fc-submit-error")!;
 
     function formatCents(cents: number): string {
       return (cents / 100).toLocaleString("en-US", {
@@ -611,15 +812,15 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
         state.disassembly
           ? null
           : "Let us know if anything needs to be disassembled.",
-      4: () =>
-        state.heavyOversized === null
-          ? "Let us know if anything is heavy or oversized."
-          : null,
+      // A heavy/oversized count of 0 is a complete, valid answer — no
+      // required interaction on this step.
+      4: () => null,
       5: () =>
         state.sameLocation === null
           ? "Let us know if all of the items are at the same location."
           : null,
       6: () => null,
+      7: () => validateCustomerStep(),
     };
 
     function showStep(step: number) {
@@ -640,8 +841,7 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
       // Always enabled: at step 1, Back exits to service selection instead
       // of moving to a previous step (see the click handler below).
       backBtn.disabled = false;
-      continueBtn.textContent =
-        step === TOTAL_STEPS ? "Continue to Booking" : "Continue";
+      updateContinueLabel();
 
       const heading = root.querySelector<HTMLElement>(
         `.fc-step[data-step="${step}"] h3`,
@@ -661,7 +861,7 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
         items,
         access: state.access ?? "garage",
         disassembly: state.disassembly ?? "none",
-        heavyOversized: state.heavyOversized ?? false,
+        heavyOversizedItemCount: state.heavyOversizedCount,
         additionalLocations:
           state.sameLocation === false ? state.additionalLocations : 0,
       };
@@ -675,6 +875,33 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
       });
     }
 
+    function renderPriceNotes(requiresReview: boolean) {
+      if (desktopPriceNote) {
+        desktopPriceNote.textContent = requiresReview
+          ? "Larger or complex removals require a quick review before we confirm your price."
+          : "A $99 minimum applies to every job.";
+      }
+      if (mobilePriceNote) {
+        mobilePriceNote.textContent = requiresReview
+          ? "Requires quick review"
+          : "$99 minimum";
+      }
+    }
+
+    function updateContinueLabel() {
+      step7Intro.textContent = lastResult?.requiresReview
+        ? "Almost done! We just need a few details so we can review your project and follow up with a quote."
+        : "Almost done! We just need a few details to confirm your booking.";
+
+      if (currentStep !== TOTAL_STEPS) {
+        continueBtn.textContent = "Continue";
+        return;
+      }
+      continueBtn.textContent = lastResult?.requiresReview
+        ? "Request a Quote"
+        : "Continue to Booking";
+    }
+
     function renderSummary(result: FurnitureRemovalPricingResult) {
       root.querySelectorAll<HTMLElement>(".js-total").forEach((el) => {
         el.textContent = formatCents(result.finalTotalCents);
@@ -686,10 +913,13 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
       setRow("heavy", result.heavyOversizedFeeCents);
       setRow("locations", result.additionalLocationFeeCents);
       setRow("minimum", result.minimumAdjustmentCents);
+      renderPriceNotes(result.requiresReview);
     }
 
     function recalculate() {
-      renderSummary(calculateFurnitureRemovalPrice(buildInput()));
+      lastResult = calculateFurnitureRemovalPrice(buildInput());
+      renderSummary(lastResult);
+      updateContinueLabel();
     }
 
     // ---- Step 1: furniture selection ----
@@ -783,11 +1013,35 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
       recalculate();
     });
 
-    wireRadioGroup("fc-heavy", (value) => {
-      state.heavyOversized = value === "yes";
-      clearStepError(4);
-      recalculate();
-    });
+    const MAX_HEAVY_ITEMS = 20;
+    const heavyCountEls = root.querySelectorAll<HTMLElement>(
+      '[data-role="heavy-count"]',
+    );
+
+    function updateHeavyCount() {
+      heavyCountEls.forEach((el) => {
+        el.textContent = String(state.heavyOversizedCount);
+      });
+    }
+
+    root
+      .querySelector("#fc-heavy-decrement")
+      ?.addEventListener("click", () => {
+        state.heavyOversizedCount = Math.max(0, state.heavyOversizedCount - 1);
+        updateHeavyCount();
+        recalculate();
+      });
+
+    root
+      .querySelector("#fc-heavy-increment")
+      ?.addEventListener("click", () => {
+        state.heavyOversizedCount = Math.min(
+          MAX_HEAVY_ITEMS,
+          state.heavyOversizedCount + 1,
+        );
+        updateHeavyCount();
+        recalculate();
+      });
 
     const additionalLocationsPanel = root.querySelector<HTMLElement>(
       "#fc-additional-locations",
@@ -893,15 +1147,139 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
       renderPhotos();
     });
 
+    // ---- Step 7: customer information ----
+    function setFieldInvalid(field: string, invalid: boolean) {
+      const input = root.querySelector<HTMLElement>(`[data-field="${field}"]`);
+      if (input) input.classList.toggle("is-invalid", invalid);
+
+      const errorEl = root.querySelector<HTMLElement>(
+        `[data-field-error="${field}"]`,
+      );
+      if (errorEl) errorEl.hidden = !invalid;
+    }
+
+    CUSTOMER_TEXT_FIELDS.forEach((field) => {
+      const input = root.querySelector<HTMLInputElement>(`[data-field="${field}"]`);
+      input?.addEventListener("input", () => {
+        state.customer[field] = input.value;
+        setFieldInvalid(field, false);
+        clearStepError(7);
+      });
+    });
+
+    wireRadioGroup("fc-customer-type", (value) => {
+      state.customer.customerType = value as CustomerType;
+      setFieldInvalid("customerType", false);
+      clearStepError(7);
+    });
+
+    const customerFieldValidity: Record<string, () => boolean> = {
+      firstName: () => state.customer.firstName.trim().length > 0,
+      lastName: () => state.customer.lastName.trim().length > 0,
+      phone: () => (state.customer.phone.match(/\d/g) ?? []).length >= 7,
+      email: () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.customer.email.trim()),
+      serviceAddress: () => state.customer.serviceAddress.trim().length > 0,
+      city: () => state.customer.city.trim().length > 0,
+      zip: () => /^\d{5}(-\d{4})?$/.test(state.customer.zip.trim()),
+      customerType: () => state.customer.customerType !== null,
+    };
+
+    function validateCustomerStep(): string | null {
+      let hasError = false;
+      for (const [field, isValid] of Object.entries(customerFieldValidity)) {
+        const valid = isValid();
+        setFieldInvalid(field, !valid);
+        if (!valid) hasError = true;
+      }
+      return hasError ? "Please complete the required fields below." : null;
+    }
+
+    function hideSubmitError() {
+      submitError.hidden = true;
+    }
+
+    function showSubmitError() {
+      submitError.textContent =
+        "Something went wrong submitting your request. Please try again, or call or text us at (515) 202-3593.";
+      submitError.hidden = false;
+    }
+
+    async function submitOrder() {
+      if (submitting || bookingRequested) return;
+      submitting = true;
+      hideSubmitError();
+      continueBtn.disabled = true;
+      continueBtn.textContent = "Submitting...";
+
+      if (!state.orderId) {
+        state.orderId = crypto.randomUUID();
+      }
+
+      const payload = {
+        orderId: state.orderId,
+        customer: {
+          firstName: state.customer.firstName.trim(),
+          lastName: state.customer.lastName.trim(),
+          phone: state.customer.phone.trim(),
+          email: state.customer.email.trim(),
+          serviceAddress: state.customer.serviceAddress.trim(),
+          city: state.customer.city.trim(),
+          zip: state.customer.zip.trim(),
+          customerType: state.customer.customerType,
+        },
+        items: Array.from(state.items.entries())
+          .filter(([, quantity]) => quantity > 0)
+          .map(([itemKey, quantity]) => ({ itemKey, quantity })),
+        access: state.access,
+        disassembly: state.disassembly,
+        heavyOversizedItemCount: state.heavyOversizedCount,
+        additionalLocations:
+          state.sameLocation === false ? state.additionalLocations : 0,
+        photos: photos.map((photo) => ({ name: photo.file.name })),
+      };
+
+      try {
+        const response = await fetch("/api/orders/furniture-removal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error("submission_failed");
+        }
+
+        const result = await response.json();
+
+        customerForm.hidden = true;
+        if (result.status === "quote_requested") {
+          showReviewPlaceholder();
+        } else {
+          showBookingPlaceholder();
+        }
+      } catch {
+        submitting = false;
+        showSubmitError();
+        continueBtn.disabled = false;
+        updateContinueLabel();
+      }
+    }
+
     // ---- Navigation ----
     function showBookingPlaceholder() {
       bookingRequested = true;
       bookingPlaceholder.hidden = false;
-      continueBtn.disabled = true;
+      continueBtn.textContent = "Request Submitted";
+    }
+
+    function showReviewPlaceholder() {
+      bookingRequested = true;
+      reviewPlaceholder.hidden = false;
+      continueBtn.textContent = "Request Submitted";
     }
 
     continueBtn.addEventListener("click", () => {
-      if (bookingRequested) return;
+      if (bookingRequested || submitting) return;
 
       const error = stepValidators[currentStep]?.();
       if (error) {
@@ -911,7 +1289,7 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
       clearStepError(currentStep);
 
       if (currentStep === TOTAL_STEPS) {
-        showBookingPlaceholder();
+        submitOrder();
         return;
       }
 
@@ -931,7 +1309,7 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
     });
 
     // ---- Init ----
-    showStep(currentStep);
     recalculate();
+    showStep(currentStep);
   }
 </script>

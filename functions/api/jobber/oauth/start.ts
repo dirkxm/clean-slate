@@ -5,7 +5,6 @@ import {
   generateOAuthState,
   storeOAuthState,
 } from "../../../_lib/jobber/oauth";
-import { JOBBER_REQUESTED_SCOPES } from "../../../_lib/jobber/config";
 import type { JobberEnv } from "../../../_lib/jobber/types";
 
 interface RequestContext {
@@ -44,7 +43,6 @@ export async function onRequestGet(context: RequestContext): Promise<Response> {
     redirectUri: env.JOBBER_REDIRECT_URI,
     state,
     codeChallenge,
-    scopes: JOBBER_REQUESTED_SCOPES,
   });
 
   return Response.redirect(authorizationUrl, 302);

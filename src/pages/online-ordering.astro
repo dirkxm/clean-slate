@@ -7,13 +7,9 @@ import { services } from "../data/services";
 import {
   ArrowLeft,
   ArrowRight,
-  Building2,
   Clock,
-  HardHat,
   HelpCircle,
-  Home,
-  Sofa,
-  Warehouse,
+  Wrench,
 } from "lucide-astro";
 
 function findService(slug: string) {
@@ -24,69 +20,148 @@ function findService(slug: string) {
   return service;
 }
 
-const estateCleanouts = findService("estate-cleanouts");
+const furnitureRemoval = findService("furniture-removal");
+const junkRemoval = findService("junk-removal");
+const householdCleanouts = findService("household-cleanouts");
 const garageCleanouts = findService("garage-cleanouts");
+const estateCleanouts = findService("estate-cleanouts");
 const propertyCleanouts = findService("property-cleanouts");
 const constructionCleanup = findService("construction-cleanup");
+const smallDemolition = findService("small-demolition");
+const portableStorage = findService("portable-storage");
 
 interface OrderingOption {
   key: string;
-  icon: typeof Sofa;
+  icon: typeof Wrench;
   title: string;
   description: string;
   infoHref?: string;
   available: boolean;
 }
 
-const orderingOptions: OrderingOption[] = [
+interface OrderingCategory {
+  name: string;
+  options: OrderingOption[];
+}
+
+// Mirrors Clean Slate's finalized service architecture: Junk Removal,
+// Cleanouts, Construction, and Portable Storage, plus a catch-all for
+// anyone who isn't sure what they need. Only Furniture Removal has a
+// working pricing engine so far — everything else is selectable (per
+// architecture) but routes to a quote request rather than a guessed price.
+const categories: OrderingCategory[] = [
   {
-    key: "furniture-removal",
-    icon: Sofa,
-    title: "Furniture Removal",
-    description:
-      "Couches, mattresses, appliances, and other bulky items hauled away.",
-    infoHref: "/services/furniture-removal",
-    available: true,
+    name: "Junk Removal",
+    options: [
+      {
+        key: "furniture-removal",
+        icon: furnitureRemoval.icon,
+        title: furnitureRemoval.title,
+        description: furnitureRemoval.short,
+        infoHref: "/services/furniture-removal",
+        available: true,
+      },
+      {
+        key: "appliance-removal",
+        icon: Wrench,
+        title: "Appliance Removal",
+        description:
+          "Refrigerators, washers, dryers, and other unwanted appliances hauled away.",
+        available: false,
+      },
+      {
+        key: "general-junk-removal",
+        icon: junkRemoval.icon,
+        title: "General Junk Removal",
+        description: junkRemoval.short,
+        infoHref: "/services/junk-removal",
+        available: false,
+      },
+    ],
   },
   {
-    key: "estate-cleanouts",
-    icon: Home,
-    title: estateCleanouts.title,
-    description: estateCleanouts.short,
-    infoHref: "/services/estate-cleanouts",
-    available: false,
+    name: "Cleanouts",
+    options: [
+      {
+        key: "household-cleanouts",
+        icon: householdCleanouts.icon,
+        title: householdCleanouts.title,
+        description: householdCleanouts.short,
+        infoHref: "/cleanouts",
+        available: false,
+      },
+      {
+        key: "garage-cleanouts",
+        icon: garageCleanouts.icon,
+        title: garageCleanouts.title,
+        description: garageCleanouts.short,
+        infoHref: "/services/garage-cleanouts",
+        available: false,
+      },
+      {
+        key: "estate-cleanouts",
+        icon: estateCleanouts.icon,
+        title: estateCleanouts.title,
+        description: estateCleanouts.short,
+        infoHref: "/services/estate-cleanouts",
+        available: false,
+      },
+      {
+        key: "property-cleanouts",
+        icon: propertyCleanouts.icon,
+        title: propertyCleanouts.title,
+        description: propertyCleanouts.short,
+        infoHref: "/services/property-cleanouts",
+        available: false,
+      },
+    ],
   },
   {
-    key: "garage-cleanouts",
-    icon: Warehouse,
-    title: garageCleanouts.title,
-    description: garageCleanouts.short,
-    infoHref: "/services/garage-cleanouts",
-    available: false,
+    name: "Construction",
+    options: [
+      {
+        key: "construction-cleanup",
+        icon: constructionCleanup.icon,
+        title: constructionCleanup.title,
+        description: constructionCleanup.short,
+        infoHref: "/services/construction-cleanup",
+        available: false,
+      },
+      {
+        key: "small-demolition",
+        icon: smallDemolition.icon,
+        title: smallDemolition.title,
+        description: smallDemolition.short,
+        infoHref: "/services/small-demolition",
+        available: false,
+      },
+    ],
   },
   {
-    key: "property-cleanouts",
-    icon: Building2,
-    title: propertyCleanouts.title,
-    description: propertyCleanouts.short,
-    infoHref: "/services/property-cleanouts",
-    available: false,
+    name: "Portable Storage",
+    options: [
+      {
+        key: "portable-storage",
+        icon: portableStorage.icon,
+        title: "Portable Storage Rental",
+        description: portableStorage.short,
+        infoHref: "/services/portable-storage",
+        available: false,
+      },
+    ],
   },
   {
-    key: "construction-cleanup",
-    icon: HardHat,
-    title: constructionCleanup.title,
-    description: constructionCleanup.short,
-    infoHref: "/services/construction-cleanup",
-    available: false,
-  },
-  {
-    key: "other",
-    icon: HelpCircle,
-    title: "Other / Not Sure",
-    description:
-      "Not sure which service you need, or have something else in mind? Tell us what's going on and we'll help you figure it out.",
-    available: false,
+    name: "Not Sure?",
+    options: [
+      {
+        key: "other",
+        icon: HelpCircle,
+        title: "Other / Not Sure",
+        description:
+          "Not sure which service you need, or have something else in mind? Tell us what's going on and we'll help you figure it out.",
+        available: false,
+      },
+    ],
   },
 ];
 ---
@@ -121,49 +196,59 @@ const orderingOptions: OrderingOption[] = [
             What do you need help with?
           </h2>
 
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex flex-col gap-12">
             {
-              orderingOptions.map((option) => (
-                <div class="flex flex-col rounded-3xl border border-border bg-white p-6 shadow-soft transition">
-                  <div class="mb-4 flex items-start justify-between gap-3">
-                    <option.icon
-                      class={option.available ? "text-primary" : "text-muted"}
-                      size={32}
-                      strokeWidth={1.5}
-                    />
-                    {option.available ? (
-                      <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                        Online Pricing
-                      </span>
-                    ) : (
-                      <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted">
-                        <Clock size={12} />
-                        Coming Soon
-                      </span>
-                    )}
+              categories.map((category) => (
+                <div>
+                  <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+                    {category.name}
+                  </p>
+
+                  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {category.options.map((option) => (
+                      <div class="flex flex-col rounded-3xl border border-border bg-white p-6 shadow-soft transition">
+                        <div class="mb-4 flex items-start justify-between gap-3">
+                          <option.icon
+                            class={option.available ? "text-primary" : "text-muted"}
+                            size={32}
+                            strokeWidth={1.5}
+                          />
+                          {option.available ? (
+                            <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                              Online Pricing
+                            </span>
+                          ) : (
+                            <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted">
+                              <Clock size={12} />
+                              Coming Soon
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 class="mb-2">{option.title}</h3>
+                        <p class="mb-6 flex-1 text-body">{option.description}</p>
+
+                        <button
+                          type="button"
+                          class="ordering-option-select inline-flex items-center gap-2 font-semibold text-primary transition hover:text-primary-dark"
+                          data-key={option.key}
+                          data-title={option.title}
+                        >
+                          {option.available ? "Get Started" : "Select"}
+                          <ArrowRight class="transition group-hover:translate-x-1" size={18} />
+                        </button>
+
+                        {option.infoHref && (
+                          <a
+                            href={option.infoHref}
+                            class="mt-3 text-sm font-medium text-muted hover:text-heading"
+                          >
+                            Learn more about {option.title}
+                          </a>
+                        )}
+                      </div>
+                    ))}
                   </div>
-
-                  <h3 class="mb-2">{option.title}</h3>
-                  <p class="mb-6 flex-1 text-body">{option.description}</p>
-
-                  <button
-                    type="button"
-                    class="ordering-option-select inline-flex items-center gap-2 font-semibold text-primary transition hover:text-primary-dark"
-                    data-key={option.key}
-                    data-title={option.title}
-                  >
-                    {option.available ? "Get Started" : "Select"}
-                    <ArrowRight class="transition group-hover:translate-x-1" size={18} />
-                  </button>
-
-                  {option.infoHref && (
-                    <a
-                      href={option.infoHref}
-                      class="mt-3 text-sm font-medium text-muted hover:text-heading"
-                    >
-                      Learn more about {option.title}
-                    </a>
-                  )}
                 </div>
               ))
             }

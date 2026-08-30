@@ -6,6 +6,7 @@ import {
   DISASSEMBLY_LABELS,
   FURNITURE_ITEMS,
   HEAVY_OVERSIZED_FEE_CENTS,
+  LARGE_JOB_REVIEW_THRESHOLD_CENTS,
   MINIMUM_JOB_CHARGE_CENTS,
 } from "./config";
 import type {
@@ -34,6 +35,12 @@ export function calculateFurnitureRemovalPrice(
   if (!isNonNegativeInteger(input.additionalLocations)) {
     throw new Error(
       `additionalLocations must be a non-negative integer, received: ${input.additionalLocations}`,
+    );
+  }
+
+  if (!isNonNegativeInteger(input.heavyOversizedItemCount)) {
+    throw new Error(
+      `heavyOversizedItemCount must be a non-negative integer, received: ${input.heavyOversizedItemCount}`,
     );
   }
 
@@ -92,14 +99,13 @@ export function calculateFurnitureRemovalPrice(
     });
   }
 
-  const heavyOversizedFeeCents = input.heavyOversized
-    ? HEAVY_OVERSIZED_FEE_CENTS
-    : 0;
+  const heavyOversizedFeeCents =
+    input.heavyOversizedItemCount * HEAVY_OVERSIZED_FEE_CENTS;
   if (heavyOversizedFeeCents > 0) {
     lineItems.push({
       name: "Heavy / Oversized Item Fee",
-      quantity: 1,
-      unitPrice: heavyOversizedFeeCents,
+      quantity: input.heavyOversizedItemCount,
+      unitPrice: HEAVY_OVERSIZED_FEE_CENTS,
       total: heavyOversizedFeeCents,
     });
   }
@@ -138,6 +144,8 @@ export function calculateFurnitureRemovalPrice(
 
   const finalTotalCents = preMinimumTotalCents + minimumAdjustmentCents;
 
+  const requiresReview = finalTotalCents > LARGE_JOB_REVIEW_THRESHOLD_CENTS;
+
   return {
     itemSubtotalCents,
     accessFeeCents,
@@ -147,6 +155,7 @@ export function calculateFurnitureRemovalPrice(
     preMinimumTotalCents,
     minimumAdjustmentCents,
     finalTotalCents,
+    requiresReview,
     lineItems,
   };
 }

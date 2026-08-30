@@ -1,35 +1,6 @@
 ---
-import { HardHat, Package, Truck, Home, Warehouse, Building2, Hammer } from "lucide-astro";
 import ServiceCard from "../cards/ServiceCard.astro";
 import { services } from "../../data/services";
-import constructionCleanupImage from "../../assets/images/construction-cleanup.jpg";
-import portableStorageImage from "../../assets/images/temporary-storage.jpg";
-import junkRemovalImage from "../../assets/images/furniture-haul-away.jpg";
-import estateCleanoutImage from "../../assets/images/estate-cleanout.jpg";
-import garageCleanoutImage from "../../assets/images/garage-cleanout.jpg";
-import propertyCleanoutImage from "../../assets/images/property-cleanout.jpg";
-import smallDemolitionImage from "../../assets/images/small-demolition.jpg";
-import type { ImageMetadata } from "astro";
-
-const icons: Record<string, typeof HardHat> = {
-  "construction-cleanup": HardHat,
-  "junk-removal": Truck,
-  "portable-storage": Package,
-  "estate-cleanouts": Home,
-  "garage-cleanouts": Warehouse,
-  "property-cleanouts": Building2,
-  "small-demolition": Hammer,
-};
-
-const images: Record<string, ImageMetadata> = {
-  "construction-cleanup": constructionCleanupImage,
-  "junk-removal": junkRemovalImage,
-  "portable-storage": portableStorageImage,
-  "estate-cleanouts": estateCleanoutImage,
-  "garage-cleanouts": garageCleanoutImage,
-  "property-cleanouts": propertyCleanoutImage,
-  "small-demolition": smallDemolitionImage,
-};
 ---
 
 <section class="bg-primary-dark">
@@ -41,8 +12,9 @@ const images: Record<string, ImageMetadata> = {
           <div class="flex w-full md:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]">
             <ServiceCard
               service={service}
-              icon={icons[service.slug]}
-              image={images[service.slug]}
+              icon={service.icon}
+              image={service.image}
+              href={service.href}
             />
           </div>
         ))

@@ -36,7 +36,6 @@ export interface BuildAuthorizationUrlOptions {
   redirectUri: string;
   state: string;
   codeChallenge: string;
-  scopes: string[];
 }
 
 /** Builds Jobber's OAuth authorization URL. The target is always Jobber's own fixed endpoint — never user-controlled — so this cannot be used as an open redirect. */
@@ -50,7 +49,6 @@ export function buildJobberAuthorizationUrl(
   url.searchParams.set("state", options.state);
   url.searchParams.set("code_challenge", options.codeChallenge);
   url.searchParams.set("code_challenge_method", "S256");
-  url.searchParams.set("scope", options.scopes.join(" "));
   return url.toString();
 }
 

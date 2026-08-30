@@ -6,7 +6,7 @@ const baseInput: FurnitureRemovalInput = {
   items: [],
   access: "garage",
   disassembly: "none",
-  heavyOversized: false,
+  heavyOversizedItemCount: 0,
   additionalLocations: 0,
 };
 
@@ -99,10 +99,10 @@ describe("calculateFurnitureRemovalPrice", () => {
     reconcileLineItems(result);
   });
 
-  it("8. sofa + heavy/oversized = $115", () => {
+  it("8. sofa + one heavy/oversized item = $115", () => {
     const result = calculateFurnitureRemovalPrice({
       ...withItems([{ itemKey: "sofa", quantity: 1 }]),
-      heavyOversized: true,
+      heavyOversizedItemCount: 1,
     });
     expect(result.finalTotalCents).toBe(11500);
     reconcileLineItems(result);
@@ -188,5 +188,125 @@ describe("calculateFurnitureRemovalPrice", () => {
     const first = calculateFurnitureRemovalPrice(input);
     const second = calculateFurnitureRemovalPrice(input);
     expect(second).toEqual(first);
+  });
+
+  it("throws when heavyOversizedItemCount is negative or non-integer", () => {
+    expect(() =>
+      calculateFurnitureRemovalPrice({
+        ...withItems([{ itemKey: "sofa", quantity: 1 }]),
+        heavyOversizedItemCount: -1,
+      }),
+    ).toThrow();
+
+    expect(() =>
+      calculateFurnitureRemovalPrice({
+        ...withItems([{ itemKey: "sofa", quantity: 1 }]),
+        heavyOversizedItemCount: 1.5,
+      }),
+    ).toThrow();
+  });
+
+  describe("heavy/oversized pricing (per item, not per job)", () => {
+    it("no heavy items adds no heavy/oversized fee", () => {
+      const result = calculateFurnitureRemovalPrice(
+        withItems([{ itemKey: "sofa", quantity: 1 }]),
+      );
+      expect(result.heavyOversizedFeeCents).toBe(0);
+      expect(
+        result.lineItems.some((item) => item.name.includes("Heavy")),
+      ).toBe(false);
+      reconcileLineItems(result);
+    });
+
+    it("one heavy/oversized item = $50", () => {
+      const result = calculateFurnitureRemovalPrice({
+        ...withItems([{ itemKey: "sofa", quantity: 1 }]),
+        heavyOversizedItemCount: 1,
+      });
+      expect(result.heavyOversizedFeeCents).toBe(5000);
+      reconcileLineItems(result);
+    });
+
+    it("two heavy/oversized items = $100", () => {
+      const result = calculateFurnitureRemovalPrice({
+        ...withItems([{ itemKey: "sofa", quantity: 1 }]),
+        heavyOversizedItemCount: 2,
+      });
+      expect(result.heavyOversizedFeeCents).toBe(10000);
+      reconcileLineItems(result);
+    });
+
+    it("three heavy/oversized items = $150", () => {
+      const result = calculateFurnitureRemovalPrice({
+        ...withItems([{ itemKey: "sofa", quantity: 1 }]),
+        heavyOversizedItemCount: 3,
+      });
+      expect(result.heavyOversizedFeeCents).toBe(15000);
+      reconcileLineItems(result);
+    });
+
+    it("the heavy/oversized line item's quantity and unit price reflect the count", () => {
+      const result = calculateFurnitureRemovalPrice({
+        ...withItems([{ itemKey: "sofa", quantity: 1 }]),
+        heavyOversizedItemCount: 3,
+      });
+      const heavyLine = result.lineItems.find((item) =>
+        item.name.includes("Heavy"),
+      );
+      expect(heavyLine).toEqual({
+        name: "Heavy / Oversized Item Fee",
+        quantity: 3,
+        unitPrice: 5000,
+        total: 15000,
+      });
+    });
+
+    it("selecting furniture items never triggers a heavy fee on its own — it's independent of item selection", () => {
+      const result = calculateFurnitureRemovalPrice(
+        withItems([
+          { itemKey: "sofa", quantity: 1 },
+          { itemKey: "dresser", quantity: 1 },
+          { itemKey: "sectionalLarge", quantity: 2 },
+        ]),
+      );
+      expect(result.heavyOversizedFeeCents).toBe(0);
+      reconcileLineItems(result);
+    });
+  });
+
+  describe("large-job review threshold", () => {
+    it("a calculated price below $1,000 remains automatically priced", () => {
+      const result = calculateFurnitureRemovalPrice(
+        withItems([{ itemKey: "sofa", quantity: 2 }]),
+      );
+      expect(result.finalTotalCents).toBe(13000);
+      expect(result.requiresReview).toBe(false);
+    });
+
+    it("a calculated price of exactly $1,000 does not require review (must exceed, not just reach, the threshold)", () => {
+      const result = calculateFurnitureRemovalPrice({
+        ...baseInput,
+        heavyOversizedItemCount: 20, // 20 x $50 = $1,000.00 exactly
+      });
+      expect(result.finalTotalCents).toBe(100000);
+      expect(result.requiresReview).toBe(false);
+    });
+
+    it("a calculated price above $1,000 enters the quote-review state", () => {
+      const result = calculateFurnitureRemovalPrice({
+        ...baseInput,
+        heavyOversizedItemCount: 21, // 21 x $50 = $1,050.00
+      });
+      expect(result.finalTotalCents).toBe(105000);
+      expect(result.requiresReview).toBe(true);
+    });
+
+    it("does not discard the calculated amount when review is required", () => {
+      const result = calculateFurnitureRemovalPrice(
+        withItems([{ itemKey: "sectionalLarge", quantity: 9 }]), // 9 x $125 = $1,125.00
+      );
+      expect(result.requiresReview).toBe(true);
+      expect(result.finalTotalCents).toBe(112500);
+    });
   });
 });

@@ -18,7 +18,6 @@ describe("buildJobberAuthorizationUrl", () => {
         redirectUri: "https://clean-slate-dsm.com/api/jobber/oauth/callback",
         state: "state-abc",
         codeChallenge: "challenge-xyz",
-        scopes: ["clients:write", "jobs:write"],
       }),
     );
 
@@ -31,7 +30,7 @@ describe("buildJobberAuthorizationUrl", () => {
     expect(url.searchParams.get("state")).toBe("state-abc");
     expect(url.searchParams.get("code_challenge")).toBe("challenge-xyz");
     expect(url.searchParams.get("code_challenge_method")).toBe("S256");
-    expect(url.searchParams.get("scope")).toBe("clients:write jobs:write");
+    expect(url.searchParams.get("scope")).toBeNull();
   });
 
   it("always targets Jobber's own fixed authorize endpoint, never a caller-supplied host", () => {
@@ -41,7 +40,6 @@ describe("buildJobberAuthorizationUrl", () => {
         redirectUri: "https://evil.example.com/steal",
         state: "state-abc",
         codeChallenge: "challenge-xyz",
-        scopes: [],
       }),
     );
 

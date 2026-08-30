@@ -1,6 +1,38 @@
 export { jobberGraphQL } from "./client";
 export type { JobberGraphQLOptions } from "./client";
 
+export {
+  createJobberClient,
+  createJobberQuote,
+  createJobberRequest,
+  findJobberClientsByEmail,
+  findJobberClientsByPhone,
+} from "./mutations";
+export type {
+  JobberAddressInput,
+  JobberClientCreateInput,
+  JobberClientEmailInput,
+  JobberClientPhoneInput,
+  JobberClientSearchResult,
+  JobberCreatedClient,
+  JobberCreatedQuote,
+  JobberCreatedRequest,
+  JobberFormInput,
+  JobberFormItemInput,
+  JobberFormSectionInput,
+  JobberPropertyInput,
+  JobberPropertySearchResult,
+  JobberQuoteCreateAttributes,
+  JobberQuoteLineItemInput,
+  JobberQuoteTransition,
+  JobberRequestCreateInput,
+  JobberRequestDetailsInput,
+  JobberRequestLineItemInput,
+} from "./mutations";
+
+export { getValidJobberAccessToken } from "./access-token";
+export type { JobberAccessTokenEnv, JobberAccessTokenError } from "./access-token";
+
 export { refreshJobberToken, refreshJobberConnection } from "./refresh";
 export type {
   RefreshJobberTokenOptions,
@@ -37,7 +69,6 @@ export {
   JOBBER_AUTHORIZE_ENDPOINT,
   JOBBER_OAUTH_STATE_TTL_SECONDS,
   JOBBER_TOKEN_EXPIRY_SAFETY_WINDOW_MS,
-  JOBBER_REQUESTED_SCOPES,
 } from "./config";
 
 export type {
