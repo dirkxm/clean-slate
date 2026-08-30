@@ -46,8 +46,48 @@ function jsonResponse(body: unknown): Response {
   } as Response;
 }
 
-function throttledResponse(message = "Throttled"): Response {
-  return jsonResponse({ errors: [{ message }] });
+/**
+ * Matches the exact shape confirmed from a real Jobber throttled
+ * response: `extensions.code`/`extensions.documentation` only — no
+ * `throttleStatus`, `currentlyAvailable`, or `restoreRate`.
+ */
+function throttledResponse(): Response {
+  return jsonResponse({
+    errors: [
+      {
+        message: "Throttled",
+        extensions: {
+          code: "THROTTLED",
+          documentation:
+            "https://developer.getjobber.com/docs/using_jobbers_api/api_rate_limits",
+        },
+      },
+    ],
+  });
+}
+
+/**
+ * Patches `setTimeout` to fire immediately (no real wall-clock delay)
+ * while recording every requested delay in `delays`, so a test can
+ * assert the exact backoff schedule without slowing down the suite.
+ * Restores the original `setTimeout` when `work` settles either way.
+ */
+async function withCapturedDelays<T>(
+  work: () => Promise<T>,
+): Promise<{ result: T; delays: number[] }> {
+  const delays: number[] = [];
+  const original = globalThis.setTimeout;
+  // @ts-expect-error deliberately narrowed for test instrumentation
+  globalThis.setTimeout = (fn: () => void, ms?: number) => {
+    delays.push(ms ?? 0);
+    return original(fn, 0);
+  };
+  try {
+    const result = await work();
+    return { result, delays };
+  } finally {
+    globalThis.setTimeout = original;
+  }
 }
 
 function mockFetchSequence(responses: Response[]) {
@@ -162,11 +202,34 @@ describe("jobberGraphQL", () => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
+    it("recovers after several consecutive throttled attempts, within the retry budget", async () => {
+      // Throttled on every attempt except the last one the budget allows
+      // — proves the retry survives more than a single throttled attempt,
+      // not just the one-retry-and-done case above.
+      expect(JOBBER_THROTTLE_MAX_ATTEMPTS).toBeGreaterThan(3);
+      const throttledCount = JOBBER_THROTTLE_MAX_ATTEMPTS - 1;
+      const fetchMock = mockFetchSequence([
+        ...Array.from({ length: throttledCount }, () => throttledResponse()),
+        jsonResponse({ data: { account: { id: "123" } } }),
+      ]);
+
+      const result = await withFakeTimers(() =>
+        jobberGraphQL<{ account: { id: string } }>({
+          query: "query { account { id } }",
+          accessToken: "test-token",
+        }),
+      );
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data.account.id).toBe("123");
+      }
+      expect(fetchMock).toHaveBeenCalledTimes(JOBBER_THROTTLE_MAX_ATTEMPTS);
+    });
+
     it("gives up after a bounded number of attempts and returns the throttled error, never retrying indefinitely", async () => {
       const fetchMock = mockFetchSequence([
-        throttledResponse(),
-        throttledResponse(),
-        throttledResponse(),
+        ...Array.from({ length: JOBBER_THROTTLE_MAX_ATTEMPTS }, () => throttledResponse()),
         // If the retry were unbounded, this would be consumed too —
         // it deliberately never runs.
         jsonResponse({ data: { account: { id: "should-not-be-reached" } } }),
@@ -182,7 +245,23 @@ describe("jobberGraphQL", () => {
       } else {
         throw new Error("expected a graphql_errors result");
       }
+      // Exactly the hard cap — not one more, proving it's bounded rather
+      // than merely "happened to stop here".
       expect(fetchMock).toHaveBeenCalledTimes(JOBBER_THROTTLE_MAX_ATTEMPTS);
+    });
+
+    it("waits with the exact exponential backoff schedule between throttled retries", async () => {
+      mockFetchSequence([
+        ...Array.from({ length: JOBBER_THROTTLE_MAX_ATTEMPTS }, () => throttledResponse()),
+      ]);
+
+      const { delays } = await withCapturedDelays(() =>
+        jobberGraphQL({ query: "query { account { id } }", accessToken: "test-token" }),
+      );
+
+      // One fewer wait than attempts — no wait follows the final attempt.
+      expect(delays).toEqual([500, 1000, 2000, 4000]);
+      expect(delays).toHaveLength(JOBBER_THROTTLE_MAX_ATTEMPTS - 1);
     });
 
     it("does not retry a non-throttled GraphQL error even once", async () => {

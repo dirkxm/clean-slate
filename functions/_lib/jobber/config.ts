@@ -31,13 +31,26 @@ export const JOBBER_TOKEN_EXPIRY_SAFETY_WINDOW_MS = 5 * 60 * 1000;
 
 /**
  * Bounded retry for Jobber's request-throttling (cost-based rate limiting)
- * only — never for any other GraphQL error. `3` means one initial attempt
- * plus up to 2 retries; never indefinite.
+ * only — never for any other GraphQL error. `5` means one initial attempt
+ * plus up to 4 retries; never indefinite.
+ *
+ * A real throttled response from Jobber was inspected directly (not
+ * guessed) and confirmed to carry only `extensions.code` and
+ * `extensions.documentation` — no `throttleStatus`/`currentlyAvailable`/
+ * `restoreRate` or any other field indicating how long to wait or how
+ * much budget remains. With no such signal to size the wait against,
+ * this value was deliberately raised (from an initial `3`, which a real
+ * sustained-throttle order exhausted) to survive a longer throttle
+ * window, conservatively, rather than computed from anything Jobber
+ * reports.
  */
-export const JOBBER_THROTTLE_MAX_ATTEMPTS = 3;
+export const JOBBER_THROTTLE_MAX_ATTEMPTS = 5;
 
 /**
  * Backoff base, in milliseconds, between throttled retries. Attempt N's
- * wait is `JOBBER_THROTTLE_RETRY_BASE_DELAY_MS * 2^(N-1)` (500ms, 1000ms, ...).
+ * wait is `JOBBER_THROTTLE_RETRY_BASE_DELAY_MS * 2^(N-1)`. With
+ * `JOBBER_THROTTLE_MAX_ATTEMPTS = 5`, the four waits between attempts are
+ * 500ms, 1000ms, 2000ms, 4000ms — roughly 7.5s total worst case before
+ * giving up, versus the previous ~1.5s.
  */
 export const JOBBER_THROTTLE_RETRY_BASE_DELAY_MS = 500;

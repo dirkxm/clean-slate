@@ -27,12 +27,19 @@ interface RawGraphQLResponse<T> {
 /**
  * True when a top-level GraphQL error list represents Jobber rejecting
  * the request for being throttled (cost/rate limited), as opposed to any
- * other kind of GraphQL error. Detection is necessarily heuristic — the
- * only confirmed data point is a real throttled response whose error
- * message contained "Throttled" — so this matches that text case-
- * insensitively. It also checks the conventional `extensions.code ===
- * "THROTTLED"` shape used by other cost-based GraphQL APIs, in case
- * Jobber's follows the same convention, but that half is unverified.
+ * other kind of GraphQL error.
+ *
+ * A real throttled response from Jobber was inspected directly and has
+ * this exact shape:
+ *   { "message": "Throttled",
+ *     "extensions": { "code": "THROTTLED", "documentation": "https://developer.getjobber.com/docs/using_jobbers_api/api_rate_limits" } }
+ * Confirmed: there is no `throttleStatus`/`currentlyAvailable`/
+ * `restoreRate` or any other recovery-timing field on the error itself —
+ * `code` and `documentation` are the only two extensions present. So
+ * detection checks `extensions.code === "THROTTLED"` (the confirmed
+ * field), with a message-text fallback (`/throttl/i`) only for
+ * resilience against a differently-shaped throttle response Jobber might
+ * send from some other endpoint/version.
  */
 function isThrottledGraphQLError(errors: GraphQLError[]): boolean {
   return errors.some((error) => {
@@ -54,8 +61,9 @@ function sleep(ms: number): Promise<void> {
  * `errors`, and mutation-level `userErrors` — into one structured result.
  * Never throws.
  *
- * Retries a bounded number of times, with backoff, but ONLY when the
- * response is specifically a throttled rejection (see
+ * Retries a bounded number of times (`JOBBER_THROTTLE_MAX_ATTEMPTS`),
+ * with exponential backoff (`JOBBER_THROTTLE_RETRY_BASE_DELAY_MS * 2^n`),
+ * but ONLY when the response is specifically a throttled rejection (see
  * `isThrottledGraphQLError`) — never for any other error. Jobber's
  * cost-based throttling rejects a request before it executes (the
  * response carries no `data`), so retrying the identical request is safe
