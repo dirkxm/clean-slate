@@ -30,6 +30,14 @@ import type { JobberResult } from "./types";
 
 export interface JobberPropertySearchResult {
   id: string;
+  address: {
+    street1?: string;
+    street2?: string;
+    city?: string;
+    province?: string;
+    postalCode?: string;
+    country?: string;
+  };
 }
 
 export interface JobberClientSearchResult {
@@ -52,9 +60,17 @@ const CLIENTS_BY_EMAIL_QUERY = `
     ) {
       nodes {
         id
-        clientProperties(first: 1) {
+        clientProperties {
           nodes {
             id
+            address {
+              street1
+              street2
+              city
+              province
+              postalCode
+              country
+            }
           }
         }
       }
@@ -71,9 +87,17 @@ const CLIENTS_BY_PHONE_QUERY = `
     ) {
       nodes {
         id
-        clientProperties(first: 1) {
+        clientProperties {
           nodes {
             id
+            address {
+              street1
+              street2
+              city
+              province
+              postalCode
+              country
+            }
           }
         }
       }
@@ -152,10 +176,20 @@ export interface JobberClientCreateInput {
   properties?: JobberPropertyInput[];
 }
 
+/**
+ * Distinct from JobberPropertySearchResult: CLIENT_CREATE_MUTATION below
+ * only ever selects `id` on the created Client's properties (its address
+ * is already known — it's exactly what we just sent), so this type
+ * doesn't claim an `address` field that query never actually requests.
+ */
+export interface JobberCreatedClientProperty {
+  id: string;
+}
+
 export interface JobberCreatedClient {
   id: string;
   clientProperties: {
-    nodes: JobberPropertySearchResult[];
+    nodes: JobberCreatedClientProperty[];
   };
 }
 
@@ -187,6 +221,60 @@ export async function createJobberClient(
     variables: { input },
     accessToken,
     userErrorsPath: ["clientCreate"],
+  });
+}
+
+// ---------------------------------------------------------------------------
+// propertyCreate
+// ---------------------------------------------------------------------------
+
+export interface JobberPropertyCreateInput {
+  properties: JobberPropertyInput[];
+}
+
+export interface JobberCreatedProperty {
+  id: string;
+}
+
+const PROPERTY_CREATE_MUTATION = `
+  mutation PropertyCreate(
+    $clientId: EncodedId!
+    $input: PropertyCreateInput!
+  ) {
+    propertyCreate(
+      clientId: $clientId
+      input: $input
+    ) {
+      properties {
+        id
+      }
+      userErrors {
+        message
+        path
+      }
+    }
+  }
+`;
+
+export async function createJobberProperty(
+  accessToken: string,
+  clientId: string,
+  input: JobberPropertyCreateInput,
+): Promise<
+  JobberResult<{
+    propertyCreate: {
+      properties: JobberCreatedProperty[];
+    };
+  }>
+> {
+  return jobberGraphQL({
+    query: PROPERTY_CREATE_MUTATION,
+    variables: {
+      clientId,
+      input,
+    },
+    accessToken,
+    userErrorsPath: ["propertyCreate"],
   });
 }
 

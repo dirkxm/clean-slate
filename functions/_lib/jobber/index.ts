@@ -3,6 +3,7 @@ export type { JobberGraphQLOptions } from "./client";
 
 export {
   createJobberClient,
+  createJobberProperty,
   createJobberQuote,
   createJobberRequest,
   findJobberClientsByEmail,
@@ -15,11 +16,14 @@ export type {
   JobberClientPhoneInput,
   JobberClientSearchResult,
   JobberCreatedClient,
+  JobberCreatedClientProperty,
+  JobberCreatedProperty,
   JobberCreatedQuote,
   JobberCreatedRequest,
   JobberFormInput,
   JobberFormItemInput,
   JobberFormSectionInput,
+  JobberPropertyCreateInput,
   JobberPropertyInput,
   JobberPropertySearchResult,
   JobberQuoteCreateAttributes,

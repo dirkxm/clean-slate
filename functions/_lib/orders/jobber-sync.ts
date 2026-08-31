@@ -1,5 +1,6 @@
 import {
   createJobberClient,
+  createJobberProperty,
   createJobberQuote,
   createJobberRequest,
   findJobberClientsByEmail,
@@ -9,6 +10,7 @@ import {
 import type {
   JobberAccessTokenEnv,
   JobberFormInput,
+  JobberPropertySearchResult,
   JobberQuoteLineItemInput,
   JobberRequestLineItemInput,
 } from "../jobber/index";
@@ -193,15 +195,107 @@ type ClientLookupResult =
   | { ok: false; error: string };
 
 /**
+ * Normalizes one address component for comparison: trims, lowercases,
+ * drops periods (so "St." and "St" are equal), and collapses internal
+ * whitespace to single spaces. Never used for anything sent to Jobber —
+ * comparison only.
+ */
+function normalizeAddressPart(value: string | null | undefined): string {
+  return (value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, "")
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * True when an existing Jobber property's address matches the current
+ * order's service address closely enough to reuse rather than create a
+ * duplicate. Matches on street1 + city + postalCode only — the fields
+ * that actually distinguish one physical property from another here;
+ * province is a fixed business-area constant and country is always
+ * "US", so neither is discriminating.
+ */
+function propertyMatchesServiceAddress(
+  property: JobberPropertySearchResult,
+  customer: CustomerInfo,
+): boolean {
+  return (
+    normalizeAddressPart(property.address.street1) ===
+      normalizeAddressPart(customer.serviceAddress) &&
+    normalizeAddressPart(property.address.city) === normalizeAddressPart(customer.city) &&
+    normalizeAddressPart(property.address.postalCode) === normalizeAddressPart(customer.zip)
+  );
+}
+
+/**
+ * Resolves the Property ID to use for an existing Jobber Client: reuses
+ * a property whose address matches the current order's service address
+ * if one exists among the Client's known properties, otherwise creates a
+ * new Property on that Client for this address. Never blindly reuses an
+ * unrelated property (e.g. a different city) just because it happens to
+ * be first in the list — this is the fix for a Client whose Jobber
+ * record has a property for a different address than the current order.
+ */
+async function resolveJobberPropertyId(
+  accessToken: string,
+  clientId: string,
+  existingProperties: JobberPropertySearchResult[],
+  customer: CustomerInfo,
+): Promise<{ ok: true; propertyId: string } | { ok: false; error: string }> {
+  const match = existingProperties.find((property) =>
+    propertyMatchesServiceAddress(property, customer),
+  );
+  if (match) {
+    return { ok: true, propertyId: match.id };
+  }
+
+  const propertyResult = await createJobberProperty(accessToken, clientId, {
+    properties: [
+      {
+        address: {
+          street1: customer.serviceAddress,
+          city: customer.city,
+          // Same fixed business-area constant used when creating a new
+          // Client's first property below — Clean Slate only serves the
+          // Des Moines, Iowa metro.
+          province: "IA",
+          postalCode: customer.zip,
+          country: "US",
+        },
+      },
+    ],
+  });
+
+  if (!propertyResult.ok) {
+    return {
+      ok: false,
+      error: `Jobber sync failed at: createJobberProperty — ${describeJobberError(propertyResult.error)}`,
+    };
+  }
+
+  const createdPropertyId = propertyResult.data.propertyCreate.properties[0]?.id;
+  if (!createdPropertyId) {
+    return {
+      ok: false,
+      error: "Jobber sync failed at: createJobberProperty — no Property ID was returned.",
+    };
+  }
+
+  return { ok: true, propertyId: createdPropertyId };
+}
+
+/**
  * Finds an existing Jobber Client by email, then by phone, before ever
  * creating a new one — avoids duplicate Clients across repeat
  * submissions from the same customer. Never guesses: if a search comes
  * back with more than one match, this fails outright rather than
  * picking one, so it can be resolved manually in Jobber.
  *
- * Also resolves a Property ID (first one found/created) via the
- * verified `clientProperties` connection, needed for Quote creation on
- * the review-required path.
+ * Also resolves a Property ID matching the current order's service
+ * address (see `resolveJobberPropertyId`) — never just the first
+ * property on the Client — needed for Quote creation on the
+ * review-required path and now also attached to every Request.
  */
 async function findOrCreateJobberClient(
   accessToken: string,
@@ -217,11 +311,17 @@ async function findOrCreateJobberClient(
 
   const emailMatches = emailSearch.data.clients.nodes;
   if (emailMatches.length === 1) {
-    return {
-      ok: true,
-      clientId: emailMatches[0].id,
-      propertyId: emailMatches[0].clientProperties.nodes[0]?.id,
-    };
+    const client = emailMatches[0];
+    const propertyResult = await resolveJobberPropertyId(
+      accessToken,
+      client.id,
+      client.clientProperties.nodes,
+      customer,
+    );
+    if (!propertyResult.ok) {
+      return { ok: false, error: propertyResult.error };
+    }
+    return { ok: true, clientId: client.id, propertyId: propertyResult.propertyId };
   }
   if (emailMatches.length > 1) {
     return {
@@ -240,11 +340,17 @@ async function findOrCreateJobberClient(
 
   const phoneMatches = phoneSearch.data.clients.nodes;
   if (phoneMatches.length === 1) {
-    return {
-      ok: true,
-      clientId: phoneMatches[0].id,
-      propertyId: phoneMatches[0].clientProperties.nodes[0]?.id,
-    };
+    const client = phoneMatches[0];
+    const propertyResult = await resolveJobberPropertyId(
+      accessToken,
+      client.id,
+      client.clientProperties.nodes,
+      customer,
+    );
+    if (!propertyResult.ok) {
+      return { ok: false, error: propertyResult.error };
+    }
+    return { ok: true, clientId: client.id, propertyId: propertyResult.propertyId };
   }
   if (phoneMatches.length > 1) {
     return {

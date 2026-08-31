@@ -115,17 +115,67 @@ function jsonResponse(body: unknown): Response {
   } as Response;
 }
 
-function clientsResult(clients: { id: string; propertyId?: string }[]) {
+interface MockAddress {
+  street1?: string;
+  street2?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+/** Matches baseRecord()'s default customer service address exactly. */
+const MATCHING_ADDRESS: MockAddress = {
+  street1: "123 Main St",
+  city: "Des Moines",
+  province: "IA",
+  postalCode: "50309",
+  country: "US",
+};
+
+/** A different city entirely, for exercising the property-mismatch path. */
+const OTHER_ADDRESS: MockAddress = {
+  street1: "500 Congress Ave",
+  city: "Austin",
+  province: "TX",
+  postalCode: "78701",
+  country: "US",
+};
+
+/**
+ * `propertyId` is shorthand for "one property whose address matches the
+ * default customer" (baseRecord()'s address) — the common case for tests
+ * that aren't specifically about address matching. Pass `properties`
+ * directly to control exact addresses (matching, mismatched, or
+ * multiple) for tests that are.
+ */
+function clientsResult(
+  clients: {
+    id: string;
+    propertyId?: string;
+    properties?: { id: string; address?: MockAddress }[];
+  }[],
+) {
   return jsonResponse({
     data: {
       clients: {
-        nodes: clients.map((c) => ({
-          id: c.id,
-          clientProperties: { nodes: c.propertyId ? [{ id: c.propertyId }] : [] },
-        })),
+        nodes: clients.map((c) => {
+          const properties =
+            c.properties ?? (c.propertyId ? [{ id: c.propertyId, address: MATCHING_ADDRESS }] : []);
+          return {
+            id: c.id,
+            clientProperties: {
+              nodes: properties.map((p) => ({ id: p.id, address: p.address ?? MATCHING_ADDRESS })),
+            },
+          };
+        }),
       },
     },
   });
+}
+
+function propertyCreateResult(id: string) {
+  return jsonResponse({ data: { propertyCreate: { properties: [{ id }], userErrors: [] } } });
 }
 
 function clientCreateResult(id: string, propertyId?: string) {
@@ -299,7 +349,7 @@ describe("syncFurnitureRemovalOrderToJobber — auto-priced path (unchanged)", (
     const env = await makeConnectedJobberEnv();
     const fetchMock = mockFetchSequence([
       clientsResult([]),
-      clientsResult([{ id: "existing-by-phone" }]),
+      clientsResult([{ id: "existing-by-phone", propertyId: "existing-by-phone-property" }]),
       requestCreateResult("request-1"),
     ]);
 
@@ -363,7 +413,7 @@ describe("syncFurnitureRemovalOrderToJobber — auto-priced path (unchanged)", (
   it("uses the found Client's ID (not a newly created one) when creating the Request", async () => {
     const env = await makeConnectedJobberEnv();
     const fetchMock = mockFetchSequence([
-      clientsResult([{ id: "found-client-99" }]),
+      clientsResult([{ id: "found-client-99", propertyId: "found-client-property" }]),
       requestCreateResult("request-1"),
     ]);
 
@@ -516,6 +566,140 @@ describe("syncFurnitureRemovalOrderToJobber — auto-priced path (unchanged)", (
     if (!result.ok) {
       expect(result.error).toContain("not connected");
     }
+  });
+});
+
+describe("syncFurnitureRemovalOrderToJobber — property address resolution", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("reuses an existing property whose address matches the order's service address", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      clientsResult([{ id: "existing-client", propertyId: "matching-property" }]),
+      requestCreateResult("request-1"),
+    ]);
+
+    const result = await syncFurnitureRemovalOrderToJobber(env, baseRecord());
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.propertyId).toBe("matching-property");
+    // email search + requestCreate only — no propertyCreate call needed.
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("matches addresses ignoring case, extra whitespace, and periods", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      clientsResult([
+        {
+          id: "existing-client",
+          properties: [
+            {
+              id: "matching-property",
+              address: { street1: "123  MAIN ST.", city: " des moines ", postalCode: "50309" },
+            },
+          ],
+        },
+      ]),
+      requestCreateResult("request-1"),
+    ]);
+
+    const result = await syncFurnitureRemovalOrderToJobber(env, baseRecord());
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.propertyId).toBe("matching-property");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("picks the correct matching property out of several on the same Client", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      clientsResult([
+        {
+          id: "existing-client",
+          properties: [
+            { id: "austin-property", address: OTHER_ADDRESS },
+            { id: "des-moines-property", address: MATCHING_ADDRESS },
+          ],
+        },
+      ]),
+      requestCreateResult("request-1"),
+    ]);
+
+    const result = await syncFurnitureRemovalOrderToJobber(env, baseRecord());
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.propertyId).toBe("des-moines-property");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("creates a new Property when the existing Client's only property is for a different address, rather than reusing it blindly", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      clientsResult([{ id: "existing-client", properties: [{ id: "austin-property", address: OTHER_ADDRESS }] }]),
+      propertyCreateResult("norwalk-property"),
+      requestCreateResult("request-1"),
+    ]);
+
+    const result = await syncFurnitureRemovalOrderToJobber(
+      env,
+      baseRecord({
+        customer: {
+          ...baseRecord().customer,
+          serviceAddress: "100 Elm St",
+          city: "Norwalk",
+          zip: "50211",
+        },
+      }),
+    );
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.propertyId).toBe("norwalk-property");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+
+    const propertyCreateCall = fetchMock.mock.calls[1];
+    const body = JSON.parse(propertyCreateCall[1].body);
+    expect(body.variables.clientId).toBe("existing-client");
+    expect(body.variables.input).toEqual({
+      properties: [
+        {
+          address: {
+            street1: "100 Elm St",
+            city: "Norwalk",
+            province: "IA",
+            postalCode: "50211",
+            country: "US",
+          },
+        },
+      ],
+    });
+  });
+
+  it("sends the newly-resolved propertyId (never the mismatched one) on the Request", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      clientsResult([{ id: "existing-client", properties: [{ id: "austin-property", address: OTHER_ADDRESS }] }]),
+      propertyCreateResult("norwalk-property"),
+      requestCreateResult("request-1"),
+    ]);
+
+    await syncFurnitureRemovalOrderToJobber(
+      env,
+      baseRecord({
+        customer: {
+          ...baseRecord().customer,
+          serviceAddress: "100 Elm St",
+          city: "Norwalk",
+          zip: "50211",
+        },
+      }),
+    );
+
+    const requestCall = fetchMock.mock.calls[2];
+    const body = JSON.parse(requestCall[1].body);
+    expect(body.variables.input.propertyId).toBe("norwalk-property");
   });
 });
 
@@ -690,20 +874,30 @@ describe("syncFurnitureRemovalOrderToJobber — review-required path (Quote)", (
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("fails with a clear, diagnosable error when no Property ID can be resolved, without guessing one", async () => {
+  it("fails with a clear, diagnosable error when propertyCreate itself fails for a Client with no matching property", async () => {
     const env = await makeConnectedJobberEnv();
     mockFetchSequence([
-      clientsResult([{ id: "client-no-property" }]), // matched, but zero properties
-      requestCreateResult("request-1"),
+      // Matched by email, but its only property is for a different
+      // address — no match, so a new Property is attempted and fails.
+      clientsResult([
+        { id: "client-no-match", properties: [{ id: "prop-elsewhere", address: OTHER_ADDRESS }] },
+      ]),
+      jsonResponse({
+        data: {
+          propertyCreate: {
+            properties: [],
+            userErrors: [{ message: "Address is invalid", path: ["address"] }],
+          },
+        },
+      }),
     ]);
 
     const result = await syncFurnitureRemovalOrderToJobber(env, reviewRequiredRecord());
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain("Property");
-      expect(result.clientId).toBe("client-no-property");
-      expect(result.requestId).toBe("request-1");
+      expect(result.error).toContain("createJobberProperty");
+      expect(result.error).toContain("Address is invalid");
     }
   });
 
