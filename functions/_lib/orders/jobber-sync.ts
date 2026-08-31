@@ -17,6 +17,7 @@ import type {
 import type {
   ApplianceRemovalOrderRecord,
   CustomerInfo,
+  EstimateBasedOrderRecord,
   FurnitureRemovalOrderRecord,
   GeneralJunkRemovalOrderRecord,
   JobberSyncInfo,
@@ -685,7 +686,17 @@ async function syncOrderToJobber<TRecord extends JobberSyncableRecord>(
     requestId = requestResult.data.requestCreate.request.id;
   }
 
-  if (!record.pricing.requiresReview) {
+  // Jobber's quoteCreate rejects an empty lineItems array outright
+  // ("lineItems can't be blank" — confirmed against the real API). An
+  // estimate-based order with no pricing configured yet (see
+  // EstimateBasedPricingConfig) is requiresReview:true with ZERO line
+  // items — a real Quote can't be created for it, and shouldn't be: the
+  // Request itself (already created above, with a Request Form clearly
+  // marked "pricing not yet configured") is the correct stopping point,
+  // for staff to price and quote manually inside Jobber. Every other
+  // service always has at least a minimum-charge line item whenever
+  // requiresReview is true, so this doesn't change their behavior at all.
+  if (!record.pricing.requiresReview || record.pricing.lineItems.length === 0) {
     return { ok: true, clientId, requestId, propertyId };
   }
 
@@ -775,4 +786,112 @@ export async function syncGeneralJunkRemovalOrderToJobber(
     buildQuoteMessage: buildGeneralJunkQuoteMessage,
     buildRequestForm: buildGeneralJunkRequestForm,
   });
+}
+
+/**
+ * Builds the four per-service formatters for an estimate-based order
+ * (cleanouts/construction), parameterized by that service's own
+ * customer-facing label — used by every one of those six services
+ * instead of each duplicating its own copy of these functions.
+ */
+export function buildEstimateBasedFormatters(serviceLabel: string) {
+  return {
+    buildRequestTitle: (customer: CustomerInfo) =>
+      `${serviceLabel} — ${customer.firstName} ${customer.lastName}`,
+    buildQuoteTitle: (customer: CustomerInfo) =>
+      `${serviceLabel} Quote — ${customer.firstName} ${customer.lastName}`,
+    buildQuoteMessage: () =>
+      `Thanks for your ${serviceLabel.toLowerCase()} request. Because of the scope of this job, we've taken a closer look and prepared this quote based on the details you submitted. It reflects our current estimate — let us know if you'd like to move forward.`,
+    buildRequestForm: (record: EstimateBasedOrderRecord): JobberFormInput => ({
+      sections: [
+        {
+          label: serviceLabel,
+          items: [
+            { label: "Area / Space", answerText: record.order.areaDescription },
+            { label: "Fill Level", answerText: record.order.fillLevelLabel },
+            { label: "Large Items", answerText: String(record.order.largeItemCount) },
+            {
+              label: "Heavy / Special-Handling Items",
+              answerText: String(record.order.heavyOrSpecialItemCount),
+            },
+            ...(record.order.approximateSquareFootage
+              ? [
+                  {
+                    label: "Approximate Square Footage",
+                    answerText: String(record.order.approximateSquareFootage),
+                  },
+                ]
+              : []),
+            ...(record.order.notes ? [{ label: "Customer Notes", answerText: record.order.notes }] : []),
+            ...(record.order.haulAwayIncluded !== undefined
+              ? [
+                  {
+                    label: "Haul-Away Included",
+                    answerText: record.order.haulAwayIncluded ? "Yes" : "No — demolition labor only",
+                  },
+                ]
+              : []),
+          ],
+        },
+        {
+          label: "Job Details",
+          items: [
+            { label: "Access", answerText: record.order.accessLabel },
+            { label: "Extra Labor", answerText: record.order.disassemblyLabel },
+            {
+              label: "Additional Locations",
+              answerText: String(record.order.additionalLocations),
+            },
+          ],
+        },
+        {
+          label: "Order",
+          items: [
+            {
+              label: "Calculated Total",
+              answerText: record.pricing.pricingConfigured
+                ? formatUsd(record.pricing.finalTotalCents)
+                : "Pending — online pricing not yet configured for this service",
+            },
+            {
+              label: "Classification",
+              answerText: record.pricing.requiresReview
+                ? "Needs Review / Quote"
+                : "Auto-Priced Booking",
+            },
+            {
+              label: "Photos Submitted",
+              answerText:
+                record.order.photoCount > 0
+                  ? `${record.order.photoCount} photo(s): ${record.order.photoFileNames.join(", ")}`
+                  : "None",
+            },
+          ],
+        },
+        {
+          label: "Customer",
+          items: [
+            {
+              label: "Customer Type",
+              answerText: record.customer.customerType === "commercial" ? "Commercial" : "Residential",
+            },
+            { label: "Phone", answerText: record.customer.phone },
+            { label: "Email", answerText: record.customer.email },
+            { label: "Service Address", answerText: record.customer.serviceAddress },
+            { label: "City", answerText: record.customer.city },
+            { label: "ZIP", answerText: record.customer.zip },
+          ],
+        },
+      ],
+    }),
+  };
+}
+
+/** Syncs any estimate-based (cleanout/construction) order into Jobber. See `syncOrderToJobber` for the actual orchestration. */
+export async function syncEstimateBasedOrderToJobber(
+  env: JobberAccessTokenEnv,
+  record: EstimateBasedOrderRecord,
+  serviceLabel: string,
+): Promise<JobberSyncResult> {
+  return syncOrderToJobber(env, record, buildEstimateBasedFormatters(serviceLabel));
 }

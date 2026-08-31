@@ -1,5 +1,7 @@
 import type {
   ApplianceRemovalOrderRecord,
+  EstimateBasedOrderRecord,
+  EstimateBasedServiceKey,
   FurnitureRemovalOrderRecord,
   GeneralJunkRemovalOrderRecord,
   OrdersKVNamespace,
@@ -88,6 +90,37 @@ export async function getGeneralJunkRemovalOrder(
 
   try {
     return JSON.parse(raw) as GeneralJunkRemovalOrderRecord;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * One key prefix per estimate-based service (household-cleanout-order:,
+ * garage-cleanout-order:, etc.) — kept distinct per service, same as
+ * every other order type, even though they share one record shape.
+ */
+export function estimateBasedOrderKey(service: EstimateBasedServiceKey, id: string): string {
+  return `${service}-order:${id}`;
+}
+
+export async function saveEstimateBasedOrder(
+  kv: OrdersKVNamespace,
+  record: EstimateBasedOrderRecord,
+): Promise<void> {
+  await kv.put(estimateBasedOrderKey(record.service, record.id), JSON.stringify(record));
+}
+
+export async function getEstimateBasedOrder(
+  kv: OrdersKVNamespace,
+  service: EstimateBasedServiceKey,
+  id: string,
+): Promise<EstimateBasedOrderRecord | null> {
+  const raw = await kv.get(estimateBasedOrderKey(service, id));
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as EstimateBasedOrderRecord;
   } catch {
     return null;
   }

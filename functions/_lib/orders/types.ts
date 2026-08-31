@@ -241,3 +241,80 @@ export interface GeneralJunkRemovalOrderRecord {
   };
   jobber: JobberSyncInfo;
 }
+
+/**
+ * Every cleanout/construction service priced by volume/scope rather
+ * than an item catalog: Household/Garage/Estate/Property Cleanouts,
+ * Construction Cleanup, Small Demolition. These genuinely share one
+ * structural shape (area description + fill level + large/special items
+ * + access + extra labor + locations), so — unlike the item-catalog
+ * services, which each have real per-item price differences — they
+ * share ONE order record type, ONE storage function pair, ONE Jobber
+ * sync path, and ONE API handler factory (see estimate-based-handler.ts)
+ * instead of six duplicated implementations.
+ */
+export type EstimateBasedServiceKey =
+  | "household-cleanout"
+  | "garage-cleanout"
+  | "estate-cleanout"
+  | "property-cleanout"
+  | "construction-cleanup"
+  | "small-demolition";
+
+/**
+ * The raw shape a client submits for any estimate-based service —
+ * pricing is deliberately NOT included; the server always recalculates
+ * it (or, currently, marks it pending review — see
+ * EstimateBasedPricingConfig's doc comment in the pricing engine).
+ */
+export interface EstimateBasedOrderRequestBody {
+  orderId?: unknown;
+  customer: unknown;
+  areaDescription: unknown;
+  fillLevel: unknown;
+  largeItemCount: unknown;
+  heavyOrSpecialItemCount: unknown;
+  access: unknown;
+  disassembly: unknown;
+  additionalLocations: unknown;
+  approximateSquareFootage?: unknown;
+  notes?: unknown;
+  /** Small Demolition only. */
+  haulAwayIncluded?: unknown;
+  photos?: unknown;
+}
+
+export interface EstimateBasedOrderRecord {
+  id: string;
+  service: EstimateBasedServiceKey;
+  status: OrderStatus;
+  submittedAt: string;
+  customer: CustomerInfo;
+  order: {
+    areaDescription: string;
+    fillLevel: string;
+    fillLevelLabel: string;
+    largeItemCount: number;
+    heavyOrSpecialItemCount: number;
+    access: string;
+    accessLabel: string;
+    disassembly: string;
+    disassemblyLabel: string;
+    additionalLocations: number;
+    approximateSquareFootage?: number;
+    notes?: string;
+    /** Small Demolition only. */
+    haulAwayIncluded?: boolean;
+    photoCount: number;
+    photoFileNames: string[];
+  };
+  pricing: {
+    severityScore: number;
+    finalTotalCents: number;
+    requiresReview: boolean;
+    /** False until this service's pricing config sets a real per-severity-point price — see the pricing engine's doc comments. */
+    pricingConfigured: boolean;
+    lineItems: OrderLineItem[];
+  };
+  jobber: JobberSyncInfo;
+}

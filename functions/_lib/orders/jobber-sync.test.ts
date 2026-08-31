@@ -11,6 +11,7 @@ import {
   buildRequestForm,
   buildRequestTitle,
   syncApplianceRemovalOrderToJobber,
+  syncEstimateBasedOrderToJobber,
   syncFurnitureRemovalOrderToJobber,
   syncGeneralJunkRemovalOrderToJobber,
 } from "./jobber-sync";
@@ -19,6 +20,7 @@ import { putJobberConnection } from "../jobber/connection";
 import type { JobberConnection } from "../jobber/types";
 import type {
   ApplianceRemovalOrderRecord,
+  EstimateBasedOrderRecord,
   FurnitureRemovalOrderRecord,
   GeneralJunkRemovalOrderRecord,
 } from "./types";
@@ -1251,6 +1253,13 @@ describe("syncApplianceRemovalOrderToJobber", () => {
   });
 });
 
+describe("buildGeneralJunkRequestTitle", () => {
+  it("includes the customer's full name and says General Junk Removal", () => {
+    const title = buildGeneralJunkRequestTitle(generalJunkBaseRecord().customer);
+    expect(title).toBe("General Junk Removal — Jane Doe");
+  });
+});
+
 describe("buildGeneralJunkRequestForm", () => {
   it("labels the field 'Disassembly', not 'Disconnection'", () => {
     const form = buildGeneralJunkRequestForm(generalJunkBaseRecord());
@@ -1297,5 +1306,98 @@ describe("syncGeneralJunkRemovalOrderToJobber", () => {
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.requestId).toBe("request-1");
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+function estimateBasedRecord(
+  overrides: Partial<EstimateBasedOrderRecord> = {},
+): EstimateBasedOrderRecord {
+  return {
+    id: "66666666-6666-6666-6666-666666666666",
+    service: "garage-cleanout",
+    status: "quote_requested",
+    submittedAt: new Date().toISOString(),
+    customer: {
+      firstName: "Jane",
+      lastName: "Doe",
+      phone: "(515) 202-3593",
+      email: "jane@example.com",
+      serviceAddress: "123 Main St",
+      city: "Des Moines",
+      zip: "50309",
+      customerType: "residential",
+    },
+    order: {
+      areaDescription: "Two-Car Garage",
+      fillLevel: "moderate",
+      fillLevelLabel: "Moderately Filled",
+      largeItemCount: 0,
+      heavyOrSpecialItemCount: 0,
+      access: "garage",
+      accessLabel: "Garage Access",
+      disassembly: "none",
+      disassemblyLabel: "No Extra Labor Expected",
+      additionalLocations: 0,
+      photoCount: 0,
+      photoFileNames: [],
+    },
+    pricing: {
+      severityScore: 2,
+      finalTotalCents: 0,
+      requiresReview: true,
+      pricingConfigured: false,
+      lineItems: [],
+    },
+    jobber: { syncStatus: "pending" },
+    ...overrides,
+  };
+}
+
+describe("syncEstimateBasedOrderToJobber — unconfigured pricing (current real state)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("creates the Client and Request but never attempts a Quote when there are no line items to quote, even though requiresReview is true", async () => {
+    const env = await makeConnectedJobberEnv();
+    // Deliberately only 4 responses queued (search x2, create, request) —
+    // if a quoteCreate call were attempted, this mock would throw for
+    // running out of responses, failing the test.
+    const fetchMock = mockFetchSequence(
+      freshClientAndRequestSequence("client-1", "property-1", "request-1"),
+    );
+
+    const result = await syncEstimateBasedOrderToJobber(
+      env,
+      estimateBasedRecord(),
+      "Garage Cleanout",
+    );
+
+    expect(result).toEqual({
+      ok: true,
+      clientId: "client-1",
+      requestId: "request-1",
+      propertyId: "property-1",
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+
+    const requestCreateCall = fetchMock.mock.calls[3];
+    const body = JSON.parse(requestCreateCall[1].body);
+    expect(body.variables.input.title).toBe("Garage Cleanout — Jane Doe");
+  });
+
+  it("the Request form marks pricing as pending rather than showing $0.00", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence(
+      freshClientAndRequestSequence("client-1", "property-1", "request-1"),
+    );
+
+    await syncEstimateBasedOrderToJobber(env, estimateBasedRecord(), "Garage Cleanout");
+
+    const requestCreateCall = fetchMock.mock.calls[3];
+    const body = JSON.parse(requestCreateCall[1].body);
+    const formJson = JSON.stringify(body.variables.input.requestDetails.form);
+    expect(formJson).toContain("Pending");
+    expect(formJson).not.toContain("$0.00");
   });
 });

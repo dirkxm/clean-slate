@@ -704,6 +704,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     ApplianceSelection,
     DisassemblyType,
   } from "../../lib/pricing/appliance";
+  import { goBackOneStep, navigateOrdering } from "../../lib/ordering/navigation";
 
   const TOTAL_STEPS = 7;
   const MAX_PHOTOS = 5;
@@ -1312,8 +1313,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         return;
       }
 
-      currentStep += 1;
-      showStep(currentStep);
+      navigateOrdering({ view: root.id, step: currentStep + 1 });
     });
 
     backBtn.addEventListener("click", () => {
@@ -1323,12 +1323,19 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         );
         return;
       }
-      currentStep -= 1;
+      goBackOneStep();
+    });
+
+    // A step transition is only ever actually applied here, in response
+    // to the shared navigation module — never directly by the Continue/
+    // Back handlers above — so the browser's native Back/Forward buttons
+    // and this wizard's own buttons always stay in sync with each other.
+    root.addEventListener("calculator-flow:show-step", (event) => {
+      currentStep = (event as CustomEvent<{ step: number }>).detail.step;
       showStep(currentStep);
     });
 
     // ---- Init ----
     recalculate();
-    showStep(currentStep);
   }
 </script>

@@ -5,6 +5,7 @@ import Button from "../components/ui/Button.astro";
 import FurnitureRemovalCalculator from "../components/sections/FurnitureRemovalCalculator.astro";
 import ApplianceRemovalCalculator from "../components/sections/ApplianceRemovalCalculator.astro";
 import GeneralJunkRemovalCalculator from "../components/sections/GeneralJunkRemovalCalculator.astro";
+import GarageCleanoutCalculator from "../components/sections/GarageCleanoutCalculator.astro";
 import { services } from "../data/services";
 import {
   ArrowLeft,
@@ -94,12 +95,12 @@ const categories: OrderingCategory[] = [
         available: false,
       },
       {
-        key: "garage-cleanouts",
+        key: "garage-cleanout",
         icon: garageCleanouts.icon,
         title: garageCleanouts.title,
         description: garageCleanouts.short,
         infoHref: "/services/garage-cleanouts",
-        available: false,
+        available: true,
       },
       {
         key: "estate-cleanouts",
@@ -293,6 +294,9 @@ const categories: OrderingCategory[] = [
       <!-- ---- View: General Junk Removal Flow ---- -->
       <GeneralJunkRemovalCalculator />
 
+      <!-- ---- View: Garage Cleanout Flow ---- -->
+      <GarageCleanoutCalculator />
+
     </section>
 
   </main>
@@ -300,18 +304,19 @@ const categories: OrderingCategory[] = [
 </BaseLayout>
 
 <script>
+  import { goBackOneStep, initOrderingNavigation, navigateOrdering } from "../lib/ordering/navigation";
+  import type { OrderingState } from "../lib/ordering/navigation";
+
   // Maps an ordering-option key to its calculator section's id. Every
-  // calculator dispatches the same "calculator-flow:back-to-selection"
-  // event and follows the same section-id-plus-<h3> convention, so
-  // adding a new service here is the only wiring a new calculator needs
-  // — no new branch, no new event name, no new focus-management code.
+  // calculator follows the same section-id-plus-<h3> convention and
+  // participates in the same shared navigation module, so adding a new
+  // service here is the only wiring a new calculator needs.
   const CALCULATOR_SECTION_IDS: Record<string, string> = {
     "furniture-removal": "furniture-calculator",
     "appliance-removal": "appliance-calculator",
     "general-junk-removal": "general-junk-calculator",
+    "garage-cleanout": "garage-cleanout-calculator",
   };
-
-  type ViewName = "selection" | "quote" | (typeof CALCULATOR_SECTION_IDS)[string];
 
   const selectionView = document.getElementById("view-service-selection")!;
   const quoteView = document.getElementById("view-quote-request")!;
@@ -333,21 +338,48 @@ const categories: OrderingCategory[] = [
     heading.focus();
   }
 
-  function showView(view: ViewName) {
-    selectionView.hidden = view !== "selection";
-    quoteView.hidden = view !== "quote";
-    Object.entries(calculatorSections).forEach(([sectionId, section]) => {
-      section.hidden = view !== sectionId;
-    });
-
-    if (view === "selection") {
-      focusHeading("#view-service-selection h2");
-    } else if (view === "quote") {
-      focusHeading("#quote-heading");
+  function renderQuoteCopy(state: OrderingState) {
+    if (state.key === "other") {
+      quoteHeading.textContent = "Tell Us What You Need";
+      quoteBody.textContent =
+        "Contact us and we'll help you figure out the right service for your project.";
     } else {
-      focusHeading(`#${view} h3`);
+      const title = state.title ?? "This Service";
+      quoteHeading.textContent = `Online Pricing Isn't Available Yet for ${title}`;
+      quoteBody.textContent = `We're still building online pricing for ${title}. Contact us and we'll get you a quote right away.`;
     }
   }
+
+  // The single place the visible view/step is actually applied — called
+  // on first load, on every forward navigation, and on every Back/
+  // Forward press via popstate, so all three stay perfectly consistent.
+  function applyOrderingState(state: OrderingState) {
+    selectionView.hidden = state.view !== "selection";
+    quoteView.hidden = state.view !== "quote";
+    Object.entries(calculatorSections).forEach(([sectionId, section]) => {
+      section.hidden = state.view !== sectionId;
+    });
+
+    if (state.view === "selection") {
+      focusHeading("#view-service-selection h2");
+      return;
+    }
+
+    if (state.view === "quote") {
+      renderQuoteCopy(state);
+      focusHeading("#quote-heading");
+      return;
+    }
+
+    // A calculator section — tell it (and only it, since every other
+    // calculator is hidden) which step to show for this state.
+    document.getElementById(state.view)?.dispatchEvent(
+      new CustomEvent("calculator-flow:show-step", { detail: { step: state.step ?? 1 } }),
+    );
+    focusHeading(`#${state.view} h3`);
+  }
+
+  initOrderingNavigation(applyOrderingState);
 
   document
     .querySelectorAll<HTMLButtonElement>(".ordering-option-select")
@@ -357,26 +389,20 @@ const categories: OrderingCategory[] = [
 
         const sectionId = key ? CALCULATOR_SECTION_IDS[key] : undefined;
         if (sectionId) {
-          showView(sectionId);
+          navigateOrdering({ view: sectionId, step: 1 });
           return;
         }
 
-        if (key === "other") {
-          quoteHeading.textContent = "Tell Us What You Need";
-          quoteBody.textContent =
-            "Contact us and we'll help you figure out the right service for your project.";
-        } else {
-          quoteHeading.textContent = `Online Pricing Isn't Available Yet for ${title}`;
-          quoteBody.textContent = `We're still building online pricing for ${title}. Contact us and we'll get you a quote right away.`;
-        }
-
-        showView("quote");
+        navigateOrdering({ view: "quote", key, title });
       });
     });
 
-  quoteBackBtn.addEventListener("click", () => showView("selection"));
+  quoteBackBtn.addEventListener("click", () => goBackOneStep());
 
+  // Every calculator's own Back button (including from its first step,
+  // exiting back to service selection) goes through the same shared
+  // history — never a separate "back to selection" event.
   document.addEventListener("calculator-flow:back-to-selection", () => {
-    showView("selection");
+    goBackOneStep();
   });
 </script>
