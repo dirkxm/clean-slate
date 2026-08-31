@@ -6,6 +6,11 @@ import FurnitureRemovalCalculator from "../components/sections/FurnitureRemovalC
 import ApplianceRemovalCalculator from "../components/sections/ApplianceRemovalCalculator.astro";
 import GeneralJunkRemovalCalculator from "../components/sections/GeneralJunkRemovalCalculator.astro";
 import GarageCleanoutCalculator from "../components/sections/GarageCleanoutCalculator.astro";
+import HouseholdCleanoutCalculator from "../components/sections/HouseholdCleanoutCalculator.astro";
+import EstateCleanoutCalculator from "../components/sections/EstateCleanoutCalculator.astro";
+import PropertyCleanoutCalculator from "../components/sections/PropertyCleanoutCalculator.astro";
+import ConstructionCleanupCalculator from "../components/sections/ConstructionCleanupCalculator.astro";
+import SmallDemolitionCalculator from "../components/sections/SmallDemolitionCalculator.astro";
 import { services } from "../data/services";
 import {
   ArrowLeft,
@@ -87,12 +92,12 @@ const categories: OrderingCategory[] = [
     name: "Cleanouts",
     options: [
       {
-        key: "household-cleanouts",
+        key: "household-cleanout",
         icon: householdCleanouts.icon,
         title: householdCleanouts.title,
         description: householdCleanouts.short,
         infoHref: "/cleanouts",
-        available: false,
+        available: true,
       },
       {
         key: "garage-cleanout",
@@ -103,20 +108,20 @@ const categories: OrderingCategory[] = [
         available: true,
       },
       {
-        key: "estate-cleanouts",
+        key: "estate-cleanout",
         icon: estateCleanouts.icon,
         title: estateCleanouts.title,
         description: estateCleanouts.short,
         infoHref: "/services/estate-cleanouts",
-        available: false,
+        available: true,
       },
       {
-        key: "property-cleanouts",
+        key: "property-cleanout",
         icon: propertyCleanouts.icon,
         title: propertyCleanouts.title,
         description: propertyCleanouts.short,
         infoHref: "/services/property-cleanouts",
-        available: false,
+        available: true,
       },
     ],
   },
@@ -129,7 +134,7 @@ const categories: OrderingCategory[] = [
         title: constructionCleanup.title,
         description: constructionCleanup.short,
         infoHref: "/services/construction-cleanup",
-        available: false,
+        available: true,
       },
       {
         key: "small-demolition",
@@ -137,7 +142,7 @@ const categories: OrderingCategory[] = [
         title: smallDemolition.title,
         description: smallDemolition.short,
         infoHref: "/services/small-demolition",
-        available: false,
+        available: true,
       },
     ],
   },
@@ -297,6 +302,21 @@ const categories: OrderingCategory[] = [
       <!-- ---- View: Garage Cleanout Flow ---- -->
       <GarageCleanoutCalculator />
 
+      <!-- ---- View: Household Cleanout Flow ---- -->
+      <HouseholdCleanoutCalculator />
+
+      <!-- ---- View: Estate Cleanout Flow ---- -->
+      <EstateCleanoutCalculator />
+
+      <!-- ---- View: Property Cleanout Flow ---- -->
+      <PropertyCleanoutCalculator />
+
+      <!-- ---- View: Construction Cleanup Flow ---- -->
+      <ConstructionCleanupCalculator />
+
+      <!-- ---- View: Small Demolition Flow ---- -->
+      <SmallDemolitionCalculator />
+
     </section>
 
   </main>
@@ -316,6 +336,11 @@ const categories: OrderingCategory[] = [
     "appliance-removal": "appliance-calculator",
     "general-junk-removal": "general-junk-calculator",
     "garage-cleanout": "garage-cleanout-calculator",
+    "household-cleanout": "household-cleanout-calculator",
+    "estate-cleanout": "estate-cleanout-calculator",
+    "property-cleanout": "property-cleanout-calculator",
+    "construction-cleanup": "construction-cleanup-calculator",
+    "small-demolition": "small-demolition-calculator",
   };
 
   const selectionView = document.getElementById("view-service-selection")!;

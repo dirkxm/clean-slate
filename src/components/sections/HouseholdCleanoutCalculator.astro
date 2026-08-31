@@ -1,0 +1,831 @@
+---
+import {
+  ACCESS_LABELS,
+  EXTRA_LABOR_LABELS,
+  FILL_LEVELS,
+  FILL_LEVEL_DESCRIPTIONS,
+  FILL_LEVEL_LABELS,
+  HOUSEHOLD_SCOPE_OPTIONS,
+} from "../../lib/pricing/household-cleanout";
+import type { AccessType, DisassemblyType, FillLevel } from "../../lib/pricing/household-cleanout";
+import { ChevronLeft, Minus, Plus, Upload } from "lucide-astro";
+
+const accessOptions = (Object.keys(ACCESS_LABELS) as AccessType[]).map((value) => ({
+  value,
+  label: ACCESS_LABELS[value],
+}));
+
+const extraLaborOptions: { value: DisassemblyType; label: string }[] = [
+  { value: "none", label: EXTRA_LABOR_LABELS.none },
+  { value: "simple", label: EXTRA_LABOR_LABELS.simple },
+  { value: "difficult", label: EXTRA_LABOR_LABELS.difficult },
+];
+
+const fillLevelOptions = FILL_LEVELS.map((value: FillLevel) => ({
+  value,
+  label: FILL_LEVEL_LABELS[value],
+  description: FILL_LEVEL_DESCRIPTIONS[value],
+}));
+---
+
+<section id="household-cleanout-calculator" hidden>
+  <div class="container">
+
+    <noscript>
+      <p class="mt-8 rounded-2xl border border-border bg-white p-6 text-body">
+        Please enable JavaScript to use the online booking flow, or
+        <a href="/contact" class="font-semibold text-primary hover:text-primary-dark">contact us</a>
+        for a quote.
+      </p>
+    </noscript>
+
+    <div
+      id="hc-app"
+      class="mt-12 grid gap-8 pb-24 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-12 lg:pb-0"
+    >
+
+      <!-- ================= Wizard ================= -->
+      <div class="rounded-3xl border border-border bg-white p-6 shadow-soft sm:p-8">
+
+        <!-- Progress -->
+        <div class="mb-8">
+          <p class="mb-2 text-sm font-semibold text-muted" data-role="step-label">
+            Step 1 of 8
+          </p>
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <div
+              class="hc-progress-bar h-full rounded-full bg-primary transition-all duration-300"
+              style="width: 12.5%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Step 1: Scope -->
+        <div class="hc-step" data-step="1">
+          <h3 id="hc-step1-heading" class="mb-6 text-2xl!">What's the scope of the cleanout?</h3>
+
+          <fieldset class="contents" aria-labelledby="hc-step1-heading">
+            <legend class="sr-only">What's the scope of the cleanout?</legend>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {
+                HOUSEHOLD_SCOPE_OPTIONS.map((option) => (
+                  <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input type="radio" name="hc-size" value={option.value} class="sr-only" />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 2: Fill Level -->
+        <div class="hc-step" data-step="2" hidden>
+          <h3 id="hc-step2-heading" class="mb-6 text-2xl!">How full is the space?</h3>
+
+          <fieldset class="contents" aria-labelledby="hc-step2-heading">
+            <legend class="sr-only">How full is the space?</legend>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {
+                fillLevelOptions.map((option) => (
+                  <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input type="radio" name="hc-fill-level" value={option.value} class="sr-only" />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                    <span class="mt-1 text-sm text-muted">{option.description}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 3: Large / Heavy Items -->
+        <div class="hc-step" data-step="3" hidden>
+          <h3 id="hc-step3-heading" class="mb-2 text-2xl!">Any large or heavy items?</h3>
+          <p class="mb-6 text-sm text-muted">
+            Large items: furniture, appliances, or bulky equipment. Heavy/special items: things
+            like a safe, an engine block, or anything needing extra care to move.
+          </p>
+
+          <div class="flex flex-col gap-4">
+            <div class="flex max-w-sm items-center justify-between rounded-2xl border border-border bg-background p-4">
+              <div>
+                <p class="font-semibold text-heading">Large items</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="button" id="hc-large-decrement" class="hc-stepper-btn" aria-label="Decrease large item count">
+                  <Minus size={14} />
+                </button>
+                <span class="w-6 text-center font-semibold text-heading" data-role="large-count" aria-live="polite">0</span>
+                <button type="button" id="hc-large-increment" class="hc-stepper-btn" aria-label="Increase large item count">
+                  <Plus size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div class="flex max-w-sm items-center justify-between rounded-2xl border border-border bg-background p-4">
+              <div>
+                <p class="font-semibold text-heading">Heavy / special items</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="button" id="hc-heavy-decrement" class="hc-stepper-btn" aria-label="Decrease heavy/special item count">
+                  <Minus size={14} />
+                </button>
+                <span class="w-6 text-center font-semibold text-heading" data-role="heavy-count" aria-live="polite">0</span>
+                <button type="button" id="hc-heavy-increment" class="hc-stepper-btn" aria-label="Increase heavy/special item count">
+                  <Plus size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 4: Access -->
+        <div class="hc-step" data-step="4" hidden>
+          <h3 id="hc-step4-heading" class="mb-6 text-2xl!">How's the access to the space?</h3>
+
+          <fieldset class="contents" aria-labelledby="hc-step4-heading">
+            <legend class="sr-only">How's the access to the space?</legend>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {
+                accessOptions.map((option) => (
+                  <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input type="radio" name="hc-access" value={option.value} class="sr-only" />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 5: Extra Labor -->
+        <div class="hc-step" data-step="5" hidden>
+          <h3 id="hc-step5-heading" class="mb-6 text-2xl!">
+            Anything needing extra work to remove?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="hc-step5-heading">
+            <legend class="sr-only">Anything needing extra work to remove?</legend>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {
+                extraLaborOptions.map((option) => (
+                  <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input type="radio" name="hc-extra-labor" value={option.value} class="sr-only" />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 6: Locations -->
+        <div class="hc-step" data-step="6" hidden>
+          <h3 id="hc-step6-heading" class="mb-6 text-2xl!">
+            Is everything at this one location?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="hc-step6-heading">
+            <legend class="sr-only">Is everything at this one location?</legend>
+            <div class="grid max-w-sm grid-cols-2 gap-3">
+              <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="hc-same-location" value="yes" class="sr-only" />
+                <span class="font-semibold text-heading">Yes</span>
+              </label>
+              <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="hc-same-location" value="no" class="sr-only" />
+                <span class="font-semibold text-heading">No</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div id="hc-additional-locations" class="mt-6 hidden items-center justify-between rounded-2xl border border-border bg-background p-4">
+            <div>
+              <p class="font-semibold text-heading">Additional locations</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="button" id="hc-location-decrement" class="hc-stepper-btn" aria-label="Decrease additional locations">
+                <Minus size={14} />
+              </button>
+              <span class="w-6 text-center font-semibold text-heading" data-role="location-count" aria-live="polite">1</span>
+              <button type="button" id="hc-location-increment" class="hc-stepper-btn" aria-label="Increase additional locations">
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 7: Photos + Notes -->
+        <div class="hc-step" data-step="7" hidden>
+          <h3 id="hc-step7-heading" class="mb-1 text-2xl!">Have photos or notes?</h3>
+          <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">Optional</p>
+          <p class="mb-6 text-body">
+            Add photos to help us better understand your job, and any notes we should know.
+          </p>
+
+          <label
+            id="hc-photo-dropzone"
+            for="hc-photo-input"
+            class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border p-8 text-center transition hover:border-primary"
+          >
+            <Upload class="text-muted" size={28} strokeWidth={1.5} />
+            <span class="font-medium text-heading">Click to upload photos</span>
+            <span class="text-sm text-muted">Up to 5 images &middot; optional</span>
+            <input id="hc-photo-input" type="file" accept="image/*" multiple class="sr-only" />
+          </label>
+
+          <p class="mt-2 text-sm text-muted" data-role="photo-hint"></p>
+          <div id="hc-photo-grid" class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5"></div>
+
+          <div class="mt-6">
+            <label class="field-label" for="hc-notes">Notes (optional)</label>
+            <textarea
+              id="hc-notes"
+              class="input"
+              rows="3"
+              maxlength="2000"
+              placeholder="Anything else we should know?"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Step 8: Customer Information -->
+        <div class="hc-step" data-step="8" hidden>
+          <h3 id="hc-step8-heading" class="mb-2 text-2xl!">Your Contact Information</h3>
+          <p id="hc-step8-intro" class="mb-6 text-sm text-muted">
+            Almost done! We just need a few details to submit your request.
+          </p>
+
+          <div id="hc-customer-form">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label class="field-label" for="hc-first-name">First Name</label>
+                <input id="hc-first-name" class="input" type="text" autocomplete="given-name" data-field="firstName" />
+                <p class="field-error" data-field-error="firstName" hidden></p>
+              </div>
+              <div>
+                <label class="field-label" for="hc-last-name">Last Name</label>
+                <input id="hc-last-name" class="input" type="text" autocomplete="family-name" data-field="lastName" />
+                <p class="field-error" data-field-error="lastName" hidden></p>
+              </div>
+              <div>
+                <label class="field-label" for="hc-phone">Phone</label>
+                <input id="hc-phone" class="input" type="tel" autocomplete="tel" data-field="phone" />
+                <p class="field-error" data-field-error="phone" hidden></p>
+              </div>
+              <div>
+                <label class="field-label" for="hc-email">Email</label>
+                <input id="hc-email" class="input" type="email" autocomplete="email" data-field="email" />
+                <p class="field-error" data-field-error="email" hidden></p>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="field-label" for="hc-address">Service Address</label>
+                <input id="hc-address" class="input" type="text" autocomplete="street-address" data-field="serviceAddress" />
+                <p class="field-error" data-field-error="serviceAddress" hidden></p>
+              </div>
+              <div>
+                <label class="field-label" for="hc-city">City</label>
+                <input id="hc-city" class="input" type="text" autocomplete="address-level2" data-field="city" />
+                <p class="field-error" data-field-error="city" hidden></p>
+              </div>
+              <div>
+                <label class="field-label" for="hc-zip">ZIP Code</label>
+                <input id="hc-zip" class="input" type="text" inputmode="numeric" autocomplete="postal-code" data-field="zip" />
+                <p class="field-error" data-field-error="zip" hidden></p>
+              </div>
+            </div>
+
+            <fieldset class="contents" aria-labelledby="hc-customer-type-heading">
+              <legend class="sr-only">Residential or Commercial?</legend>
+              <p id="hc-customer-type-heading" class="mb-2 mt-6 font-semibold text-heading">
+                Residential or Commercial?
+              </p>
+              <div class="grid max-w-sm grid-cols-2 gap-3">
+                <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                  <input type="radio" name="hc-customer-type" value="residential" class="sr-only" />
+                  <span class="font-semibold text-heading">Residential</span>
+                </label>
+                <label class="hc-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                  <input type="radio" name="hc-customer-type" value="commercial" class="sr-only" />
+                  <span class="font-semibold text-heading">Commercial</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <p class="field-error" data-field-error="customerType" hidden></p>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+          <p class="field-error mt-4" id="hc-submit-error" role="alert" hidden></p>
+
+          <div id="hc-review-placeholder" class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center" role="status">
+            <p class="font-semibold text-heading">Request Received</p>
+            <p class="mt-2 text-sm text-body">
+              Thanks! We've received your household cleanout request. Because pricing for this
+              service is still being finalized, our team will review the details and follow up
+              with you shortly to confirm your price &mdash; or call or text us at
+              <a href="tel:+15152023593" class="font-semibold text-primary hover:text-primary-dark">(515) 202-3593</a>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <div class="mt-8 flex items-center justify-between border-t border-border pt-6">
+          <button
+            type="button"
+            id="hc-back"
+            class="inline-flex items-center gap-1 rounded-xl px-4 py-2 text-[16px] font-medium text-muted transition hover:text-heading disabled:pointer-events-none disabled:opacity-0"
+          >
+            <ChevronLeft size={18} />
+            Back
+          </button>
+          <button
+            type="button"
+            id="hc-continue"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-[16px] font-medium text-white transition hover:bg-primary-dark disabled:pointer-events-none disabled:opacity-50"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= Summary (desktop) ================= -->
+      <aside class="hidden rounded-3xl border border-border bg-primary-dark p-6 text-white shadow-soft lg:sticky lg:top-24 lg:block sm:p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-white/70">Household Cleanout</p>
+        <p class="mt-2 text-2xl font-semibold text-white">Price Confirmed After Review</p>
+        <p class="mt-2 text-sm text-white/70">
+          Online pricing for this service is still being finalized. Submit your details now
+          and we'll confirm your price before any work begins &mdash; no surprise charges.
+        </p>
+      </aside>
+
+    </div>
+
+    <!-- ================= Summary (mobile, sticky) ================= -->
+    <div class="sticky bottom-0 z-30 -mx-6 mt-6 flex items-center justify-between border-t border-border bg-surface/95 px-6 py-2.5 shadow-soft backdrop-blur lg:hidden">
+      <div>
+        <p class="text-[11px] font-semibold uppercase leading-tight tracking-wide text-muted">Household Cleanout</p>
+        <p class="text-sm font-semibold leading-tight text-heading">Price confirmed after review</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .hc-stepper-btn {
+    display: flex;
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    transition: all 0.2s ease;
+  }
+
+  .hc-stepper-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+</style>
+
+<script>
+  import { goBackOneStep, navigateOrdering } from "../../lib/ordering/navigation";
+
+  const TOTAL_STEPS = 8;
+  const MAX_PHOTOS = 5;
+  const MAX_ADDITIONAL_LOCATIONS = 20;
+  const MAX_LARGE_ITEMS = 50;
+  const MAX_HEAVY_ITEMS = 50;
+  const CUSTOMER_TEXT_FIELDS = [
+    "firstName",
+    "lastName",
+    "phone",
+    "email",
+    "serviceAddress",
+    "city",
+    "zip",
+  ] as const;
+  type CustomerTextField = (typeof CUSTOMER_TEXT_FIELDS)[number];
+  type CustomerType = "residential" | "commercial";
+
+  const app = document.getElementById("hc-app");
+  if (app) {
+    const root = app.closest("section") as HTMLElement;
+
+    const state: {
+      scope: string | null;
+      fillLevel: string | null;
+      largeItemCount: number;
+      heavyItemCount: number;
+      access: string | null;
+      extraLabor: string | null;
+      sameLocation: boolean | null;
+      additionalLocations: number;
+      notes: string;
+      customer: Record<CustomerTextField, string> & { customerType: CustomerType | null };
+      orderId: string | null;
+    } = {
+      scope: null,
+      fillLevel: null,
+      largeItemCount: 0,
+      heavyItemCount: 0,
+      access: null,
+      extraLabor: null,
+      sameLocation: null,
+      additionalLocations: 1,
+      notes: "",
+      customer: {
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        serviceAddress: "",
+        city: "",
+        zip: "",
+        customerType: null,
+      },
+      orderId: null,
+    };
+
+    let currentStep = 1;
+    let submitted = false;
+    let submitting = false;
+
+    const backBtn = root.querySelector<HTMLButtonElement>("#hc-back")!;
+    const continueBtn = root.querySelector<HTMLButtonElement>("#hc-continue")!;
+    const reviewPlaceholder = root.querySelector<HTMLElement>("#hc-review-placeholder")!;
+    const customerForm = root.querySelector<HTMLElement>("#hc-customer-form")!;
+    const submitError = root.querySelector<HTMLElement>("#hc-submit-error")!;
+
+    function setCardSelected(card: HTMLElement, selected: boolean) {
+      card.classList.toggle("border-primary", selected);
+      card.classList.toggle("bg-primary/5", selected);
+      card.classList.toggle("ring-2", selected);
+      card.classList.toggle("ring-primary/20", selected);
+      card.classList.toggle("border-border", !selected);
+    }
+
+    function showStepError(step: number, message: string) {
+      const el = root.querySelector<HTMLElement>(`.hc-step[data-step="${step}"] [data-role="step-error"]`);
+      if (!el) return;
+      el.textContent = message;
+      el.hidden = false;
+    }
+
+    function clearStepError(step: number) {
+      const el = root.querySelector<HTMLElement>(`.hc-step[data-step="${step}"] [data-role="step-error"]`);
+      if (!el) return;
+      el.hidden = true;
+    }
+
+    const stepValidators: Record<number, () => string | null> = {
+      1: () => (state.scope ? null : "Please select the scope of the cleanout."),
+      2: () => (state.fillLevel ? null : "Please select how full the space is."),
+      3: () => null,
+      4: () => (state.access ? null : "Please select an access option."),
+      5: () => (state.extraLabor ? null : "Please let us know about extra labor."),
+      6: () => (state.sameLocation === null ? "Please let us know if everything is at one location." : null),
+      7: () => null,
+      8: () => validateCustomerStep(),
+    };
+
+    function showStep(step: number) {
+      root.querySelectorAll<HTMLElement>(".hc-step").forEach((el) => {
+        el.hidden = Number(el.dataset.step) !== step;
+      });
+      root.querySelectorAll<HTMLElement>('[data-role="step-label"]').forEach((el) => {
+        el.textContent = `Step ${step} of ${TOTAL_STEPS}`;
+      });
+      root.querySelectorAll<HTMLElement>(".hc-progress-bar").forEach((bar) => {
+        bar.style.width = `${(step / TOTAL_STEPS) * 100}%`;
+      });
+      backBtn.disabled = false;
+      updateContinueLabel();
+
+      const heading = root.querySelector<HTMLElement>(`.hc-step[data-step="${step}"] h3`);
+      if (heading) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus();
+      }
+    }
+
+    function updateContinueLabel() {
+      if (currentStep !== TOTAL_STEPS) {
+        continueBtn.textContent = "Continue";
+        return;
+      }
+      continueBtn.textContent = "Submit Request";
+    }
+
+    // ---- Step 1: scope ----
+    function wireRadioGroup(name: string, onChange: (value: string) => void) {
+      const inputs = root.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`);
+      inputs.forEach((input) => {
+        input.addEventListener("change", () => {
+          inputs.forEach((i) => {
+            const card = i.closest<HTMLElement>(".hc-option-card");
+            if (card) setCardSelected(card, i.checked);
+          });
+          if (input.checked) onChange(input.value);
+        });
+      });
+    }
+
+    wireRadioGroup("hc-size", (value) => {
+      state.scope = value;
+      clearStepError(1);
+    });
+
+    wireRadioGroup("hc-fill-level", (value) => {
+      state.fillLevel = value;
+      clearStepError(2);
+    });
+
+    const largeCountEls = root.querySelectorAll<HTMLElement>('[data-role="large-count"]');
+    const heavyCountEls = root.querySelectorAll<HTMLElement>('[data-role="heavy-count"]');
+
+    function updateLargeCount() {
+      largeCountEls.forEach((el) => (el.textContent = String(state.largeItemCount)));
+    }
+    function updateHeavyCount() {
+      heavyCountEls.forEach((el) => (el.textContent = String(state.heavyItemCount)));
+    }
+
+    root.querySelector("#hc-large-decrement")?.addEventListener("click", () => {
+      state.largeItemCount = Math.max(0, state.largeItemCount - 1);
+      updateLargeCount();
+    });
+    root.querySelector("#hc-large-increment")?.addEventListener("click", () => {
+      state.largeItemCount = Math.min(MAX_LARGE_ITEMS, state.largeItemCount + 1);
+      updateLargeCount();
+    });
+    root.querySelector("#hc-heavy-decrement")?.addEventListener("click", () => {
+      state.heavyItemCount = Math.max(0, state.heavyItemCount - 1);
+      updateHeavyCount();
+    });
+    root.querySelector("#hc-heavy-increment")?.addEventListener("click", () => {
+      state.heavyItemCount = Math.min(MAX_HEAVY_ITEMS, state.heavyItemCount + 1);
+      updateHeavyCount();
+    });
+
+    wireRadioGroup("hc-access", (value) => {
+      state.access = value;
+      clearStepError(4);
+    });
+
+    wireRadioGroup("hc-extra-labor", (value) => {
+      state.extraLabor = value;
+      clearStepError(5);
+    });
+
+    const additionalLocationsPanel = root.querySelector<HTMLElement>("#hc-additional-locations")!;
+    const locationCountEls = root.querySelectorAll<HTMLElement>('[data-role="location-count"]');
+
+    function updateLocationCount() {
+      locationCountEls.forEach((el) => (el.textContent = String(state.additionalLocations)));
+    }
+
+    wireRadioGroup("hc-same-location", (value) => {
+      state.sameLocation = value === "yes";
+      if (state.sameLocation) {
+        additionalLocationsPanel.classList.add("hidden");
+        additionalLocationsPanel.classList.remove("flex");
+      } else {
+        additionalLocationsPanel.classList.remove("hidden");
+        additionalLocationsPanel.classList.add("flex");
+        if (state.additionalLocations < 1) state.additionalLocations = 1;
+        updateLocationCount();
+      }
+      clearStepError(6);
+    });
+
+    root.querySelector("#hc-location-decrement")?.addEventListener("click", () => {
+      state.additionalLocations = Math.max(1, state.additionalLocations - 1);
+      updateLocationCount();
+    });
+    root.querySelector("#hc-location-increment")?.addEventListener("click", () => {
+      state.additionalLocations = Math.min(MAX_ADDITIONAL_LOCATIONS, state.additionalLocations + 1);
+      updateLocationCount();
+    });
+
+    // ---- Step 7: photos + notes ----
+    const photoInput = root.querySelector<HTMLInputElement>("#hc-photo-input")!;
+    const photoDropzone = root.querySelector<HTMLElement>("#hc-photo-dropzone")!;
+    const photoGrid = root.querySelector<HTMLElement>("#hc-photo-grid")!;
+    const photoHint = root.querySelector<HTMLElement>('[data-role="photo-hint"]')!;
+    const notesInput = root.querySelector<HTMLTextAreaElement>("#hc-notes")!;
+
+    let photos: { file: File; url: string }[] = [];
+
+    function renderPhotos() {
+      photoGrid.innerHTML = "";
+      photos.forEach((photo, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "relative aspect-square overflow-hidden rounded-xl border border-border";
+        const img = document.createElement("img");
+        img.src = photo.url;
+        img.alt = `Uploaded photo ${index + 1}`;
+        img.className = "h-full w-full object-cover";
+        wrapper.appendChild(img);
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className =
+          "absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-heading/80 text-sm font-semibold leading-none text-white transition hover:bg-heading";
+        removeBtn.setAttribute("aria-label", `Remove photo ${index + 1}`);
+        removeBtn.textContent = "×";
+        removeBtn.addEventListener("click", () => {
+          URL.revokeObjectURL(photo.url);
+          photos.splice(index, 1);
+          renderPhotos();
+        });
+        wrapper.appendChild(removeBtn);
+        photoGrid.appendChild(wrapper);
+      });
+      photoDropzone.hidden = photos.length >= MAX_PHOTOS;
+      photoHint.textContent = photos.length > 0 ? `${photos.length} of ${MAX_PHOTOS} photos added` : "";
+    }
+
+    photoInput.addEventListener("change", () => {
+      const files = Array.from(photoInput.files ?? []);
+      const remaining = MAX_PHOTOS - photos.length;
+      files.slice(0, remaining).forEach((file) => {
+        photos.push({ file, url: URL.createObjectURL(file) });
+      });
+      photoInput.value = "";
+      renderPhotos();
+    });
+
+    notesInput.addEventListener("input", () => {
+      state.notes = notesInput.value;
+    });
+
+    // ---- Step 8: customer information ----
+    function setFieldInvalid(field: string, invalid: boolean) {
+      const input = root.querySelector<HTMLElement>(`[data-field="${field}"]`);
+      if (input) input.classList.toggle("is-invalid", invalid);
+      const errorEl = root.querySelector<HTMLElement>(`[data-field-error="${field}"]`);
+      if (errorEl) errorEl.hidden = !invalid;
+    }
+
+    CUSTOMER_TEXT_FIELDS.forEach((field) => {
+      const input = root.querySelector<HTMLInputElement>(`[data-field="${field}"]`);
+      input?.addEventListener("input", () => {
+        state.customer[field] = input.value;
+        setFieldInvalid(field, false);
+        clearStepError(8);
+      });
+    });
+
+    wireRadioGroup("hc-customer-type", (value) => {
+      state.customer.customerType = value as CustomerType;
+      setFieldInvalid("customerType", false);
+      clearStepError(8);
+    });
+
+    const customerFieldValidity: Record<string, () => boolean> = {
+      firstName: () => state.customer.firstName.trim().length > 0,
+      lastName: () => state.customer.lastName.trim().length > 0,
+      phone: () => (state.customer.phone.match(/\d/g) ?? []).length >= 7,
+      email: () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.customer.email.trim()),
+      serviceAddress: () => state.customer.serviceAddress.trim().length > 0,
+      city: () => state.customer.city.trim().length > 0,
+      zip: () => /^\d{5}(-\d{4})?$/.test(state.customer.zip.trim()),
+      customerType: () => state.customer.customerType !== null,
+    };
+
+    function validateCustomerStep(): string | null {
+      let hasError = false;
+      for (const [field, isValid] of Object.entries(customerFieldValidity)) {
+        const valid = isValid();
+        setFieldInvalid(field, !valid);
+        if (!valid) hasError = true;
+      }
+      return hasError ? "Please complete the required fields below." : null;
+    }
+
+    function hideSubmitError() {
+      submitError.hidden = true;
+    }
+    function showSubmitError() {
+      submitError.textContent =
+        "Something went wrong submitting your request. Please try again, or call or text us at (515) 202-3593.";
+      submitError.hidden = false;
+    }
+
+    async function submitOrder() {
+      if (submitting || submitted) return;
+      submitting = true;
+      hideSubmitError();
+      continueBtn.disabled = true;
+      continueBtn.textContent = "Submitting...";
+
+      if (!state.orderId) {
+        state.orderId = crypto.randomUUID();
+      }
+
+      const areaDescription = state.scope
+        ? {
+            oneToTwoRooms: "1–2 Rooms",
+            threeToFiveRooms: "3–5 Rooms",
+            sixPlusRooms: "6+ Rooms",
+            wholeHome: "Whole Home",
+          }[state.scope] ?? "Household Cleanout"
+        : "Household Cleanout";
+
+      const payload = {
+        orderId: state.orderId,
+        customer: {
+          firstName: state.customer.firstName.trim(),
+          lastName: state.customer.lastName.trim(),
+          phone: state.customer.phone.trim(),
+          email: state.customer.email.trim(),
+          serviceAddress: state.customer.serviceAddress.trim(),
+          city: state.customer.city.trim(),
+          zip: state.customer.zip.trim(),
+          customerType: state.customer.customerType,
+        },
+        areaDescription,
+        fillLevel: state.fillLevel,
+        largeItemCount: state.largeItemCount,
+        heavyOrSpecialItemCount: state.heavyItemCount,
+        access: state.access,
+        disassembly: state.extraLabor,
+        additionalLocations: state.sameLocation === false ? state.additionalLocations : 0,
+        notes: state.notes.trim() || undefined,
+        photos: photos.map((photo) => ({ name: photo.file.name })),
+      };
+
+      try {
+        const response = await fetch("/api/orders/household-cleanout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error("submission_failed");
+        }
+
+        await response.json();
+
+        customerForm.hidden = true;
+        submitted = true;
+        reviewPlaceholder.classList.remove("hidden");
+        continueBtn.textContent = "Request Submitted";
+      } catch {
+        submitting = false;
+        showSubmitError();
+        continueBtn.disabled = false;
+        updateContinueLabel();
+      }
+    }
+
+    continueBtn.addEventListener("click", () => {
+      if (submitted || submitting) return;
+
+      const error = stepValidators[currentStep]?.();
+      if (error) {
+        showStepError(currentStep, error);
+        return;
+      }
+      clearStepError(currentStep);
+
+      if (currentStep === TOTAL_STEPS) {
+        submitOrder();
+        return;
+      }
+
+      navigateOrdering({ view: root.id, step: currentStep + 1 });
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (currentStep === 1) {
+        root.dispatchEvent(new CustomEvent("calculator-flow:back-to-selection", { bubbles: true }));
+        return;
+      }
+      goBackOneStep();
+    });
+
+    root.addEventListener("calculator-flow:show-step", (event) => {
+      currentStep = (event as CustomEvent<{ step: number }>).detail.step;
+      showStep(currentStep);
+    });
+  }
+</script>
