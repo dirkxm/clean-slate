@@ -18,6 +18,7 @@ import type {
   ApplianceRemovalOrderRecord,
   CustomerInfo,
   FurnitureRemovalOrderRecord,
+  GeneralJunkRemovalOrderRecord,
   JobberSyncInfo,
   OrderLineItem,
 } from "./types";
@@ -207,6 +208,87 @@ export function buildApplianceRequestForm(record: ApplianceRemovalOrderRecord): 
         items: [
           { label: "Access", answerText: record.order.accessLabel },
           { label: "Disconnection", answerText: record.order.disassemblyLabel },
+          {
+            label: "Heavy/Oversized Items",
+            answerText: String(record.order.heavyOversizedItemCount),
+          },
+          {
+            label: "Additional Locations",
+            answerText: String(record.order.additionalLocations),
+          },
+        ],
+      },
+      {
+        label: "Order",
+        items: [
+          { label: "Calculated Total", answerText: formatUsd(record.pricing.finalTotalCents) },
+          {
+            label: "Classification",
+            answerText: record.pricing.requiresReview
+              ? "Needs Review / Quote"
+              : "Auto-Priced Booking",
+          },
+          {
+            label: "Photos Submitted",
+            answerText:
+              record.order.photoCount > 0
+                ? `${record.order.photoCount} photo(s): ${record.order.photoFileNames.join(", ")}`
+                : "None",
+          },
+        ],
+      },
+      {
+        label: "Customer",
+        items: [
+          {
+            label: "Customer Type",
+            answerText: record.customer.customerType === "commercial" ? "Commercial" : "Residential",
+          },
+          { label: "Phone", answerText: record.customer.phone },
+          { label: "Email", answerText: record.customer.email },
+          { label: "Service Address", answerText: record.customer.serviceAddress },
+          { label: "City", answerText: record.customer.city },
+          { label: "ZIP", answerText: record.customer.zip },
+        ],
+      },
+    ],
+  };
+}
+
+export function buildGeneralJunkRequestTitle(customer: CustomerInfo): string {
+  return `General Junk Removal — ${customer.firstName} ${customer.lastName}`;
+}
+
+export function buildGeneralJunkQuoteTitle(customer: CustomerInfo): string {
+  return `General Junk Removal Quote — ${customer.firstName} ${customer.lastName}`;
+}
+
+/** Same customer-facing framing as Furniture Removal's quote message — never mentions the internal review threshold. */
+export function buildGeneralJunkQuoteMessage(): string {
+  return "Thanks for your junk removal request. Because of the size or complexity of this job, we've taken a closer look and prepared this quote based on the details you submitted. It reflects our current estimate — let us know if you'd like to move forward.";
+}
+
+/** Mirrors buildRequestForm's structure/sections, for a general junk removal order. */
+export function buildGeneralJunkRequestForm(
+  record: GeneralJunkRemovalOrderRecord,
+): JobberFormInput {
+  const junkItems = record.order.items.map((item) => ({
+    label: item.label,
+    answerText: `Qty ${item.quantity} × ${formatUsd(item.unitPriceCents)}`,
+  }));
+
+  return {
+    sections: [
+      {
+        label: "General Junk Removal",
+        items:
+          junkItems.length > 0 ? junkItems : [{ label: "Items", answerText: "None selected" }],
+      },
+      {
+        label: "Job Details",
+        items: [
+          { label: "Access", answerText: record.order.accessLabel },
+          { label: "Disassembly", answerText: record.order.disassemblyLabel },
           {
             label: "Heavy/Oversized Items",
             answerText: String(record.order.heavyOversizedItemCount),
@@ -679,5 +761,18 @@ export async function syncApplianceRemovalOrderToJobber(
     buildQuoteTitle: buildApplianceQuoteTitle,
     buildQuoteMessage: buildApplianceQuoteMessage,
     buildRequestForm: buildApplianceRequestForm,
+  });
+}
+
+/** Syncs a general junk removal order into Jobber. See `syncOrderToJobber` for the actual orchestration. */
+export async function syncGeneralJunkRemovalOrderToJobber(
+  env: JobberAccessTokenEnv,
+  record: GeneralJunkRemovalOrderRecord,
+): Promise<JobberSyncResult> {
+  return syncOrderToJobber(env, record, {
+    buildRequestTitle: buildGeneralJunkRequestTitle,
+    buildQuoteTitle: buildGeneralJunkQuoteTitle,
+    buildQuoteMessage: buildGeneralJunkQuoteMessage,
+    buildRequestForm: buildGeneralJunkRequestForm,
   });
 }

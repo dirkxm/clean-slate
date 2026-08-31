@@ -4,6 +4,7 @@ import Header from "../components/layout/Header.astro";
 import Button from "../components/ui/Button.astro";
 import FurnitureRemovalCalculator from "../components/sections/FurnitureRemovalCalculator.astro";
 import ApplianceRemovalCalculator from "../components/sections/ApplianceRemovalCalculator.astro";
+import GeneralJunkRemovalCalculator from "../components/sections/GeneralJunkRemovalCalculator.astro";
 import { services } from "../data/services";
 import {
   ArrowLeft,
@@ -77,7 +78,7 @@ const categories: OrderingCategory[] = [
         title: "General Junk Removal",
         description: junkRemoval.short,
         infoHref: "/services/junk-removal",
-        available: false,
+        available: true,
       },
     ],
   },
@@ -170,7 +171,7 @@ const categories: OrderingCategory[] = [
 
 <BaseLayout
   title="Get Your Price | Clean Slate"
-  description="Choose your Clean Slate service and get your price online. Furniture and appliance removal pricing is available now, with more services on the way."
+  description="Choose your Clean Slate service and get your price online. Furniture, appliance, and general junk removal pricing is available now, with more services on the way."
 >
 
   <Header />
@@ -289,6 +290,9 @@ const categories: OrderingCategory[] = [
       <!-- ---- View: Appliance Removal Flow ---- -->
       <ApplianceRemovalCalculator />
 
+      <!-- ---- View: General Junk Removal Flow ---- -->
+      <GeneralJunkRemovalCalculator />
+
     </section>
 
   </main>
@@ -296,15 +300,31 @@ const categories: OrderingCategory[] = [
 </BaseLayout>
 
 <script>
-  type ViewName = "selection" | "furniture" | "appliance" | "quote";
+  // Maps an ordering-option key to its calculator section's id. Every
+  // calculator dispatches the same "calculator-flow:back-to-selection"
+  // event and follows the same section-id-plus-<h3> convention, so
+  // adding a new service here is the only wiring a new calculator needs
+  // — no new branch, no new event name, no new focus-management code.
+  const CALCULATOR_SECTION_IDS: Record<string, string> = {
+    "furniture-removal": "furniture-calculator",
+    "appliance-removal": "appliance-calculator",
+    "general-junk-removal": "general-junk-calculator",
+  };
+
+  type ViewName = "selection" | "quote" | (typeof CALCULATOR_SECTION_IDS)[string];
 
   const selectionView = document.getElementById("view-service-selection")!;
   const quoteView = document.getElementById("view-quote-request")!;
-  const furnitureSection = document.getElementById("furniture-calculator")!;
-  const applianceSection = document.getElementById("appliance-calculator")!;
   const quoteHeading = document.getElementById("quote-heading")!;
   const quoteBody = document.getElementById("quote-body")!;
   const quoteBackBtn = document.getElementById("quote-back")!;
+
+  const calculatorSections = Object.fromEntries(
+    Object.values(CALCULATOR_SECTION_IDS).map((sectionId) => [
+      sectionId,
+      document.getElementById(sectionId)!,
+    ]),
+  );
 
   function focusHeading(selector: string) {
     const heading = document.querySelector<HTMLElement>(selector);
@@ -316,17 +336,16 @@ const categories: OrderingCategory[] = [
   function showView(view: ViewName) {
     selectionView.hidden = view !== "selection";
     quoteView.hidden = view !== "quote";
-    furnitureSection.hidden = view !== "furniture";
-    applianceSection.hidden = view !== "appliance";
+    Object.entries(calculatorSections).forEach(([sectionId, section]) => {
+      section.hidden = view !== sectionId;
+    });
 
     if (view === "selection") {
       focusHeading("#view-service-selection h2");
     } else if (view === "quote") {
       focusHeading("#quote-heading");
-    } else if (view === "appliance") {
-      focusHeading("#appliance-calculator h3");
     } else {
-      focusHeading("#furniture-calculator h3");
+      focusHeading(`#${view} h3`);
     }
   }
 
@@ -336,13 +355,9 @@ const categories: OrderingCategory[] = [
       button.addEventListener("click", () => {
         const { key, title } = button.dataset;
 
-        if (key === "furniture-removal") {
-          showView("furniture");
-          return;
-        }
-
-        if (key === "appliance-removal") {
-          showView("appliance");
+        const sectionId = key ? CALCULATOR_SECTION_IDS[key] : undefined;
+        if (sectionId) {
+          showView(sectionId);
           return;
         }
 
@@ -361,11 +376,7 @@ const categories: OrderingCategory[] = [
 
   quoteBackBtn.addEventListener("click", () => showView("selection"));
 
-  document.addEventListener("furniture-flow:back-to-selection", () => {
-    showView("selection");
-  });
-
-  document.addEventListener("appliance-flow:back-to-selection", () => {
+  document.addEventListener("calculator-flow:back-to-selection", () => {
     showView("selection");
   });
 </script>

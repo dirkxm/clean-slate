@@ -1300,7 +1300,7 @@ const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
     backBtn.addEventListener("click", () => {
       if (currentStep === 1) {
         root.dispatchEvent(
-          new CustomEvent("furniture-flow:back-to-selection", { bubbles: true }),
+          new CustomEvent("calculator-flow:back-to-selection", { bubbles: true }),
         );
         return;
       }

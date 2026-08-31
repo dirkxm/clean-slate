@@ -199,3 +199,45 @@ export interface ApplianceRemovalOrderRecord {
   };
   jobber: JobberSyncInfo;
 }
+
+/**
+ * The full record persisted in KV for a submitted general junk removal
+ * order/quote request. Structurally mirrors `FurnitureRemovalOrderRecord`.
+ */
+export interface GeneralJunkRemovalOrderRecord {
+  id: string;
+  service: "general-junk-removal";
+  status: OrderStatus;
+  submittedAt: string;
+  customer: CustomerInfo;
+  order: {
+    items: {
+      itemKey: string;
+      label: string;
+      quantity: number;
+      unitPriceCents: number;
+    }[];
+    access: string;
+    accessLabel: string;
+    disassembly: string;
+    disassemblyLabel: string;
+    heavyOversizedItemCount: number;
+    additionalLocations: number;
+    photoCount: number;
+    photoFileNames: string[];
+  };
+  pricing: {
+    itemSubtotalCents: number;
+    accessFeeCents: number;
+    disassemblyFeeCents: number;
+    heavyOversizedFeeCents: number;
+    additionalLocationFeeCents: number;
+    preMinimumTotalCents: number;
+    minimumAdjustmentCents: number;
+    finalTotalCents: number;
+    requiresReview: boolean;
+    /** Preserved so a retry/resume can build Jobber line items without recalculating. */
+    lineItems: OrderLineItem[];
+  };
+  jobber: JobberSyncInfo;
+}

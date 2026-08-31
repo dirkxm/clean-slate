@@ -8,6 +8,9 @@ export {
   applianceRemovalOrderKey,
   saveApplianceRemovalOrder,
   getApplianceRemovalOrder,
+  generalJunkRemovalOrderKey,
+  saveGeneralJunkRemovalOrder,
+  getGeneralJunkRemovalOrder,
 } from "./storage";
 
 export type {
@@ -16,6 +19,7 @@ export type {
   CustomerType,
   FurnitureRemovalOrderRecord,
   FurnitureRemovalOrderRequestBody,
+  GeneralJunkRemovalOrderRecord,
   OrderLineItem,
   OrderStatus,
   OrdersEnv,

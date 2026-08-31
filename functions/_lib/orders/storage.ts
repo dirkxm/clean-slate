@@ -1,6 +1,7 @@
 import type {
   ApplianceRemovalOrderRecord,
   FurnitureRemovalOrderRecord,
+  GeneralJunkRemovalOrderRecord,
   OrdersKVNamespace,
 } from "./types";
 
@@ -59,6 +60,34 @@ export async function getApplianceRemovalOrder(
 
   try {
     return JSON.parse(raw) as ApplianceRemovalOrderRecord;
+  } catch {
+    return null;
+  }
+}
+
+/** Same pattern as Furniture Removal's, in its own KV namespace. */
+const GENERAL_JUNK_REMOVAL_ORDER_KEY_PREFIX = "general-junk-removal-order:";
+
+export function generalJunkRemovalOrderKey(id: string): string {
+  return `${GENERAL_JUNK_REMOVAL_ORDER_KEY_PREFIX}${id}`;
+}
+
+export async function saveGeneralJunkRemovalOrder(
+  kv: OrdersKVNamespace,
+  record: GeneralJunkRemovalOrderRecord,
+): Promise<void> {
+  await kv.put(generalJunkRemovalOrderKey(record.id), JSON.stringify(record));
+}
+
+export async function getGeneralJunkRemovalOrder(
+  kv: OrdersKVNamespace,
+  id: string,
+): Promise<GeneralJunkRemovalOrderRecord | null> {
+  const raw = await kv.get(generalJunkRemovalOrderKey(id));
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as GeneralJunkRemovalOrderRecord;
   } catch {
     return null;
   }

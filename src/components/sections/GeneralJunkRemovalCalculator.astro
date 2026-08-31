@@ -3,16 +3,15 @@ import {
   ACCESS_FEES_CENTS,
   ACCESS_LABELS,
   ADDITIONAL_LOCATION_FEE_CENTS,
-  APPLIANCE_ITEMS,
   DISASSEMBLY_FEES_CENTS,
+  GENERAL_JUNK_ITEMS,
   HEAVY_OVERSIZED_FEE_CENTS,
-  REFRIGERANT_RECOVERY_FEE_CENTS,
-} from "../../lib/pricing/appliance";
+} from "../../lib/pricing/general-junk";
 import type {
   AccessType,
-  ApplianceItemKey,
   DisassemblyType,
-} from "../../lib/pricing/appliance";
+  GeneralJunkItemKey,
+} from "../../lib/pricing/general-junk";
 import { ChevronLeft, Check, Minus, Plus, Upload } from "lucide-astro";
 
 function formatUsd(cents: number): string {
@@ -26,9 +25,9 @@ function feeLabel(cents: number): string {
   return cents === 0 ? "Included" : `+${formatUsd(cents)}`;
 }
 
-const applianceEntries = Object.entries(APPLIANCE_ITEMS) as [
-  ApplianceItemKey,
-  (typeof APPLIANCE_ITEMS)[ApplianceItemKey],
+const junkEntries = Object.entries(GENERAL_JUNK_ITEMS) as [
+  GeneralJunkItemKey,
+  (typeof GENERAL_JUNK_ITEMS)[GeneralJunkItemKey],
 ][];
 
 const accessOptions = (Object.keys(ACCESS_LABELS) as AccessType[]).map(
@@ -39,20 +38,18 @@ const accessOptions = (Object.keys(ACCESS_LABELS) as AccessType[]).map(
   }),
 );
 
-const disconnectionOptions: { value: DisassemblyType; label: string; feeCents: number }[] = [
+const disassemblyOptions: { value: DisassemblyType; label: string; feeCents: number }[] = [
   { value: "none", label: "No", feeCents: DISASSEMBLY_FEES_CENTS.none },
-  { value: "simple", label: "Yes - Simple Disconnection", feeCents: DISASSEMBLY_FEES_CENTS.simple },
-  { value: "difficult", label: "Yes - Difficult Disconnection", feeCents: DISASSEMBLY_FEES_CENTS.difficult },
+  { value: "simple", label: "Yes - Simple Disassembly", feeCents: DISASSEMBLY_FEES_CENTS.simple },
+  { value: "difficult", label: "Yes - Difficult Disassembly", feeCents: DISASSEMBLY_FEES_CENTS.difficult },
 ];
 
 const heavyItemFeeLabel = formatUsd(HEAVY_OVERSIZED_FEE_CENTS);
 
 const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
-
-const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
 ---
 
-<section id="appliance-calculator" hidden>
+<section id="general-junk-calculator" hidden>
   <div class="container">
 
     <noscript>
@@ -64,7 +61,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     </noscript>
 
     <div
-      id="ac-app"
+      id="gj-app"
       class="mt-12 grid gap-8 pb-24 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-12 lg:pb-0"
     >
 
@@ -78,40 +75,37 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           </p>
           <div class="h-1.5 w-full overflow-hidden rounded-full bg-border">
             <div
-              class="ac-progress-bar h-full rounded-full bg-primary transition-all duration-300"
+              class="gj-progress-bar h-full rounded-full bg-primary transition-all duration-300"
               style="width: 16.6667%"
             ></div>
           </div>
         </div>
 
-        <!-- Step 1: Appliances -->
-        <div class="ac-step" data-step="1">
-          <h3 id="ac-step1-heading" class="mb-2 text-2xl!">
-            What appliances do you need removed?
+        <!-- Step 1: Junk items -->
+        <div class="gj-step" data-step="1">
+          <h3 id="gj-step1-heading" class="mb-6 text-2xl!">
+            What do you need hauled away?
           </h3>
-          <p class="mb-6 text-sm text-muted">
-            Refrigerators, freezers, and AC units include a {refrigerantFeeLabel} refrigerant recovery fee each, required before disposal.
-          </p>
 
-          <fieldset class="contents" aria-labelledby="ac-step1-heading">
-            <legend class="sr-only">What appliances do you need removed?</legend>
+          <fieldset class="contents" aria-labelledby="gj-step1-heading">
+            <legend class="sr-only">What do you need hauled away?</legend>
 
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {
-                applianceEntries.map(([key, item]) => (
+                junkEntries.map(([key, item]) => (
                   <label
-                    class="ac-appliance-card relative flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition"
+                    class="gj-junk-card relative flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition"
                     data-item-key={key}
                   >
                     <input
                       type="checkbox"
                       class="sr-only"
-                      data-role="appliance-toggle"
+                      data-role="junk-toggle"
                       data-item-key={key}
                     />
 
                     <span
-                      class="ac-check absolute right-3 top-3 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-white"
+                      class="gj-check absolute right-3 top-3 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-white"
                       data-role="check"
                       aria-hidden="true"
                     >
@@ -123,7 +117,6 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
                     </span>
                     <span class="mt-1 text-sm text-muted">
                       {formatUsd(item.priceCents)}
-                      {item.requiresRefrigerantRecovery && ` + ${refrigerantFeeLabel} recovery`}
                     </span>
 
                     <div
@@ -132,7 +125,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
                     >
                       <button
                         type="button"
-                        class="ac-stepper-btn"
+                        class="gj-stepper-btn"
                         data-action="decrement"
                         aria-label={`Decrease ${item.label} quantity`}
                       >
@@ -147,7 +140,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
                       </span>
                       <button
                         type="button"
-                        class="ac-stepper-btn"
+                        class="gj-stepper-btn"
                         data-action="increment"
                         aria-label={`Increase ${item.label} quantity`}
                       >
@@ -164,21 +157,21 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         </div>
 
         <!-- Step 2: Access -->
-        <div class="ac-step" data-step="2" hidden>
-          <h3 id="ac-step2-heading" class="mb-6 text-2xl!">
-            Where are the appliances located?
+        <div class="gj-step" data-step="2" hidden>
+          <h3 id="gj-step2-heading" class="mb-6 text-2xl!">
+            Where is the junk located?
           </h3>
 
-          <fieldset class="contents" aria-labelledby="ac-step2-heading">
-            <legend class="sr-only">Where are the appliances located?</legend>
+          <fieldset class="contents" aria-labelledby="gj-step2-heading">
+            <legend class="sr-only">Where is the junk located?</legend>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {
                 accessOptions.map((option) => (
-                  <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                  <label class="gj-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
                     <input
                       type="radio"
-                      name="ac-access"
+                      name="gj-access"
                       value={option.value}
                       class="sr-only"
                     />
@@ -195,25 +188,22 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
         </div>
 
-        <!-- Step 3: Disconnection -->
-        <div class="ac-step" data-step="3" hidden>
-          <h3 id="ac-step3-heading" class="mb-2 text-2xl!">
-            Does anything need to be disconnected?
+        <!-- Step 3: Disassembly -->
+        <div class="gj-step" data-step="3" hidden>
+          <h3 id="gj-step3-heading" class="mb-6 text-2xl!">
+            Does anything need to be disassembled?
           </h3>
-          <p class="mb-6 text-sm text-muted">
-            Gas, water, or electrical disconnection before removal.
-          </p>
 
-          <fieldset class="contents" aria-labelledby="ac-step3-heading">
-            <legend class="sr-only">Does anything need to be disconnected?</legend>
+          <fieldset class="contents" aria-labelledby="gj-step3-heading">
+            <legend class="sr-only">Does anything need to be disassembled?</legend>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {
-                disconnectionOptions.map((option) => (
-                  <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                disassemblyOptions.map((option) => (
+                  <label class="gj-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
                     <input
                       type="radio"
-                      name="ac-disassembly"
+                      name="gj-disassembly"
                       value={option.value}
                       class="sr-only"
                     />
@@ -231,12 +221,12 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         </div>
 
         <!-- Step 4: Heavy / Oversized -->
-        <div class="ac-step" data-step="4" hidden>
-          <h3 id="ac-step4-heading" class="mb-2 text-2xl!">
+        <div class="gj-step" data-step="4" hidden>
+          <h3 id="gj-step4-heading" class="mb-2 text-2xl!">
             Is anything unusually heavy or oversized?
           </h3>
           <p class="mb-6 text-sm text-muted">
-            Examples include large commercial units or appliances in tight spaces.
+            Examples include hot tubs, safes, or pianos.
             Heavy / Oversized Items &mdash; {heavyItemFeeLabel} each.
           </p>
 
@@ -248,8 +238,8 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
             <div class="flex items-center gap-3">
               <button
                 type="button"
-                id="ac-heavy-decrement"
-                class="ac-stepper-btn"
+                id="gj-heavy-decrement"
+                class="gj-stepper-btn"
                 aria-label="Decrease heavy/oversized item count"
               >
                 <Minus size={14} />
@@ -263,8 +253,8 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </span>
               <button
                 type="button"
-                id="ac-heavy-increment"
-                class="ac-stepper-btn"
+                id="gj-heavy-increment"
+                class="gj-stepper-btn"
                 aria-label="Increase heavy/oversized item count"
               >
                 <Plus size={14} />
@@ -276,22 +266,22 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         </div>
 
         <!-- Step 5: Locations -->
-        <div class="ac-step" data-step="5" hidden>
-          <h3 id="ac-step5-heading" class="mb-6 text-2xl!">
+        <div class="gj-step" data-step="5" hidden>
+          <h3 id="gj-step5-heading" class="mb-6 text-2xl!">
             Are all of the items at the same location?
           </h3>
 
-          <fieldset class="contents" aria-labelledby="ac-step5-heading">
+          <fieldset class="contents" aria-labelledby="gj-step5-heading">
             <legend class="sr-only">Are all of the items at the same location?</legend>
 
             <div class="grid max-w-sm grid-cols-2 gap-3">
-              <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
-                <input type="radio" name="ac-same-location" value="yes" class="sr-only" />
+              <label class="gj-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="gj-same-location" value="yes" class="sr-only" />
                 <span class="font-semibold text-heading">Yes</span>
                 <span class="mt-1 text-sm text-muted">One location</span>
               </label>
-              <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
-                <input type="radio" name="ac-same-location" value="no" class="sr-only" />
+              <label class="gj-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="gj-same-location" value="no" class="sr-only" />
                 <span class="font-semibold text-heading">No</span>
                 <span class="mt-1 text-sm text-muted">Multiple locations</span>
               </label>
@@ -299,7 +289,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           </fieldset>
 
           <div
-            id="ac-additional-locations"
+            id="gj-additional-locations"
             class="mt-6 hidden items-center justify-between rounded-2xl border border-border bg-background p-4"
           >
             <div>
@@ -311,8 +301,8 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
             <div class="flex items-center gap-3">
               <button
                 type="button"
-                id="ac-location-decrement"
-                class="ac-stepper-btn"
+                id="gj-location-decrement"
+                class="gj-stepper-btn"
                 aria-label="Decrease additional locations"
               >
                 <Minus size={14} />
@@ -326,8 +316,8 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </span>
               <button
                 type="button"
-                id="ac-location-increment"
-                class="ac-stepper-btn"
+                id="gj-location-increment"
+                class="gj-stepper-btn"
                 aria-label="Increase additional locations"
               >
                 <Plus size={14} />
@@ -339,28 +329,28 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         </div>
 
         <!-- Step 6: Photos -->
-        <div class="ac-step" data-step="6" hidden>
-          <h3 id="ac-step6-heading" class="mb-1 text-2xl!">
+        <div class="gj-step" data-step="6" hidden>
+          <h3 id="gj-step6-heading" class="mb-1 text-2xl!">
             Want us to confirm the items?
           </h3>
           <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
             Optional
           </p>
           <p class="mb-6 text-body">
-            Upload photos of the appliances so we can make sure we're
+            Upload photos of the junk so we can make sure we're
             prepared for the job.
           </p>
 
           <label
-            id="ac-photo-dropzone"
-            for="ac-photo-input"
+            id="gj-photo-dropzone"
+            for="gj-photo-input"
             class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border p-8 text-center transition hover:border-primary"
           >
             <Upload class="text-muted" size={28} strokeWidth={1.5} />
             <span class="font-medium text-heading">Click to upload photos</span>
             <span class="text-sm text-muted">Up to 5 images &middot; optional</span>
             <input
-              id="ac-photo-input"
+              id="gj-photo-input"
               type="file"
               accept="image/*"
               multiple
@@ -371,26 +361,26 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           <p class="mt-2 text-sm text-muted" data-role="photo-hint"></p>
 
           <div
-            id="ac-photo-grid"
+            id="gj-photo-grid"
             class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5"
           ></div>
         </div>
 
         <!-- Step 7: Customer Information -->
-        <div class="ac-step" data-step="7" hidden>
-          <h3 id="ac-step7-heading" class="mb-2 text-2xl!">
+        <div class="gj-step" data-step="7" hidden>
+          <h3 id="gj-step7-heading" class="mb-2 text-2xl!">
             Your Contact Information
           </h3>
-          <p id="ac-step7-intro" class="mb-6 text-sm text-muted">
+          <p id="gj-step7-intro" class="mb-6 text-sm text-muted">
             Almost done! We just need a few details to confirm your booking.
           </p>
 
-          <div id="ac-customer-form">
+          <div id="gj-customer-form">
             <div class="grid gap-4 sm:grid-cols-2">
               <div>
-                <label class="field-label" for="ac-first-name">First Name</label>
+                <label class="field-label" for="gj-first-name">First Name</label>
                 <input
-                  id="ac-first-name"
+                  id="gj-first-name"
                   class="input"
                   type="text"
                   autocomplete="given-name"
@@ -400,9 +390,9 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </div>
 
               <div>
-                <label class="field-label" for="ac-last-name">Last Name</label>
+                <label class="field-label" for="gj-last-name">Last Name</label>
                 <input
-                  id="ac-last-name"
+                  id="gj-last-name"
                   class="input"
                   type="text"
                   autocomplete="family-name"
@@ -412,9 +402,9 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </div>
 
               <div>
-                <label class="field-label" for="ac-phone">Phone</label>
+                <label class="field-label" for="gj-phone">Phone</label>
                 <input
-                  id="ac-phone"
+                  id="gj-phone"
                   class="input"
                   type="tel"
                   autocomplete="tel"
@@ -424,9 +414,9 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </div>
 
               <div>
-                <label class="field-label" for="ac-email">Email</label>
+                <label class="field-label" for="gj-email">Email</label>
                 <input
-                  id="ac-email"
+                  id="gj-email"
                   class="input"
                   type="email"
                   autocomplete="email"
@@ -436,9 +426,9 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </div>
 
               <div class="sm:col-span-2">
-                <label class="field-label" for="ac-address">Service Address</label>
+                <label class="field-label" for="gj-address">Service Address</label>
                 <input
-                  id="ac-address"
+                  id="gj-address"
                   class="input"
                   type="text"
                   autocomplete="street-address"
@@ -448,9 +438,9 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </div>
 
               <div>
-                <label class="field-label" for="ac-city">City</label>
+                <label class="field-label" for="gj-city">City</label>
                 <input
-                  id="ac-city"
+                  id="gj-city"
                   class="input"
                   type="text"
                   autocomplete="address-level2"
@@ -460,9 +450,9 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </div>
 
               <div>
-                <label class="field-label" for="ac-zip">ZIP Code</label>
+                <label class="field-label" for="gj-zip">ZIP Code</label>
                 <input
-                  id="ac-zip"
+                  id="gj-zip"
                   class="input"
                   type="text"
                   inputmode="numeric"
@@ -473,27 +463,27 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </div>
             </div>
 
-            <fieldset class="contents" aria-labelledby="ac-customer-type-heading">
+            <fieldset class="contents" aria-labelledby="gj-customer-type-heading">
               <legend class="sr-only">Residential or Commercial?</legend>
-              <p id="ac-customer-type-heading" class="mb-2 mt-6 font-semibold text-heading">
+              <p id="gj-customer-type-heading" class="mb-2 mt-6 font-semibold text-heading">
                 Residential or Commercial?
               </p>
 
               <div class="grid max-w-sm grid-cols-2 gap-3">
-                <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <label class="gj-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
                   <input
                     type="radio"
-                    name="ac-customer-type"
+                    name="gj-customer-type"
                     value="residential"
                     class="sr-only"
                   />
                   <span class="font-semibold text-heading">Residential</span>
                   <span class="mt-1 text-sm text-muted">Home or personal property</span>
                 </label>
-                <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <label class="gj-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
                   <input
                     type="radio"
-                    name="ac-customer-type"
+                    name="gj-customer-type"
                     value="commercial"
                     class="sr-only"
                   />
@@ -507,10 +497,10 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           </div>
 
           <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
-          <p class="field-error mt-4" id="ac-submit-error" role="alert" hidden></p>
+          <p class="field-error mt-4" id="gj-submit-error" role="alert" hidden></p>
 
           <div
-            id="ac-booking-placeholder"
+            id="gj-booking-placeholder"
             class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center"
             role="status"
           >
@@ -526,7 +516,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           </div>
 
           <div
-            id="ac-review-placeholder"
+            id="gj-review-placeholder"
             class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center"
             role="status"
           >
@@ -547,7 +537,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         <div class="mt-8 flex items-center justify-between border-t border-border pt-6">
           <button
             type="button"
-            id="ac-back"
+            id="gj-back"
             class="inline-flex items-center gap-1 rounded-xl px-4 py-2 text-[16px] font-medium text-muted transition hover:text-heading disabled:pointer-events-none disabled:opacity-0"
           >
             <ChevronLeft size={18} />
@@ -556,7 +546,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
 
           <button
             type="button"
-            id="ac-continue"
+            id="gj-continue"
             class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-[16px] font-medium text-white transition hover:bg-primary-dark disabled:pointer-events-none disabled:opacity-50"
           >
             Continue
@@ -564,14 +554,14 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         </div>
 
         <!-- Mobile breakdown (compact, expandable) -->
-        <details class="ac-mobile-details mt-6 rounded-2xl border border-border lg:hidden">
+        <details class="gj-mobile-details mt-6 rounded-2xl border border-border lg:hidden">
           <summary class="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-primary">
             View price breakdown
           </summary>
           <div class="border-t border-border px-4 py-4">
             <dl class="flex flex-col gap-2 text-sm">
-              <div class="flex items-center justify-between" data-row="appliances">
-                <dt class="text-muted">Appliances</dt>
+              <div class="flex items-center justify-between" data-row="junk">
+                <dt class="text-muted">Items</dt>
                 <dd class="js-value font-medium text-heading">$0.00</dd>
               </div>
               <div class="flex items-center justify-between" data-row="access" hidden>
@@ -579,15 +569,11 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
                 <dd class="js-value font-medium text-heading">$0.00</dd>
               </div>
               <div class="flex items-center justify-between" data-row="disassembly" hidden>
-                <dt class="text-muted">Disconnection</dt>
+                <dt class="text-muted">Disassembly</dt>
                 <dd class="js-value font-medium text-heading">$0.00</dd>
               </div>
               <div class="flex items-center justify-between" data-row="heavy" hidden>
                 <dt class="text-muted">Heavy / Oversized</dt>
-                <dd class="js-value font-medium text-heading">$0.00</dd>
-              </div>
-              <div class="flex items-center justify-between" data-row="refrigerant" hidden>
-                <dt class="text-muted">Refrigerant Recovery</dt>
                 <dd class="js-value font-medium text-heading">$0.00</dd>
               </div>
               <div class="flex items-center justify-between" data-row="locations" hidden>
@@ -610,16 +596,16 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       <!-- ================= Summary (desktop) ================= -->
       <aside class="hidden rounded-3xl border border-border bg-primary-dark p-6 text-white shadow-soft lg:sticky lg:top-24 lg:block sm:p-8">
         <p class="text-sm font-semibold uppercase tracking-[0.25em] text-white/70">
-          Your Appliance Removal Price
+          Your Junk Removal Price
         </p>
         <p class="js-total mt-2 text-4xl font-semibold text-white">$0.00</p>
-        <p id="ac-desktop-price-note" class="mt-2 text-sm text-white/70">
+        <p id="gj-desktop-price-note" class="mt-2 text-sm text-white/70">
           A $99 minimum applies to every job.
         </p>
 
         <dl class="mt-6 flex flex-col gap-2 border-t border-white/15 pt-6 text-sm">
-          <div class="flex items-center justify-between" data-row="appliances">
-            <dt class="text-white/70">Appliances</dt>
+          <div class="flex items-center justify-between" data-row="junk">
+            <dt class="text-white/70">Items</dt>
             <dd class="js-value font-medium text-white">$0.00</dd>
           </div>
           <div class="flex items-center justify-between" data-row="access" hidden>
@@ -627,15 +613,11 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
             <dd class="js-value font-medium text-white">$0.00</dd>
           </div>
           <div class="flex items-center justify-between" data-row="disassembly" hidden>
-            <dt class="text-white/70">Disconnection</dt>
+            <dt class="text-white/70">Disassembly</dt>
             <dd class="js-value font-medium text-white">$0.00</dd>
           </div>
           <div class="flex items-center justify-between" data-row="heavy" hidden>
             <dt class="text-white/70">Heavy / Oversized</dt>
-            <dd class="js-value font-medium text-white">$0.00</dd>
-          </div>
-          <div class="flex items-center justify-between" data-row="refrigerant" hidden>
-            <dt class="text-white/70">Refrigerant Recovery</dt>
             <dd class="js-value font-medium text-white">$0.00</dd>
           </div>
           <div class="flex items-center justify-between" data-row="locations" hidden>
@@ -664,14 +646,14 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         </p>
         <p class="js-total text-lg font-semibold leading-tight text-heading">$0.00</p>
       </div>
-      <p id="ac-mobile-price-note" class="text-[11px] leading-tight text-muted">$99 minimum</p>
+      <p id="gj-mobile-price-note" class="text-[11px] leading-tight text-muted">$99 minimum</p>
     </div>
 
   </div>
 </section>
 
 <style>
-  .ac-stepper-btn {
+  .gj-stepper-btn {
     display: flex;
     height: 2rem;
     width: 2rem;
@@ -684,26 +666,26 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     transition: all 0.2s ease;
   }
 
-  .ac-stepper-btn:hover {
+  .gj-stepper-btn:hover {
     border-color: var(--primary);
     color: var(--primary);
   }
 
-  .ac-mobile-details summary::-webkit-details-marker {
+  .gj-mobile-details summary::-webkit-details-marker {
     display: none;
   }
 </style>
 
 <script>
-  import { calculateApplianceRemovalPrice } from "../../lib/pricing/appliance";
+  import { calculateGeneralJunkRemovalPrice } from "../../lib/pricing/general-junk";
   import type {
     AccessType,
-    ApplianceItemKey,
-    ApplianceRemovalInput,
-    ApplianceRemovalPricingResult,
-    ApplianceSelection,
     DisassemblyType,
-  } from "../../lib/pricing/appliance";
+    GeneralJunkItemKey,
+    GeneralJunkRemovalInput,
+    GeneralJunkRemovalPricingResult,
+    GeneralJunkSelection,
+  } from "../../lib/pricing/general-junk";
 
   const TOTAL_STEPS = 7;
   const MAX_PHOTOS = 5;
@@ -720,12 +702,12 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
   type CustomerTextField = (typeof CUSTOMER_TEXT_FIELDS)[number];
   type CustomerType = "residential" | "commercial";
 
-  const app = document.getElementById("ac-app");
+  const app = document.getElementById("gj-app");
   if (app) {
     const root = app.closest("section") as HTMLElement;
 
     const state: {
-      items: Map<ApplianceItemKey, number>;
+      items: Map<GeneralJunkItemKey, number>;
       access: AccessType | null;
       disassembly: DisassemblyType | null;
       heavyOversizedCount: number;
@@ -762,25 +744,25 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     let currentStep = 1;
     let bookingRequested = false;
     let submitting = false;
-    let lastResult: ApplianceRemovalPricingResult | null = null;
+    let lastResult: GeneralJunkRemovalPricingResult | null = null;
 
-    const backBtn = root.querySelector<HTMLButtonElement>("#ac-back")!;
-    const continueBtn = root.querySelector<HTMLButtonElement>("#ac-continue")!;
+    const backBtn = root.querySelector<HTMLButtonElement>("#gj-back")!;
+    const continueBtn = root.querySelector<HTMLButtonElement>("#gj-continue")!;
     const bookingPlaceholder = root.querySelector<HTMLElement>(
-      "#ac-booking-placeholder",
+      "#gj-booking-placeholder",
     )!;
     const reviewPlaceholder = root.querySelector<HTMLElement>(
-      "#ac-review-placeholder",
+      "#gj-review-placeholder",
     )!;
     const desktopPriceNote = root.querySelector<HTMLElement>(
-      "#ac-desktop-price-note",
+      "#gj-desktop-price-note",
     );
     const mobilePriceNote = root.querySelector<HTMLElement>(
-      "#ac-mobile-price-note",
+      "#gj-mobile-price-note",
     );
-    const customerForm = root.querySelector<HTMLElement>("#ac-customer-form")!;
-    const step7Intro = root.querySelector<HTMLElement>("#ac-step7-intro")!;
-    const submitError = root.querySelector<HTMLElement>("#ac-submit-error")!;
+    const customerForm = root.querySelector<HTMLElement>("#gj-customer-form")!;
+    const step7Intro = root.querySelector<HTMLElement>("#gj-step7-intro")!;
+    const submitError = root.querySelector<HTMLElement>("#gj-submit-error")!;
 
     function formatCents(cents: number): string {
       return (cents / 100).toLocaleString("en-US", {
@@ -799,7 +781,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
 
     function showStepError(step: number, message: string) {
       const el = root.querySelector<HTMLElement>(
-        `.ac-step[data-step="${step}"] [data-role="step-error"]`,
+        `.gj-step[data-step="${step}"] [data-role="step-error"]`,
       );
       if (!el) return;
       el.textContent = message;
@@ -808,7 +790,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
 
     function clearStepError(step: number) {
       const el = root.querySelector<HTMLElement>(
-        `.ac-step[data-step="${step}"] [data-role="step-error"]`,
+        `.gj-step[data-step="${step}"] [data-role="step-error"]`,
       );
       if (!el) return;
       el.hidden = true;
@@ -825,11 +807,11 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           : "Please select at least one item to continue.";
       },
       2: () =>
-        state.access ? null : "Please choose where the appliances are located.",
+        state.access ? null : "Please choose where the junk is located.",
       3: () =>
         state.disassembly
           ? null
-          : "Let us know if anything needs to be disconnected.",
+          : "Let us know if anything needs to be disassembled.",
       // A heavy/oversized count of 0 is a complete, valid answer — no
       // required interaction on this step.
       4: () => null,
@@ -842,7 +824,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     };
 
     function showStep(step: number) {
-      root.querySelectorAll<HTMLElement>(".ac-step").forEach((el) => {
+      root.querySelectorAll<HTMLElement>(".gj-step").forEach((el) => {
         el.hidden = Number(el.dataset.step) !== step;
       });
 
@@ -852,7 +834,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
           el.textContent = `Step ${step} of ${TOTAL_STEPS}`;
         });
 
-      root.querySelectorAll<HTMLElement>(".ac-progress-bar").forEach((bar) => {
+      root.querySelectorAll<HTMLElement>(".gj-progress-bar").forEach((bar) => {
         bar.style.width = `${(step / TOTAL_STEPS) * 100}%`;
       });
 
@@ -862,7 +844,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       updateContinueLabel();
 
       const heading = root.querySelector<HTMLElement>(
-        `.ac-step[data-step="${step}"] h3`,
+        `.gj-step[data-step="${step}"] h3`,
       );
       if (heading) {
         heading.setAttribute("tabindex", "-1");
@@ -870,8 +852,8 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       }
     }
 
-    function buildInput(): ApplianceRemovalInput {
-      const items: ApplianceSelection[] = Array.from(state.items.entries())
+    function buildInput(): GeneralJunkRemovalInput {
+      const items: GeneralJunkSelection[] = Array.from(state.items.entries())
         .filter(([, quantity]) => quantity > 0)
         .map(([itemKey, quantity]) => ({ itemKey, quantity }));
 
@@ -920,33 +902,32 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         : "Continue to Booking";
     }
 
-    function renderSummary(result: ApplianceRemovalPricingResult) {
+    function renderSummary(result: GeneralJunkRemovalPricingResult) {
       root.querySelectorAll<HTMLElement>(".js-total").forEach((el) => {
         el.textContent = formatCents(result.finalTotalCents);
       });
 
-      setRow("appliances", result.itemSubtotalCents, true);
+      setRow("junk", result.itemSubtotalCents, true);
       setRow("access", result.accessFeeCents);
       setRow("disassembly", result.disassemblyFeeCents);
       setRow("heavy", result.heavyOversizedFeeCents);
-      setRow("refrigerant", result.refrigerantRecoveryFeeCents);
       setRow("locations", result.additionalLocationFeeCents);
       setRow("minimum", result.minimumAdjustmentCents);
       renderPriceNotes(result.requiresReview);
     }
 
     function recalculate() {
-      lastResult = calculateApplianceRemovalPrice(buildInput());
+      lastResult = calculateGeneralJunkRemovalPrice(buildInput());
       renderSummary(lastResult);
       updateContinueLabel();
     }
 
-    // ---- Step 1: appliance selection ----
+    // ---- Step 1: item selection ----
     root
-      .querySelectorAll<HTMLInputElement>('[data-role="appliance-toggle"]')
+      .querySelectorAll<HTMLInputElement>('[data-role="junk-toggle"]')
       .forEach((checkbox) => {
-        const itemKey = checkbox.dataset.itemKey as ApplianceItemKey;
-        const card = checkbox.closest<HTMLElement>(".ac-appliance-card")!;
+        const itemKey = checkbox.dataset.itemKey as GeneralJunkItemKey;
+        const card = checkbox.closest<HTMLElement>(".gj-junk-card")!;
         const stepper = card.querySelector<HTMLElement>(
           '[data-role="stepper"]',
         )!;
@@ -1012,7 +993,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       inputs.forEach((input) => {
         input.addEventListener("change", () => {
           inputs.forEach((i) => {
-            const card = i.closest<HTMLElement>(".ac-option-card");
+            const card = i.closest<HTMLElement>(".gj-option-card");
             if (card) setCardSelected(card, i.checked);
           });
           if (input.checked) onChange(input.value);
@@ -1020,13 +1001,13 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       });
     }
 
-    wireRadioGroup("ac-access", (value) => {
+    wireRadioGroup("gj-access", (value) => {
       state.access = value as AccessType;
       clearStepError(2);
       recalculate();
     });
 
-    wireRadioGroup("ac-disassembly", (value) => {
+    wireRadioGroup("gj-disassembly", (value) => {
       state.disassembly = value as DisassemblyType;
       clearStepError(3);
       recalculate();
@@ -1044,7 +1025,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     }
 
     root
-      .querySelector("#ac-heavy-decrement")
+      .querySelector("#gj-heavy-decrement")
       ?.addEventListener("click", () => {
         state.heavyOversizedCount = Math.max(0, state.heavyOversizedCount - 1);
         updateHeavyCount();
@@ -1052,7 +1033,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       });
 
     root
-      .querySelector("#ac-heavy-increment")
+      .querySelector("#gj-heavy-increment")
       ?.addEventListener("click", () => {
         state.heavyOversizedCount = Math.min(
           MAX_HEAVY_ITEMS,
@@ -1063,7 +1044,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       });
 
     const additionalLocationsPanel = root.querySelector<HTMLElement>(
-      "#ac-additional-locations",
+      "#gj-additional-locations",
     )!;
     const locationCountEls = root.querySelectorAll<HTMLElement>(
       '[data-role="location-count"]',
@@ -1075,7 +1056,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       });
     }
 
-    wireRadioGroup("ac-same-location", (value) => {
+    wireRadioGroup("gj-same-location", (value) => {
       state.sameLocation = value === "yes";
       if (state.sameLocation) {
         additionalLocationsPanel.classList.add("hidden");
@@ -1091,7 +1072,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     });
 
     root
-      .querySelector("#ac-location-decrement")
+      .querySelector("#gj-location-decrement")
       ?.addEventListener("click", () => {
         state.additionalLocations = Math.max(1, state.additionalLocations - 1);
         updateLocationCount();
@@ -1099,7 +1080,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       });
 
     root
-      .querySelector("#ac-location-increment")
+      .querySelector("#gj-location-increment")
       ?.addEventListener("click", () => {
         state.additionalLocations = Math.min(
           MAX_ADDITIONAL_LOCATIONS,
@@ -1110,11 +1091,11 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       });
 
     // ---- Step 6: photos ----
-    const photoInput = root.querySelector<HTMLInputElement>("#ac-photo-input")!;
+    const photoInput = root.querySelector<HTMLInputElement>("#gj-photo-input")!;
     const photoDropzone = root.querySelector<HTMLElement>(
-      "#ac-photo-dropzone",
+      "#gj-photo-dropzone",
     )!;
-    const photoGrid = root.querySelector<HTMLElement>("#ac-photo-grid")!;
+    const photoGrid = root.querySelector<HTMLElement>("#gj-photo-grid")!;
     const photoHint = root.querySelector<HTMLElement>(
       '[data-role="photo-hint"]',
     )!;
@@ -1131,7 +1112,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
 
         const img = document.createElement("img");
         img.src = photo.url;
-        img.alt = `Uploaded appliance photo ${index + 1}`;
+        img.alt = `Uploaded junk photo ${index + 1}`;
         img.className = "h-full w-full object-cover";
         wrapper.appendChild(img);
 
@@ -1186,7 +1167,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       });
     });
 
-    wireRadioGroup("ac-customer-type", (value) => {
+    wireRadioGroup("gj-customer-type", (value) => {
       state.customer.customerType = value as CustomerType;
       setFieldInvalid("customerType", false);
       clearStepError(7);
@@ -1258,7 +1239,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       };
 
       try {
-        const response = await fetch("/api/orders/appliance-removal", {
+        const response = await fetch("/api/orders/general-junk-removal", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

@@ -3,6 +3,8 @@ import {
   buildApplianceQuoteTitle,
   buildApplianceRequestForm,
   buildApplianceRequestTitle,
+  buildGeneralJunkRequestForm,
+  buildGeneralJunkRequestTitle,
   buildJobberLineItems,
   buildJobberQuoteLineItems,
   buildQuoteTitle,
@@ -10,11 +12,16 @@ import {
   buildRequestTitle,
   syncApplianceRemovalOrderToJobber,
   syncFurnitureRemovalOrderToJobber,
+  syncGeneralJunkRemovalOrderToJobber,
 } from "./jobber-sync";
 import { createMockKv } from "../jobber/test-support";
 import { putJobberConnection } from "../jobber/connection";
 import type { JobberConnection } from "../jobber/types";
-import type { ApplianceRemovalOrderRecord, FurnitureRemovalOrderRecord } from "./types";
+import type {
+  ApplianceRemovalOrderRecord,
+  FurnitureRemovalOrderRecord,
+  GeneralJunkRemovalOrderRecord,
+} from "./types";
 
 async function makeConnectedJobberEnv() {
   const kv = createMockKv();
@@ -193,6 +200,60 @@ function applianceReviewRequiredRecord(
     },
     ...overrides,
   });
+}
+
+function generalJunkBaseRecord(
+  overrides: Partial<GeneralJunkRemovalOrderRecord> = {},
+): GeneralJunkRemovalOrderRecord {
+  return {
+    id: "55555555-5555-5555-5555-555555555555",
+    service: "general-junk-removal",
+    status: "booking_requested",
+    submittedAt: new Date().toISOString(),
+    customer: {
+      firstName: "Jane",
+      lastName: "Doe",
+      phone: "(515) 202-3593",
+      email: "jane@example.com",
+      serviceAddress: "123 Main St",
+      city: "Des Moines",
+      zip: "50309",
+      customerType: "residential",
+    },
+    order: {
+      items: [{ itemKey: "bagLarge", label: "Large Bag of Junk", quantity: 1, unitPriceCents: 4000 }],
+      access: "garage",
+      accessLabel: "Garage Access",
+      disassembly: "none",
+      disassemblyLabel: "No Disassembly",
+      heavyOversizedItemCount: 0,
+      additionalLocations: 0,
+      photoCount: 0,
+      photoFileNames: [],
+    },
+    pricing: {
+      itemSubtotalCents: 4000,
+      accessFeeCents: 0,
+      disassemblyFeeCents: 0,
+      heavyOversizedFeeCents: 0,
+      additionalLocationFeeCents: 0,
+      preMinimumTotalCents: 4000,
+      minimumAdjustmentCents: 5900,
+      finalTotalCents: 9900,
+      requiresReview: false,
+      lineItems: [
+        { name: "Large Bag of Junk", quantity: 1, unitPrice: 4000, total: 4000 },
+        {
+          name: "General Junk Removal - Minimum Service Adjustment",
+          quantity: 1,
+          unitPrice: 5900,
+          total: 5900,
+        },
+      ],
+    },
+    jobber: { syncStatus: "pending" },
+    ...overrides,
+  };
 }
 
 function jsonResponse(body: unknown): Response {
@@ -1187,5 +1248,54 @@ describe("syncApplianceRemovalOrderToJobber", () => {
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.clientId).toBe("existing-client");
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("buildGeneralJunkRequestForm", () => {
+  it("labels the field 'Disassembly', not 'Disconnection'", () => {
+    const form = buildGeneralJunkRequestForm(generalJunkBaseRecord());
+    const jobDetails = form.sections.find((s) => s.label === "Job Details")!;
+    const disassembly = jobDetails.items.find((i) => i.label === "Disassembly");
+    expect(disassembly?.answerText).toBe("No Disassembly");
+  });
+});
+
+describe("syncGeneralJunkRemovalOrderToJobber", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("follows Client -> Request for an auto-priced order, using general junk formatters", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence(
+      freshClientAndRequestSequence("client-1", "property-1", "request-1"),
+    );
+
+    const result = await syncGeneralJunkRemovalOrderToJobber(env, generalJunkBaseRecord());
+
+    expect(result).toEqual({
+      ok: true,
+      clientId: "client-1",
+      requestId: "request-1",
+      propertyId: "property-1",
+    });
+
+    const requestCreateCall = fetchMock.mock.calls[3];
+    const body = JSON.parse(requestCreateCall[1].body);
+    expect(body.variables.input.title).toBe("General Junk Removal — Jane Doe");
+  });
+
+  it("is idempotent — a record already synced skips Jobber entirely", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([]);
+
+    const record = generalJunkBaseRecord({
+      jobber: { clientId: "client-1", requestId: "request-1", syncStatus: "synced" },
+    });
+    const result = await syncGeneralJunkRemovalOrderToJobber(env, record);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.requestId).toBe("request-1");
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
