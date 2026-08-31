@@ -358,6 +358,7 @@ export async function syncFurnitureRemovalOrderToJobber(
   if (!requestId) {
     const requestResult = await createJobberRequest(accessToken, {
       clientId,
+      propertyId,
       title: buildRequestTitle(record.customer),
       lineItems: buildJobberLineItems(record.pricing.lineItems),
       requestDetails: { form: buildRequestForm(record) },
