@@ -209,7 +209,10 @@ async function findOrCreateJobberClient(
 ): Promise<ClientLookupResult> {
   const emailSearch = await findJobberClientsByEmail(accessToken, customer.email);
   if (!emailSearch.ok) {
-    return { ok: false, error: describeJobberError(emailSearch.error) };
+    return {
+      ok: false,
+      error: `Jobber sync failed at: findJobberClientsByEmail — ${describeJobberError(emailSearch.error)}`,
+    };
   }
 
   const emailMatches = emailSearch.data.clients.nodes;
@@ -229,7 +232,10 @@ async function findOrCreateJobberClient(
 
   const phoneSearch = await findJobberClientsByPhone(accessToken, customer.phone);
   if (!phoneSearch.ok) {
-    return { ok: false, error: describeJobberError(phoneSearch.error) };
+    return {
+      ok: false,
+      error: `Jobber sync failed at: findJobberClientsByPhone — ${describeJobberError(phoneSearch.error)}`,
+    };
   }
 
   const phoneMatches = phoneSearch.data.clients.nodes;
@@ -276,7 +282,10 @@ async function findOrCreateJobberClient(
   });
 
   if (!clientResult.ok) {
-    return { ok: false, error: describeJobberError(clientResult.error) };
+    return {
+      ok: false,
+      error: `Jobber sync failed at: createJobberClient — ${describeJobberError(clientResult.error)}`,
+    };
   }
 
   return {
@@ -355,9 +364,12 @@ export async function syncFurnitureRemovalOrderToJobber(
     });
 
     if (!requestResult.ok) {
-      // Client resolution already succeeded — preserve it so a retry
-      // doesn't search/create a second Client.
-      return { ok: false, error: describeJobberError(requestResult.error), clientId, propertyId };
+      return {
+        ok: false,
+        error: `Jobber sync failed at: createJobberRequest — ${describeJobberError(requestResult.error)}`,
+        clientId,
+        propertyId,
+      };
     }
 
     requestId = requestResult.data.requestCreate.request.id;
@@ -395,7 +407,7 @@ export async function syncFurnitureRemovalOrderToJobber(
     // resumes at the Quote step only.
     return {
       ok: false,
-      error: describeJobberError(quoteResult.error),
+      error: `Jobber sync failed at: createJobberQuote — ${describeJobberError(quoteResult.error)}`,
       clientId,
       propertyId,
       requestId,

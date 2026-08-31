@@ -45,10 +45,14 @@ export interface JobberClientSearchResult {
 // typed variable for it.
 const CLIENTS_BY_EMAIL_QUERY = `
   query ClientsByEmail($searchTerm: String!) {
-    clients(searchTerm: $searchTerm, searchFields: [PRIMARY_EMAIL]) {
+    clients(
+      searchTerm: $searchTerm,
+      searchFields: [PRIMARY_EMAIL],
+      first: 2
+    ) {
       nodes {
         id
-        clientProperties {
+        clientProperties(first: 1) {
           nodes {
             id
           }
@@ -60,10 +64,14 @@ const CLIENTS_BY_EMAIL_QUERY = `
 
 const CLIENTS_BY_PHONE_QUERY = `
   query ClientsByPhone($searchTerm: String!) {
-    clients(searchTerm: $searchTerm, searchFields: [PHONES]) {
+    clients(
+      searchTerm: $searchTerm,
+      searchFields: [PHONES],
+      first: 2
+    ) {
       nodes {
         id
-        clientProperties {
+        clientProperties(first: 1) {
           nodes {
             id
           }
