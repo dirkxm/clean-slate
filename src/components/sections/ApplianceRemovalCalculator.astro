@@ -1,0 +1,1334 @@
+---
+import {
+  ACCESS_FEES_CENTS,
+  ACCESS_LABELS,
+  ADDITIONAL_LOCATION_FEE_CENTS,
+  APPLIANCE_ITEMS,
+  DISASSEMBLY_FEES_CENTS,
+  HEAVY_OVERSIZED_FEE_CENTS,
+  REFRIGERANT_RECOVERY_FEE_CENTS,
+} from "../../lib/pricing/appliance";
+import type {
+  AccessType,
+  ApplianceItemKey,
+  DisassemblyType,
+} from "../../lib/pricing/appliance";
+import { ChevronLeft, Check, Minus, Plus, Upload } from "lucide-astro";
+
+function formatUsd(cents: number): string {
+  return (cents / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
+
+function feeLabel(cents: number): string {
+  return cents === 0 ? "Included" : `+${formatUsd(cents)}`;
+}
+
+const applianceEntries = Object.entries(APPLIANCE_ITEMS) as [
+  ApplianceItemKey,
+  (typeof APPLIANCE_ITEMS)[ApplianceItemKey],
+][];
+
+const accessOptions = (Object.keys(ACCESS_LABELS) as AccessType[]).map(
+  (value) => ({
+    value,
+    label: ACCESS_LABELS[value],
+    feeCents: ACCESS_FEES_CENTS[value],
+  }),
+);
+
+const disconnectionOptions: { value: DisassemblyType; label: string; feeCents: number }[] = [
+  { value: "none", label: "No", feeCents: DISASSEMBLY_FEES_CENTS.none },
+  { value: "simple", label: "Yes - Simple Disconnection", feeCents: DISASSEMBLY_FEES_CENTS.simple },
+  { value: "difficult", label: "Yes - Difficult Disconnection", feeCents: DISASSEMBLY_FEES_CENTS.difficult },
+];
+
+const heavyItemFeeLabel = formatUsd(HEAVY_OVERSIZED_FEE_CENTS);
+
+const additionalLocationFeeLabel = formatUsd(ADDITIONAL_LOCATION_FEE_CENTS);
+
+const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
+---
+
+<section id="appliance-calculator" hidden>
+  <div class="container">
+
+    <noscript>
+      <p class="mt-8 rounded-2xl border border-border bg-white p-6 text-body">
+        Please enable JavaScript to use the price calculator, or
+        <a href="/contact" class="font-semibold text-primary hover:text-primary-dark">contact us</a>
+        for a quote.
+      </p>
+    </noscript>
+
+    <div
+      id="ac-app"
+      class="mt-12 grid gap-8 pb-24 lg:grid-cols-[1fr_380px] lg:items-start lg:gap-12 lg:pb-0"
+    >
+
+      <!-- ================= Wizard ================= -->
+      <div class="rounded-3xl border border-border bg-white p-6 shadow-soft sm:p-8">
+
+        <!-- Progress -->
+        <div class="mb-8">
+          <p class="mb-2 text-sm font-semibold text-muted" data-role="step-label">
+            Step 1 of 6
+          </p>
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <div
+              class="ac-progress-bar h-full rounded-full bg-primary transition-all duration-300"
+              style="width: 16.6667%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Step 1: Appliances -->
+        <div class="ac-step" data-step="1">
+          <h3 id="ac-step1-heading" class="mb-2 text-2xl!">
+            What appliances do you need removed?
+          </h3>
+          <p class="mb-6 text-sm text-muted">
+            Refrigerators, freezers, and AC units include a {refrigerantFeeLabel} refrigerant recovery fee each, required before disposal.
+          </p>
+
+          <fieldset class="contents" aria-labelledby="ac-step1-heading">
+            <legend class="sr-only">What appliances do you need removed?</legend>
+
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {
+                applianceEntries.map(([key, item]) => (
+                  <label
+                    class="ac-appliance-card relative flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition"
+                    data-item-key={key}
+                  >
+                    <input
+                      type="checkbox"
+                      class="sr-only"
+                      data-role="appliance-toggle"
+                      data-item-key={key}
+                    />
+
+                    <span
+                      class="ac-check absolute right-3 top-3 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-white"
+                      data-role="check"
+                      aria-hidden="true"
+                    >
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+
+                    <span class="pr-6 font-semibold text-heading">
+                      {item.label}
+                    </span>
+                    <span class="mt-1 text-sm text-muted">
+                      {formatUsd(item.priceCents)}
+                      {item.requiresRefrigerantRecovery && ` + ${refrigerantFeeLabel} recovery`}
+                    </span>
+
+                    <div
+                      class="mt-3 hidden items-center justify-between gap-2 border-t border-border pt-3"
+                      data-role="stepper"
+                    >
+                      <button
+                        type="button"
+                        class="ac-stepper-btn"
+                        data-action="decrement"
+                        aria-label={`Decrease ${item.label} quantity`}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span
+                        class="font-semibold text-heading"
+                        data-role="quantity"
+                        aria-live="polite"
+                      >
+                        1
+                      </span>
+                      <button
+                        type="button"
+                        class="ac-stepper-btn"
+                        data-action="increment"
+                        aria-label={`Increase ${item.label} quantity`}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 2: Access -->
+        <div class="ac-step" data-step="2" hidden>
+          <h3 id="ac-step2-heading" class="mb-6 text-2xl!">
+            Where are the appliances located?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="ac-step2-heading">
+            <legend class="sr-only">Where are the appliances located?</legend>
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {
+                accessOptions.map((option) => (
+                  <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input
+                      type="radio"
+                      name="ac-access"
+                      value={option.value}
+                      class="sr-only"
+                    />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                    <span class="mt-1 text-sm text-muted">
+                      {feeLabel(option.feeCents)}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 3: Disconnection -->
+        <div class="ac-step" data-step="3" hidden>
+          <h3 id="ac-step3-heading" class="mb-2 text-2xl!">
+            Does anything need to be disconnected?
+          </h3>
+          <p class="mb-6 text-sm text-muted">
+            Gas, water, or electrical disconnection before removal.
+          </p>
+
+          <fieldset class="contents" aria-labelledby="ac-step3-heading">
+            <legend class="sr-only">Does anything need to be disconnected?</legend>
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {
+                disconnectionOptions.map((option) => (
+                  <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                    <input
+                      type="radio"
+                      name="ac-disassembly"
+                      value={option.value}
+                      class="sr-only"
+                    />
+                    <span class="font-semibold text-heading">{option.label}</span>
+                    <span class="mt-1 text-sm text-muted">
+                      {feeLabel(option.feeCents)}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 4: Heavy / Oversized -->
+        <div class="ac-step" data-step="4" hidden>
+          <h3 id="ac-step4-heading" class="mb-2 text-2xl!">
+            Is anything unusually heavy or oversized?
+          </h3>
+          <p class="mb-6 text-sm text-muted">
+            Examples include large commercial units or appliances in tight spaces.
+            Heavy / Oversized Items &mdash; {heavyItemFeeLabel} each.
+          </p>
+
+          <div class="flex max-w-sm items-center justify-between rounded-2xl border border-border bg-background p-4">
+            <div>
+              <p class="font-semibold text-heading">Heavy / oversized items</p>
+              <p class="text-sm text-muted">{heavyItemFeeLabel} each</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="ac-heavy-decrement"
+                class="ac-stepper-btn"
+                aria-label="Decrease heavy/oversized item count"
+              >
+                <Minus size={14} />
+              </button>
+              <span
+                class="w-6 text-center font-semibold text-heading"
+                data-role="heavy-count"
+                aria-live="polite"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                id="ac-heavy-increment"
+                class="ac-stepper-btn"
+                aria-label="Increase heavy/oversized item count"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 5: Locations -->
+        <div class="ac-step" data-step="5" hidden>
+          <h3 id="ac-step5-heading" class="mb-6 text-2xl!">
+            Are all of the items at the same location?
+          </h3>
+
+          <fieldset class="contents" aria-labelledby="ac-step5-heading">
+            <legend class="sr-only">Are all of the items at the same location?</legend>
+
+            <div class="grid max-w-sm grid-cols-2 gap-3">
+              <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="ac-same-location" value="yes" class="sr-only" />
+                <span class="font-semibold text-heading">Yes</span>
+                <span class="mt-1 text-sm text-muted">One location</span>
+              </label>
+              <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                <input type="radio" name="ac-same-location" value="no" class="sr-only" />
+                <span class="font-semibold text-heading">No</span>
+                <span class="mt-1 text-sm text-muted">Multiple locations</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div
+            id="ac-additional-locations"
+            class="mt-6 hidden items-center justify-between rounded-2xl border border-border bg-background p-4"
+          >
+            <div>
+              <p class="font-semibold text-heading">Additional locations</p>
+              <p class="text-sm text-muted">
+                {additionalLocationFeeLabel} each, beyond the first
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="ac-location-decrement"
+                class="ac-stepper-btn"
+                aria-label="Decrease additional locations"
+              >
+                <Minus size={14} />
+              </button>
+              <span
+                class="w-6 text-center font-semibold text-heading"
+                data-role="location-count"
+                aria-live="polite"
+              >
+                1
+              </span>
+              <button
+                type="button"
+                id="ac-location-increment"
+                class="ac-stepper-btn"
+                aria-label="Increase additional locations"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+        </div>
+
+        <!-- Step 6: Photos -->
+        <div class="ac-step" data-step="6" hidden>
+          <h3 id="ac-step6-heading" class="mb-1 text-2xl!">
+            Want us to confirm the items?
+          </h3>
+          <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
+            Optional
+          </p>
+          <p class="mb-6 text-body">
+            Upload photos of the appliances so we can make sure we're
+            prepared for the job.
+          </p>
+
+          <label
+            id="ac-photo-dropzone"
+            for="ac-photo-input"
+            class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border p-8 text-center transition hover:border-primary"
+          >
+            <Upload class="text-muted" size={28} strokeWidth={1.5} />
+            <span class="font-medium text-heading">Click to upload photos</span>
+            <span class="text-sm text-muted">Up to 5 images &middot; optional</span>
+            <input
+              id="ac-photo-input"
+              type="file"
+              accept="image/*"
+              multiple
+              class="sr-only"
+            />
+          </label>
+
+          <p class="mt-2 text-sm text-muted" data-role="photo-hint"></p>
+
+          <div
+            id="ac-photo-grid"
+            class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5"
+          ></div>
+        </div>
+
+        <!-- Step 7: Customer Information -->
+        <div class="ac-step" data-step="7" hidden>
+          <h3 id="ac-step7-heading" class="mb-2 text-2xl!">
+            Your Contact Information
+          </h3>
+          <p id="ac-step7-intro" class="mb-6 text-sm text-muted">
+            Almost done! We just need a few details to confirm your booking.
+          </p>
+
+          <div id="ac-customer-form">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label class="field-label" for="ac-first-name">First Name</label>
+                <input
+                  id="ac-first-name"
+                  class="input"
+                  type="text"
+                  autocomplete="given-name"
+                  data-field="firstName"
+                />
+                <p class="field-error" data-field-error="firstName" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="ac-last-name">Last Name</label>
+                <input
+                  id="ac-last-name"
+                  class="input"
+                  type="text"
+                  autocomplete="family-name"
+                  data-field="lastName"
+                />
+                <p class="field-error" data-field-error="lastName" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="ac-phone">Phone</label>
+                <input
+                  id="ac-phone"
+                  class="input"
+                  type="tel"
+                  autocomplete="tel"
+                  data-field="phone"
+                />
+                <p class="field-error" data-field-error="phone" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="ac-email">Email</label>
+                <input
+                  id="ac-email"
+                  class="input"
+                  type="email"
+                  autocomplete="email"
+                  data-field="email"
+                />
+                <p class="field-error" data-field-error="email" hidden></p>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="field-label" for="ac-address">Service Address</label>
+                <input
+                  id="ac-address"
+                  class="input"
+                  type="text"
+                  autocomplete="street-address"
+                  data-field="serviceAddress"
+                />
+                <p class="field-error" data-field-error="serviceAddress" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="ac-city">City</label>
+                <input
+                  id="ac-city"
+                  class="input"
+                  type="text"
+                  autocomplete="address-level2"
+                  data-field="city"
+                />
+                <p class="field-error" data-field-error="city" hidden></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="ac-zip">ZIP Code</label>
+                <input
+                  id="ac-zip"
+                  class="input"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="postal-code"
+                  data-field="zip"
+                />
+                <p class="field-error" data-field-error="zip" hidden></p>
+              </div>
+            </div>
+
+            <fieldset class="contents" aria-labelledby="ac-customer-type-heading">
+              <legend class="sr-only">Residential or Commercial?</legend>
+              <p id="ac-customer-type-heading" class="mb-2 mt-6 font-semibold text-heading">
+                Residential or Commercial?
+              </p>
+
+              <div class="grid max-w-sm grid-cols-2 gap-3">
+                <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                  <input
+                    type="radio"
+                    name="ac-customer-type"
+                    value="residential"
+                    class="sr-only"
+                  />
+                  <span class="font-semibold text-heading">Residential</span>
+                  <span class="mt-1 text-sm text-muted">Home or personal property</span>
+                </label>
+                <label class="ac-option-card flex cursor-pointer flex-col rounded-2xl border border-border bg-white p-4 transition">
+                  <input
+                    type="radio"
+                    name="ac-customer-type"
+                    value="commercial"
+                    class="sr-only"
+                  />
+                  <span class="font-semibold text-heading">Commercial</span>
+                  <span class="mt-1 text-sm text-muted">Business or commercial property</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <p class="field-error" data-field-error="customerType" hidden></p>
+          </div>
+
+          <p class="field-error mt-4" data-role="step-error" role="alert" hidden></p>
+          <p class="field-error mt-4" id="ac-submit-error" role="alert" hidden></p>
+
+          <div
+            id="ac-booking-placeholder"
+            class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center"
+            role="status"
+          >
+            <p class="font-semibold text-heading">Booking Request Received</p>
+            <p class="mt-2 text-sm text-body">
+              Thanks! We've received your booking request and will
+              follow up shortly to confirm scheduling &mdash; or call
+              or text us at
+              <a href="tel:+15152023593" class="font-semibold text-primary hover:text-primary-dark">
+                (515) 202-3593
+              </a>.
+            </p>
+          </div>
+
+          <div
+            id="ac-review-placeholder"
+            class="mt-8 hidden rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center"
+            role="status"
+          >
+            <p class="font-semibold text-heading">Quote Request Received</p>
+            <p class="mt-2 text-sm text-body">
+              Thanks! Your project includes enough items or complexity
+              that we want to double-check the details before
+              confirming a final price. We'll review it and follow up
+              shortly with a formal quote &mdash; or call or text us at
+              <a href="tel:+15152023593" class="font-semibold text-primary hover:text-primary-dark">
+                (515) 202-3593
+              </a>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <div class="mt-8 flex items-center justify-between border-t border-border pt-6">
+          <button
+            type="button"
+            id="ac-back"
+            class="inline-flex items-center gap-1 rounded-xl px-4 py-2 text-[16px] font-medium text-muted transition hover:text-heading disabled:pointer-events-none disabled:opacity-0"
+          >
+            <ChevronLeft size={18} />
+            Back
+          </button>
+
+          <button
+            type="button"
+            id="ac-continue"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-[16px] font-medium text-white transition hover:bg-primary-dark disabled:pointer-events-none disabled:opacity-50"
+          >
+            Continue
+          </button>
+        </div>
+
+        <!-- Mobile breakdown (compact, expandable) -->
+        <details class="ac-mobile-details mt-6 rounded-2xl border border-border lg:hidden">
+          <summary class="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-primary">
+            View price breakdown
+          </summary>
+          <div class="border-t border-border px-4 py-4">
+            <dl class="flex flex-col gap-2 text-sm">
+              <div class="flex items-center justify-between" data-row="appliances">
+                <dt class="text-muted">Appliances</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="access" hidden>
+                <dt class="text-muted">Access</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="disassembly" hidden>
+                <dt class="text-muted">Disconnection</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="heavy" hidden>
+                <dt class="text-muted">Heavy / Oversized</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="refrigerant" hidden>
+                <dt class="text-muted">Refrigerant Recovery</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="locations" hidden>
+                <dt class="text-muted">Additional Locations</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="flex items-center justify-between" data-row="minimum" hidden>
+                <dt class="text-muted">Minimum Service Adjustment</dt>
+                <dd class="js-value font-medium text-heading">$0.00</dd>
+              </div>
+              <div class="mt-2 flex items-center justify-between border-t border-border pt-2 font-semibold text-heading">
+                <dt>Total</dt>
+                <dd class="js-total">$0.00</dd>
+              </div>
+            </dl>
+          </div>
+        </details>
+      </div>
+
+      <!-- ================= Summary (desktop) ================= -->
+      <aside class="hidden rounded-3xl border border-border bg-primary-dark p-6 text-white shadow-soft lg:sticky lg:top-24 lg:block sm:p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-white/70">
+          Your Appliance Removal Price
+        </p>
+        <p class="js-total mt-2 text-4xl font-semibold text-white">$0.00</p>
+        <p id="ac-desktop-price-note" class="mt-2 text-sm text-white/70">
+          A $99 minimum applies to every job.
+        </p>
+
+        <dl class="mt-6 flex flex-col gap-2 border-t border-white/15 pt-6 text-sm">
+          <div class="flex items-center justify-between" data-row="appliances">
+            <dt class="text-white/70">Appliances</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="access" hidden>
+            <dt class="text-white/70">Access</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="disassembly" hidden>
+            <dt class="text-white/70">Disconnection</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="heavy" hidden>
+            <dt class="text-white/70">Heavy / Oversized</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="refrigerant" hidden>
+            <dt class="text-white/70">Refrigerant Recovery</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="locations" hidden>
+            <dt class="text-white/70">Additional Locations</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+          <div class="flex items-center justify-between" data-row="minimum" hidden>
+            <dt class="text-white/70">Minimum Service Adjustment</dt>
+            <dd class="js-value font-medium text-white">$0.00</dd>
+          </div>
+        </dl>
+
+        <div class="mt-6 flex items-center justify-between border-t border-white/15 pt-6 text-lg font-semibold text-white">
+          <span>Total</span>
+          <span class="js-total">$0.00</span>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- ================= Summary (mobile, sticky) ================= -->
+    <div class="sticky bottom-0 z-30 -mx-6 mt-6 flex items-center justify-between border-t border-border bg-surface/95 px-6 py-2.5 shadow-soft backdrop-blur lg:hidden">
+      <div>
+        <p class="text-[11px] font-semibold uppercase leading-tight tracking-wide text-muted">
+          Your Price
+        </p>
+        <p class="js-total text-lg font-semibold leading-tight text-heading">$0.00</p>
+      </div>
+      <p id="ac-mobile-price-note" class="text-[11px] leading-tight text-muted">$99 minimum</p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .ac-stepper-btn {
+    display: flex;
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    transition: all 0.2s ease;
+  }
+
+  .ac-stepper-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .ac-mobile-details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
+
+<script>
+  import { calculateApplianceRemovalPrice } from "../../lib/pricing/appliance";
+  import type {
+    AccessType,
+    ApplianceItemKey,
+    ApplianceRemovalInput,
+    ApplianceRemovalPricingResult,
+    ApplianceSelection,
+    DisassemblyType,
+  } from "../../lib/pricing/appliance";
+
+  const TOTAL_STEPS = 7;
+  const MAX_PHOTOS = 5;
+  const MAX_ADDITIONAL_LOCATIONS = 20;
+  const CUSTOMER_TEXT_FIELDS = [
+    "firstName",
+    "lastName",
+    "phone",
+    "email",
+    "serviceAddress",
+    "city",
+    "zip",
+  ] as const;
+  type CustomerTextField = (typeof CUSTOMER_TEXT_FIELDS)[number];
+  type CustomerType = "residential" | "commercial";
+
+  const app = document.getElementById("ac-app");
+  if (app) {
+    const root = app.closest("section") as HTMLElement;
+
+    const state: {
+      items: Map<ApplianceItemKey, number>;
+      access: AccessType | null;
+      disassembly: DisassemblyType | null;
+      heavyOversizedCount: number;
+      sameLocation: boolean | null;
+      additionalLocations: number;
+      customer: Record<CustomerTextField, string> & { customerType: CustomerType | null };
+      /**
+       * Generated once, on the first submit attempt, and reused for any
+       * retry within this page session — the idempotency key the server
+       * uses to avoid creating duplicate Jobber Clients/Requests if a
+       * submission is retried after a failed/dropped request.
+       */
+      orderId: string | null;
+    } = {
+      items: new Map(),
+      access: null,
+      disassembly: null,
+      heavyOversizedCount: 0,
+      sameLocation: null,
+      additionalLocations: 1,
+      customer: {
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        serviceAddress: "",
+        city: "",
+        zip: "",
+        customerType: null,
+      },
+      orderId: null,
+    };
+
+    let currentStep = 1;
+    let bookingRequested = false;
+    let submitting = false;
+    let lastResult: ApplianceRemovalPricingResult | null = null;
+
+    const backBtn = root.querySelector<HTMLButtonElement>("#ac-back")!;
+    const continueBtn = root.querySelector<HTMLButtonElement>("#ac-continue")!;
+    const bookingPlaceholder = root.querySelector<HTMLElement>(
+      "#ac-booking-placeholder",
+    )!;
+    const reviewPlaceholder = root.querySelector<HTMLElement>(
+      "#ac-review-placeholder",
+    )!;
+    const desktopPriceNote = root.querySelector<HTMLElement>(
+      "#ac-desktop-price-note",
+    );
+    const mobilePriceNote = root.querySelector<HTMLElement>(
+      "#ac-mobile-price-note",
+    );
+    const customerForm = root.querySelector<HTMLElement>("#ac-customer-form")!;
+    const step7Intro = root.querySelector<HTMLElement>("#ac-step7-intro")!;
+    const submitError = root.querySelector<HTMLElement>("#ac-submit-error")!;
+
+    function formatCents(cents: number): string {
+      return (cents / 100).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+
+    function setCardSelected(card: HTMLElement, selected: boolean) {
+      card.classList.toggle("border-primary", selected);
+      card.classList.toggle("bg-primary/5", selected);
+      card.classList.toggle("ring-2", selected);
+      card.classList.toggle("ring-primary/20", selected);
+      card.classList.toggle("border-border", !selected);
+    }
+
+    function showStepError(step: number, message: string) {
+      const el = root.querySelector<HTMLElement>(
+        `.ac-step[data-step="${step}"] [data-role="step-error"]`,
+      );
+      if (!el) return;
+      el.textContent = message;
+      el.hidden = false;
+    }
+
+    function clearStepError(step: number) {
+      const el = root.querySelector<HTMLElement>(
+        `.ac-step[data-step="${step}"] [data-role="step-error"]`,
+      );
+      if (!el) return;
+      el.hidden = true;
+    }
+
+    const stepValidators: Record<number, () => string | null> = {
+      1: () => {
+        const total = Array.from(state.items.values()).reduce(
+          (sum, qty) => sum + qty,
+          0,
+        );
+        return total > 0
+          ? null
+          : "Please select at least one item to continue.";
+      },
+      2: () =>
+        state.access ? null : "Please choose where the appliances are located.",
+      3: () =>
+        state.disassembly
+          ? null
+          : "Let us know if anything needs to be disconnected.",
+      // A heavy/oversized count of 0 is a complete, valid answer — no
+      // required interaction on this step.
+      4: () => null,
+      5: () =>
+        state.sameLocation === null
+          ? "Let us know if all of the items are at the same location."
+          : null,
+      6: () => null,
+      7: () => validateCustomerStep(),
+    };
+
+    function showStep(step: number) {
+      root.querySelectorAll<HTMLElement>(".ac-step").forEach((el) => {
+        el.hidden = Number(el.dataset.step) !== step;
+      });
+
+      root
+        .querySelectorAll<HTMLElement>('[data-role="step-label"]')
+        .forEach((el) => {
+          el.textContent = `Step ${step} of ${TOTAL_STEPS}`;
+        });
+
+      root.querySelectorAll<HTMLElement>(".ac-progress-bar").forEach((bar) => {
+        bar.style.width = `${(step / TOTAL_STEPS) * 100}%`;
+      });
+
+      // Always enabled: at step 1, Back exits to service selection instead
+      // of moving to a previous step (see the click handler below).
+      backBtn.disabled = false;
+      updateContinueLabel();
+
+      const heading = root.querySelector<HTMLElement>(
+        `.ac-step[data-step="${step}"] h3`,
+      );
+      if (heading) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus();
+      }
+    }
+
+    function buildInput(): ApplianceRemovalInput {
+      const items: ApplianceSelection[] = Array.from(state.items.entries())
+        .filter(([, quantity]) => quantity > 0)
+        .map(([itemKey, quantity]) => ({ itemKey, quantity }));
+
+      return {
+        items,
+        access: state.access ?? "garage",
+        disassembly: state.disassembly ?? "none",
+        heavyOversizedItemCount: state.heavyOversizedCount,
+        additionalLocations:
+          state.sameLocation === false ? state.additionalLocations : 0,
+      };
+    }
+
+    function setRow(key: string, cents: number, alwaysShow = false) {
+      root.querySelectorAll<HTMLElement>(`[data-row="${key}"]`).forEach((row) => {
+        row.hidden = !alwaysShow && cents <= 0;
+        const valueEl = row.querySelector<HTMLElement>(".js-value");
+        if (valueEl) valueEl.textContent = formatCents(cents);
+      });
+    }
+
+    function renderPriceNotes(requiresReview: boolean) {
+      if (desktopPriceNote) {
+        desktopPriceNote.textContent = requiresReview
+          ? "Larger or complex removals require a quick review before we confirm your price."
+          : "A $99 minimum applies to every job.";
+      }
+      if (mobilePriceNote) {
+        mobilePriceNote.textContent = requiresReview
+          ? "Requires quick review"
+          : "$99 minimum";
+      }
+    }
+
+    function updateContinueLabel() {
+      step7Intro.textContent = lastResult?.requiresReview
+        ? "Almost done! We just need a few details so we can review your project and follow up with a quote."
+        : "Almost done! We just need a few details to confirm your booking.";
+
+      if (currentStep !== TOTAL_STEPS) {
+        continueBtn.textContent = "Continue";
+        return;
+      }
+      continueBtn.textContent = lastResult?.requiresReview
+        ? "Request a Quote"
+        : "Continue to Booking";
+    }
+
+    function renderSummary(result: ApplianceRemovalPricingResult) {
+      root.querySelectorAll<HTMLElement>(".js-total").forEach((el) => {
+        el.textContent = formatCents(result.finalTotalCents);
+      });
+
+      setRow("appliances", result.itemSubtotalCents, true);
+      setRow("access", result.accessFeeCents);
+      setRow("disassembly", result.disassemblyFeeCents);
+      setRow("heavy", result.heavyOversizedFeeCents);
+      setRow("refrigerant", result.refrigerantRecoveryFeeCents);
+      setRow("locations", result.additionalLocationFeeCents);
+      setRow("minimum", result.minimumAdjustmentCents);
+      renderPriceNotes(result.requiresReview);
+    }
+
+    function recalculate() {
+      lastResult = calculateApplianceRemovalPrice(buildInput());
+      renderSummary(lastResult);
+      updateContinueLabel();
+    }
+
+    // ---- Step 1: appliance selection ----
+    root
+      .querySelectorAll<HTMLInputElement>('[data-role="appliance-toggle"]')
+      .forEach((checkbox) => {
+        const itemKey = checkbox.dataset.itemKey as ApplianceItemKey;
+        const card = checkbox.closest<HTMLElement>(".ac-appliance-card")!;
+        const stepper = card.querySelector<HTMLElement>(
+          '[data-role="stepper"]',
+        )!;
+        const check = card.querySelector<HTMLElement>('[data-role="check"]')!;
+        const quantityEl = card.querySelector<HTMLElement>(
+          '[data-role="quantity"]',
+        )!;
+
+        function setSelected(selected: boolean, quantity: number) {
+          checkbox.checked = selected;
+          setCardSelected(card, selected);
+          stepper.classList.toggle("hidden", !selected);
+          stepper.classList.toggle("flex", selected);
+          check.classList.toggle("hidden", !selected);
+          check.classList.toggle("flex", selected);
+          quantityEl.textContent = String(quantity);
+        }
+
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            state.items.set(itemKey, 1);
+            setSelected(true, 1);
+          } else {
+            state.items.set(itemKey, 0);
+            setSelected(false, 0);
+          }
+          clearStepError(1);
+          recalculate();
+        });
+
+        card
+          .querySelector('[data-action="increment"]')
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const qty = (state.items.get(itemKey) ?? 0) + 1;
+            state.items.set(itemKey, qty);
+            quantityEl.textContent = String(qty);
+            recalculate();
+          });
+
+        card
+          .querySelector('[data-action="decrement"]')
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const qty = Math.max(0, (state.items.get(itemKey) ?? 0) - 1);
+            state.items.set(itemKey, qty);
+            if (qty === 0) {
+              setSelected(false, 0);
+            } else {
+              quantityEl.textContent = String(qty);
+            }
+            recalculate();
+          });
+      });
+
+    // ---- Steps 2-5: radio option cards ----
+    function wireRadioGroup(name: string, onChange: (value: string) => void) {
+      const inputs = root.querySelectorAll<HTMLInputElement>(
+        `input[name="${name}"]`,
+      );
+      inputs.forEach((input) => {
+        input.addEventListener("change", () => {
+          inputs.forEach((i) => {
+            const card = i.closest<HTMLElement>(".ac-option-card");
+            if (card) setCardSelected(card, i.checked);
+          });
+          if (input.checked) onChange(input.value);
+        });
+      });
+    }
+
+    wireRadioGroup("ac-access", (value) => {
+      state.access = value as AccessType;
+      clearStepError(2);
+      recalculate();
+    });
+
+    wireRadioGroup("ac-disassembly", (value) => {
+      state.disassembly = value as DisassemblyType;
+      clearStepError(3);
+      recalculate();
+    });
+
+    const MAX_HEAVY_ITEMS = 20;
+    const heavyCountEls = root.querySelectorAll<HTMLElement>(
+      '[data-role="heavy-count"]',
+    );
+
+    function updateHeavyCount() {
+      heavyCountEls.forEach((el) => {
+        el.textContent = String(state.heavyOversizedCount);
+      });
+    }
+
+    root
+      .querySelector("#ac-heavy-decrement")
+      ?.addEventListener("click", () => {
+        state.heavyOversizedCount = Math.max(0, state.heavyOversizedCount - 1);
+        updateHeavyCount();
+        recalculate();
+      });
+
+    root
+      .querySelector("#ac-heavy-increment")
+      ?.addEventListener("click", () => {
+        state.heavyOversizedCount = Math.min(
+          MAX_HEAVY_ITEMS,
+          state.heavyOversizedCount + 1,
+        );
+        updateHeavyCount();
+        recalculate();
+      });
+
+    const additionalLocationsPanel = root.querySelector<HTMLElement>(
+      "#ac-additional-locations",
+    )!;
+    const locationCountEls = root.querySelectorAll<HTMLElement>(
+      '[data-role="location-count"]',
+    );
+
+    function updateLocationCount() {
+      locationCountEls.forEach((el) => {
+        el.textContent = String(state.additionalLocations);
+      });
+    }
+
+    wireRadioGroup("ac-same-location", (value) => {
+      state.sameLocation = value === "yes";
+      if (state.sameLocation) {
+        additionalLocationsPanel.classList.add("hidden");
+        additionalLocationsPanel.classList.remove("flex");
+      } else {
+        additionalLocationsPanel.classList.remove("hidden");
+        additionalLocationsPanel.classList.add("flex");
+        if (state.additionalLocations < 1) state.additionalLocations = 1;
+        updateLocationCount();
+      }
+      clearStepError(5);
+      recalculate();
+    });
+
+    root
+      .querySelector("#ac-location-decrement")
+      ?.addEventListener("click", () => {
+        state.additionalLocations = Math.max(1, state.additionalLocations - 1);
+        updateLocationCount();
+        recalculate();
+      });
+
+    root
+      .querySelector("#ac-location-increment")
+      ?.addEventListener("click", () => {
+        state.additionalLocations = Math.min(
+          MAX_ADDITIONAL_LOCATIONS,
+          state.additionalLocations + 1,
+        );
+        updateLocationCount();
+        recalculate();
+      });
+
+    // ---- Step 6: photos ----
+    const photoInput = root.querySelector<HTMLInputElement>("#ac-photo-input")!;
+    const photoDropzone = root.querySelector<HTMLElement>(
+      "#ac-photo-dropzone",
+    )!;
+    const photoGrid = root.querySelector<HTMLElement>("#ac-photo-grid")!;
+    const photoHint = root.querySelector<HTMLElement>(
+      '[data-role="photo-hint"]',
+    )!;
+
+    let photos: { file: File; url: string }[] = [];
+
+    function renderPhotos() {
+      photoGrid.innerHTML = "";
+
+      photos.forEach((photo, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className =
+          "relative aspect-square overflow-hidden rounded-xl border border-border";
+
+        const img = document.createElement("img");
+        img.src = photo.url;
+        img.alt = `Uploaded appliance photo ${index + 1}`;
+        img.className = "h-full w-full object-cover";
+        wrapper.appendChild(img);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className =
+          "absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-heading/80 text-sm font-semibold leading-none text-white transition hover:bg-heading";
+        removeBtn.setAttribute("aria-label", `Remove photo ${index + 1}`);
+        removeBtn.textContent = "×";
+        removeBtn.addEventListener("click", () => {
+          URL.revokeObjectURL(photo.url);
+          photos.splice(index, 1);
+          renderPhotos();
+        });
+        wrapper.appendChild(removeBtn);
+
+        photoGrid.appendChild(wrapper);
+      });
+
+      photoDropzone.hidden = photos.length >= MAX_PHOTOS;
+      photoHint.textContent =
+        photos.length > 0 ? `${photos.length} of ${MAX_PHOTOS} photos added` : "";
+    }
+
+    photoInput.addEventListener("change", () => {
+      const files = Array.from(photoInput.files ?? []);
+      const remaining = MAX_PHOTOS - photos.length;
+      files.slice(0, remaining).forEach((file) => {
+        photos.push({ file, url: URL.createObjectURL(file) });
+      });
+      photoInput.value = "";
+      renderPhotos();
+    });
+
+    // ---- Step 7: customer information ----
+    function setFieldInvalid(field: string, invalid: boolean) {
+      const input = root.querySelector<HTMLElement>(`[data-field="${field}"]`);
+      if (input) input.classList.toggle("is-invalid", invalid);
+
+      const errorEl = root.querySelector<HTMLElement>(
+        `[data-field-error="${field}"]`,
+      );
+      if (errorEl) errorEl.hidden = !invalid;
+    }
+
+    CUSTOMER_TEXT_FIELDS.forEach((field) => {
+      const input = root.querySelector<HTMLInputElement>(`[data-field="${field}"]`);
+      input?.addEventListener("input", () => {
+        state.customer[field] = input.value;
+        setFieldInvalid(field, false);
+        clearStepError(7);
+      });
+    });
+
+    wireRadioGroup("ac-customer-type", (value) => {
+      state.customer.customerType = value as CustomerType;
+      setFieldInvalid("customerType", false);
+      clearStepError(7);
+    });
+
+    const customerFieldValidity: Record<string, () => boolean> = {
+      firstName: () => state.customer.firstName.trim().length > 0,
+      lastName: () => state.customer.lastName.trim().length > 0,
+      phone: () => (state.customer.phone.match(/\d/g) ?? []).length >= 7,
+      email: () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.customer.email.trim()),
+      serviceAddress: () => state.customer.serviceAddress.trim().length > 0,
+      city: () => state.customer.city.trim().length > 0,
+      zip: () => /^\d{5}(-\d{4})?$/.test(state.customer.zip.trim()),
+      customerType: () => state.customer.customerType !== null,
+    };
+
+    function validateCustomerStep(): string | null {
+      let hasError = false;
+      for (const [field, isValid] of Object.entries(customerFieldValidity)) {
+        const valid = isValid();
+        setFieldInvalid(field, !valid);
+        if (!valid) hasError = true;
+      }
+      return hasError ? "Please complete the required fields below." : null;
+    }
+
+    function hideSubmitError() {
+      submitError.hidden = true;
+    }
+
+    function showSubmitError() {
+      submitError.textContent =
+        "Something went wrong submitting your request. Please try again, or call or text us at (515) 202-3593.";
+      submitError.hidden = false;
+    }
+
+    async function submitOrder() {
+      if (submitting || bookingRequested) return;
+      submitting = true;
+      hideSubmitError();
+      continueBtn.disabled = true;
+      continueBtn.textContent = "Submitting...";
+
+      if (!state.orderId) {
+        state.orderId = crypto.randomUUID();
+      }
+
+      const payload = {
+        orderId: state.orderId,
+        customer: {
+          firstName: state.customer.firstName.trim(),
+          lastName: state.customer.lastName.trim(),
+          phone: state.customer.phone.trim(),
+          email: state.customer.email.trim(),
+          serviceAddress: state.customer.serviceAddress.trim(),
+          city: state.customer.city.trim(),
+          zip: state.customer.zip.trim(),
+          customerType: state.customer.customerType,
+        },
+        items: Array.from(state.items.entries())
+          .filter(([, quantity]) => quantity > 0)
+          .map(([itemKey, quantity]) => ({ itemKey, quantity })),
+        access: state.access,
+        disassembly: state.disassembly,
+        heavyOversizedItemCount: state.heavyOversizedCount,
+        additionalLocations:
+          state.sameLocation === false ? state.additionalLocations : 0,
+        photos: photos.map((photo) => ({ name: photo.file.name })),
+      };
+
+      try {
+        const response = await fetch("/api/orders/appliance-removal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error("submission_failed");
+        }
+
+        const result = await response.json();
+
+        customerForm.hidden = true;
+        if (result.status === "quote_requested") {
+          showReviewPlaceholder();
+        } else {
+          showBookingPlaceholder();
+        }
+      } catch {
+        submitting = false;
+        showSubmitError();
+        continueBtn.disabled = false;
+        updateContinueLabel();
+      }
+    }
+
+    // ---- Navigation ----
+    function showBookingPlaceholder() {
+      bookingRequested = true;
+      bookingPlaceholder.classList.remove("hidden");
+      continueBtn.textContent = "Request Submitted";
+    }
+
+    function showReviewPlaceholder() {
+      bookingRequested = true;
+      reviewPlaceholder.classList.remove("hidden");
+      continueBtn.textContent = "Request Submitted";
+    }
+
+    continueBtn.addEventListener("click", () => {
+      if (bookingRequested || submitting) return;
+
+      const error = stepValidators[currentStep]?.();
+      if (error) {
+        showStepError(currentStep, error);
+        return;
+      }
+      clearStepError(currentStep);
+
+      if (currentStep === TOTAL_STEPS) {
+        submitOrder();
+        return;
+      }
+
+      currentStep += 1;
+      showStep(currentStep);
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (currentStep === 1) {
+        root.dispatchEvent(
+          new CustomEvent("appliance-flow:back-to-selection", { bubbles: true }),
+        );
+        return;
+      }
+      currentStep -= 1;
+      showStep(currentStep);
+    });
+
+    // ---- Init ----
+    recalculate();
+    showStep(currentStep);
+  }
+</script>

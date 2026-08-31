@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Button from "../components/ui/Button.astro";
 import FurnitureRemovalCalculator from "../components/sections/FurnitureRemovalCalculator.astro";
+import ApplianceRemovalCalculator from "../components/sections/ApplianceRemovalCalculator.astro";
 import { services } from "../data/services";
 import {
   ArrowLeft,
@@ -46,9 +47,10 @@ interface OrderingCategory {
 
 // Mirrors Clean Slate's finalized service architecture: Junk Removal,
 // Cleanouts, Construction, and Portable Storage, plus a catch-all for
-// anyone who isn't sure what they need. Only Furniture Removal has a
-// working pricing engine so far — everything else is selectable (per
-// architecture) but routes to a quote request rather than a guessed price.
+// anyone who isn't sure what they need. Furniture Removal and Appliance
+// Removal have working pricing engines so far — everything else is
+// selectable (per architecture) but routes to a quote request rather
+// than a guessed price.
 const categories: OrderingCategory[] = [
   {
     name: "Junk Removal",
@@ -67,7 +69,7 @@ const categories: OrderingCategory[] = [
         title: "Appliance Removal",
         description:
           "Refrigerators, washers, dryers, and other unwanted appliances hauled away.",
-        available: false,
+        available: true,
       },
       {
         key: "general-junk-removal",
@@ -168,7 +170,7 @@ const categories: OrderingCategory[] = [
 
 <BaseLayout
   title="Get Your Price | Clean Slate"
-  description="Choose your Clean Slate service and get your price online. Furniture removal pricing is available now, with more services on the way."
+  description="Choose your Clean Slate service and get your price online. Furniture and appliance removal pricing is available now, with more services on the way."
 >
 
   <Header />
@@ -284,6 +286,9 @@ const categories: OrderingCategory[] = [
       <!-- ---- View: Furniture Removal Flow ---- -->
       <FurnitureRemovalCalculator />
 
+      <!-- ---- View: Appliance Removal Flow ---- -->
+      <ApplianceRemovalCalculator />
+
     </section>
 
   </main>
@@ -291,11 +296,12 @@ const categories: OrderingCategory[] = [
 </BaseLayout>
 
 <script>
-  type ViewName = "selection" | "furniture" | "quote";
+  type ViewName = "selection" | "furniture" | "appliance" | "quote";
 
   const selectionView = document.getElementById("view-service-selection")!;
   const quoteView = document.getElementById("view-quote-request")!;
   const furnitureSection = document.getElementById("furniture-calculator")!;
+  const applianceSection = document.getElementById("appliance-calculator")!;
   const quoteHeading = document.getElementById("quote-heading")!;
   const quoteBody = document.getElementById("quote-body")!;
   const quoteBackBtn = document.getElementById("quote-back")!;
@@ -311,11 +317,14 @@ const categories: OrderingCategory[] = [
     selectionView.hidden = view !== "selection";
     quoteView.hidden = view !== "quote";
     furnitureSection.hidden = view !== "furniture";
+    applianceSection.hidden = view !== "appliance";
 
     if (view === "selection") {
       focusHeading("#view-service-selection h2");
     } else if (view === "quote") {
       focusHeading("#quote-heading");
+    } else if (view === "appliance") {
+      focusHeading("#appliance-calculator h3");
     } else {
       focusHeading("#furniture-calculator h3");
     }
@@ -329,6 +338,11 @@ const categories: OrderingCategory[] = [
 
         if (key === "furniture-removal") {
           showView("furniture");
+          return;
+        }
+
+        if (key === "appliance-removal") {
+          showView("appliance");
           return;
         }
 
@@ -348,6 +362,10 @@ const categories: OrderingCategory[] = [
   quoteBackBtn.addEventListener("click", () => showView("selection"));
 
   document.addEventListener("furniture-flow:back-to-selection", () => {
+    showView("selection");
+  });
+
+  document.addEventListener("appliance-flow:back-to-selection", () => {
     showView("selection");
   });
 </script>

@@ -40,8 +40,14 @@ export interface CustomerInfo {
   customerType: CustomerType;
 }
 
-/** The raw shape a client submits — pricing is deliberately NOT included; the server always recalculates it. */
-export interface FurnitureRemovalOrderRequestBody {
+/**
+ * The raw shape a client submits — pricing is deliberately NOT included;
+ * the server always recalculates it. Shared across every "items +
+ * access + disassembly/disconnection + heavy/oversized + locations"
+ * style service (Furniture Removal, Appliance Removal, ...) — each
+ * service's endpoint validates/interprets `items` on its own terms.
+ */
+export interface RemovalOrderRequestBody {
   /**
    * Client-generated UUID, stable across retries of the same submission
    * attempt — the idempotency key. A malformed/missing value falls back
@@ -56,6 +62,9 @@ export interface FurnitureRemovalOrderRequestBody {
   additionalLocations: unknown;
   photos?: unknown;
 }
+
+/** @deprecated Use `RemovalOrderRequestBody` — kept as an alias so existing imports don't need to change. */
+export type FurnitureRemovalOrderRequestBody = RemovalOrderRequestBody;
 
 export type OrderStatus = "booking_requested" | "quote_requested";
 
@@ -134,6 +143,52 @@ export interface FurnitureRemovalOrderRecord {
     accessFeeCents: number;
     disassemblyFeeCents: number;
     heavyOversizedFeeCents: number;
+    additionalLocationFeeCents: number;
+    preMinimumTotalCents: number;
+    minimumAdjustmentCents: number;
+    finalTotalCents: number;
+    requiresReview: boolean;
+    /** Preserved so a retry/resume can build Jobber line items without recalculating. */
+    lineItems: OrderLineItem[];
+  };
+  jobber: JobberSyncInfo;
+}
+
+/**
+ * The full record persisted in KV for a submitted appliance removal
+ * order/quote request. Structurally mirrors `FurnitureRemovalOrderRecord`
+ * (same customer/jobber shape, same job-modifier fee concepts) but is
+ * its own interface rather than a shared generic — each service's order
+ * details are its own, per the reusable-service-architecture design.
+ */
+export interface ApplianceRemovalOrderRecord {
+  id: string;
+  service: "appliance-removal";
+  status: OrderStatus;
+  submittedAt: string;
+  customer: CustomerInfo;
+  order: {
+    items: {
+      itemKey: string;
+      label: string;
+      quantity: number;
+      unitPriceCents: number;
+    }[];
+    access: string;
+    accessLabel: string;
+    disassembly: string;
+    disassemblyLabel: string;
+    heavyOversizedItemCount: number;
+    additionalLocations: number;
+    photoCount: number;
+    photoFileNames: string[];
+  };
+  pricing: {
+    itemSubtotalCents: number;
+    accessFeeCents: number;
+    disassemblyFeeCents: number;
+    heavyOversizedFeeCents: number;
+    refrigerantRecoveryFeeCents: number;
     additionalLocationFeeCents: number;
     preMinimumTotalCents: number;
     minimumAdjustmentCents: number;

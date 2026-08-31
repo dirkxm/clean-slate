@@ -14,7 +14,13 @@ import type {
   JobberQuoteLineItemInput,
   JobberRequestLineItemInput,
 } from "../jobber/index";
-import type { CustomerInfo, FurnitureRemovalOrderRecord, OrderLineItem } from "./types";
+import type {
+  ApplianceRemovalOrderRecord,
+  CustomerInfo,
+  FurnitureRemovalOrderRecord,
+  JobberSyncInfo,
+  OrderLineItem,
+} from "./types";
 
 export type JobberSyncResult =
   | {
@@ -120,6 +126,87 @@ export function buildRequestForm(record: FurnitureRemovalOrderRecord): JobberFor
         items: [
           { label: "Access", answerText: record.order.accessLabel },
           { label: "Disassembly", answerText: record.order.disassemblyLabel },
+          {
+            label: "Heavy/Oversized Items",
+            answerText: String(record.order.heavyOversizedItemCount),
+          },
+          {
+            label: "Additional Locations",
+            answerText: String(record.order.additionalLocations),
+          },
+        ],
+      },
+      {
+        label: "Order",
+        items: [
+          { label: "Calculated Total", answerText: formatUsd(record.pricing.finalTotalCents) },
+          {
+            label: "Classification",
+            answerText: record.pricing.requiresReview
+              ? "Needs Review / Quote"
+              : "Auto-Priced Booking",
+          },
+          {
+            label: "Photos Submitted",
+            answerText:
+              record.order.photoCount > 0
+                ? `${record.order.photoCount} photo(s): ${record.order.photoFileNames.join(", ")}`
+                : "None",
+          },
+        ],
+      },
+      {
+        label: "Customer",
+        items: [
+          {
+            label: "Customer Type",
+            answerText: record.customer.customerType === "commercial" ? "Commercial" : "Residential",
+          },
+          { label: "Phone", answerText: record.customer.phone },
+          { label: "Email", answerText: record.customer.email },
+          { label: "Service Address", answerText: record.customer.serviceAddress },
+          { label: "City", answerText: record.customer.city },
+          { label: "ZIP", answerText: record.customer.zip },
+        ],
+      },
+    ],
+  };
+}
+
+export function buildApplianceRequestTitle(customer: CustomerInfo): string {
+  return `Appliance Removal — ${customer.firstName} ${customer.lastName}`;
+}
+
+export function buildApplianceQuoteTitle(customer: CustomerInfo): string {
+  return `Appliance Removal Quote — ${customer.firstName} ${customer.lastName}`;
+}
+
+/** Same customer-facing framing as Furniture Removal's quote message — never mentions the internal review threshold. */
+export function buildApplianceQuoteMessage(): string {
+  return "Thanks for your appliance removal request. Because of the size or complexity of this job, we've taken a closer look and prepared this quote based on the details you submitted. It reflects our current estimate — let us know if you'd like to move forward.";
+}
+
+/** Mirrors buildRequestForm's structure/sections, for an appliance removal order. */
+export function buildApplianceRequestForm(record: ApplianceRemovalOrderRecord): JobberFormInput {
+  const applianceItems = record.order.items.map((item) => ({
+    label: item.label,
+    answerText: `Qty ${item.quantity} × ${formatUsd(item.unitPriceCents)}`,
+  }));
+
+  return {
+    sections: [
+      {
+        label: "Appliance Removal",
+        items:
+          applianceItems.length > 0
+            ? applianceItems
+            : [{ label: "Items", answerText: "None selected" }],
+      },
+      {
+        label: "Job Details",
+        items: [
+          { label: "Access", answerText: record.order.accessLabel },
+          { label: "Disconnection", answerText: record.order.disassemblyLabel },
           {
             label: "Heavy/Oversized Items",
             answerText: String(record.order.heavyOversizedItemCount),
@@ -409,10 +496,36 @@ async function findOrCreateJobberClient(
 }
 
 /**
- * Syncs a furniture removal order into Jobber.
+ * The minimal shape `syncOrderToJobber` needs from any service's order
+ * record — every service's record structurally satisfies this (same
+ * customer/jobber shape, same requiresReview/lineItems concepts), even
+ * though each has its own, non-shared top-level interface.
+ */
+interface JobberSyncableRecord {
+  customer: CustomerInfo;
+  pricing: {
+    requiresReview: boolean;
+    lineItems: OrderLineItem[];
+  };
+  jobber: JobberSyncInfo;
+}
+
+/** The small set of customer-facing text/form generation each service supplies for itself. */
+interface JobberSyncFormatters<TRecord> {
+  buildRequestTitle: (customer: CustomerInfo) => string;
+  buildQuoteTitle: (customer: CustomerInfo) => string;
+  buildQuoteMessage: () => string;
+  buildRequestForm: (record: TRecord) => JobberFormInput;
+}
+
+/**
+ * Syncs any removal-style order into Jobber. Shared by every service —
+ * see `syncFurnitureRemovalOrderToJobber`/`syncApplianceRemovalOrderToJobber`
+ * below, which are thin per-service wrappers supplying only their own
+ * title/message/form text. This is the one place the actual Client →
+ * Property → Request → Quote orchestration is written.
  *
- * Auto-priced (`requiresReview: false`): Client → Request. Unchanged
- * from before — this task does not touch that path.
+ * Auto-priced (`requiresReview: false`): Client → Request.
  *
  * Review-required (`requiresReview: true`): Client → Request → Quote,
  * with the Quote transitioned to AWAITING_RESPONSE (sent to the
@@ -423,9 +536,10 @@ async function findOrCreateJobberClient(
  * `requestId`, and/or `quoteId` from a prior partial or full success
  * skips those steps and resumes from wherever it left off.
  */
-export async function syncFurnitureRemovalOrderToJobber(
+async function syncOrderToJobber<TRecord extends JobberSyncableRecord>(
   env: JobberAccessTokenEnv,
-  record: FurnitureRemovalOrderRecord,
+  record: TRecord,
+  formatters: JobberSyncFormatters<TRecord>,
 ): Promise<JobberSyncResult> {
   const alreadyDone = record.pricing.requiresReview
     ? Boolean(record.jobber.requestId && record.jobber.quoteId)
@@ -472,9 +586,9 @@ export async function syncFurnitureRemovalOrderToJobber(
     const requestResult = await createJobberRequest(accessToken, {
       clientId,
       propertyId,
-      title: buildRequestTitle(record.customer),
+      title: formatters.buildRequestTitle(record.customer),
       lineItems: buildJobberLineItems(record.pricing.lineItems),
-      requestDetails: { form: buildRequestForm(record) },
+      requestDetails: { form: formatters.buildRequestForm(record) },
     });
 
     if (!requestResult.ok) {
@@ -510,8 +624,8 @@ export async function syncFurnitureRemovalOrderToJobber(
     clientId,
     propertyId,
     requestId,
-    title: buildQuoteTitle(record.customer),
-    message: buildQuoteMessage(),
+    title: formatters.buildQuoteTitle(record.customer),
+    message: formatters.buildQuoteMessage(),
     lineItems: buildJobberQuoteLineItems(record.pricing.lineItems),
     transitionQuoteTo: "AWAITING_RESPONSE",
   });
@@ -540,4 +654,30 @@ export async function syncFurnitureRemovalOrderToJobber(
     clientHubUri: quote.clientHubUri,
     jobberWebUri: quote.jobberWebUri,
   };
+}
+
+/** Syncs a furniture removal order into Jobber. See `syncOrderToJobber` for the actual orchestration. */
+export async function syncFurnitureRemovalOrderToJobber(
+  env: JobberAccessTokenEnv,
+  record: FurnitureRemovalOrderRecord,
+): Promise<JobberSyncResult> {
+  return syncOrderToJobber(env, record, {
+    buildRequestTitle,
+    buildQuoteTitle,
+    buildQuoteMessage,
+    buildRequestForm,
+  });
+}
+
+/** Syncs an appliance removal order into Jobber. See `syncOrderToJobber` for the actual orchestration. */
+export async function syncApplianceRemovalOrderToJobber(
+  env: JobberAccessTokenEnv,
+  record: ApplianceRemovalOrderRecord,
+): Promise<JobberSyncResult> {
+  return syncOrderToJobber(env, record, {
+    buildRequestTitle: buildApplianceRequestTitle,
+    buildQuoteTitle: buildApplianceQuoteTitle,
+    buildQuoteMessage: buildApplianceQuoteMessage,
+    buildRequestForm: buildApplianceRequestForm,
+  });
 }

@@ -1,4 +1,8 @@
-import type { FurnitureRemovalOrderRecord, OrdersKVNamespace } from "./types";
+import type {
+  ApplianceRemovalOrderRecord,
+  FurnitureRemovalOrderRecord,
+  OrdersKVNamespace,
+} from "./types";
 
 /**
  * Key prefix for furniture removal order/quote submissions in ORDERS_KV.
@@ -27,6 +31,34 @@ export async function getFurnitureRemovalOrder(
 
   try {
     return JSON.parse(raw) as FurnitureRemovalOrderRecord;
+  } catch {
+    return null;
+  }
+}
+
+/** Same pattern as Furniture Removal's, in its own KV namespace. */
+const APPLIANCE_REMOVAL_ORDER_KEY_PREFIX = "appliance-removal-order:";
+
+export function applianceRemovalOrderKey(id: string): string {
+  return `${APPLIANCE_REMOVAL_ORDER_KEY_PREFIX}${id}`;
+}
+
+export async function saveApplianceRemovalOrder(
+  kv: OrdersKVNamespace,
+  record: ApplianceRemovalOrderRecord,
+): Promise<void> {
+  await kv.put(applianceRemovalOrderKey(record.id), JSON.stringify(record));
+}
+
+export async function getApplianceRemovalOrder(
+  kv: OrdersKVNamespace,
+  id: string,
+): Promise<ApplianceRemovalOrderRecord | null> {
+  const raw = await kv.get(applianceRemovalOrderKey(id));
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as ApplianceRemovalOrderRecord;
   } catch {
     return null;
   }

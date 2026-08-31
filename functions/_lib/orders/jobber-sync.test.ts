@@ -1,16 +1,20 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  buildApplianceQuoteTitle,
+  buildApplianceRequestForm,
+  buildApplianceRequestTitle,
   buildJobberLineItems,
   buildJobberQuoteLineItems,
   buildQuoteTitle,
   buildRequestForm,
   buildRequestTitle,
+  syncApplianceRemovalOrderToJobber,
   syncFurnitureRemovalOrderToJobber,
 } from "./jobber-sync";
 import { createMockKv } from "../jobber/test-support";
 import { putJobberConnection } from "../jobber/connection";
 import type { JobberConnection } from "../jobber/types";
-import type { FurnitureRemovalOrderRecord } from "./types";
+import type { ApplianceRemovalOrderRecord, FurnitureRemovalOrderRecord } from "./types";
 
 async function makeConnectedJobberEnv() {
   const kv = createMockKv();
@@ -100,6 +104,92 @@ function reviewRequiredRecord(
       finalTotalCents: 112500,
       requiresReview: true,
       lineItems: [{ name: "Sectional - Large", quantity: 9, unitPrice: 12500, total: 112500 }],
+    },
+    ...overrides,
+  });
+}
+
+function applianceBaseRecord(
+  overrides: Partial<ApplianceRemovalOrderRecord> = {},
+): ApplianceRemovalOrderRecord {
+  return {
+    id: "22222222-2222-2222-2222-222222222222",
+    service: "appliance-removal",
+    status: "booking_requested",
+    submittedAt: new Date().toISOString(),
+    customer: {
+      firstName: "Jane",
+      lastName: "Doe",
+      phone: "(515) 202-3593",
+      email: "jane@example.com",
+      serviceAddress: "123 Main St",
+      city: "Des Moines",
+      zip: "50309",
+      customerType: "residential",
+    },
+    order: {
+      items: [{ itemKey: "washer", label: "Washer", quantity: 1, unitPriceCents: 6000 }],
+      access: "garage",
+      accessLabel: "Garage Access",
+      disassembly: "none",
+      disassemblyLabel: "No Disconnection",
+      heavyOversizedItemCount: 0,
+      additionalLocations: 0,
+      photoCount: 0,
+      photoFileNames: [],
+    },
+    pricing: {
+      itemSubtotalCents: 6000,
+      accessFeeCents: 0,
+      disassemblyFeeCents: 0,
+      heavyOversizedFeeCents: 0,
+      refrigerantRecoveryFeeCents: 0,
+      additionalLocationFeeCents: 0,
+      preMinimumTotalCents: 6000,
+      minimumAdjustmentCents: 3900,
+      finalTotalCents: 9900,
+      requiresReview: false,
+      lineItems: [
+        { name: "Washer", quantity: 1, unitPrice: 6000, total: 6000 },
+        {
+          name: "Appliance Removal - Minimum Service Adjustment",
+          quantity: 1,
+          unitPrice: 3900,
+          total: 3900,
+        },
+      ],
+    },
+    jobber: { syncStatus: "pending" },
+    ...overrides,
+  };
+}
+
+/** A record whose pricing requires review, for exercising the Quote branch. */
+function applianceReviewRequiredRecord(
+  overrides: Partial<ApplianceRemovalOrderRecord> = {},
+): ApplianceRemovalOrderRecord {
+  return applianceBaseRecord({
+    status: "quote_requested",
+    pricing: {
+      itemSubtotalCents: 95000,
+      accessFeeCents: 0,
+      disassemblyFeeCents: 0,
+      heavyOversizedFeeCents: 0,
+      refrigerantRecoveryFeeCents: 35000,
+      additionalLocationFeeCents: 0,
+      preMinimumTotalCents: 130000,
+      minimumAdjustmentCents: 0,
+      finalTotalCents: 130000,
+      requiresReview: true,
+      lineItems: [
+        {
+          name: "Refrigerator (Large / Side-by-Side)",
+          quantity: 10,
+          unitPrice: 9500,
+          total: 95000,
+        },
+        { name: "Refrigerant Recovery Fee", quantity: 10, unitPrice: 3500, total: 35000 },
+      ],
     },
     ...overrides,
   });
@@ -975,5 +1065,127 @@ describe("syncFurnitureRemovalOrderToJobber — review-required path (Quote)", (
 
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("network down");
+  });
+});
+
+describe("buildApplianceRequestTitle", () => {
+  it("includes the customer's full name and says Appliance Removal", () => {
+    const title = buildApplianceRequestTitle(applianceBaseRecord().customer);
+    expect(title).toBe("Appliance Removal — Jane Doe");
+  });
+});
+
+describe("buildApplianceQuoteTitle", () => {
+  it("clearly identifies the service and customer", () => {
+    expect(buildApplianceQuoteTitle(applianceBaseRecord().customer)).toBe(
+      "Appliance Removal Quote — Jane Doe",
+    );
+  });
+});
+
+describe("buildApplianceRequestForm", () => {
+  it("labels the disconnection field, not 'disassembly'", () => {
+    const form = buildApplianceRequestForm(applianceBaseRecord());
+    const jobDetails = form.sections.find((s) => s.label === "Job Details")!;
+    const disconnection = jobDetails.items.find((i) => i.label === "Disconnection");
+    expect(disconnection?.answerText).toBe("No Disconnection");
+  });
+
+  it("never leaks the $1,000 threshold — only a readable classification label", () => {
+    const form = buildApplianceRequestForm(applianceReviewRequiredRecord());
+    const orderSection = form.sections.find((s) => s.label === "Order")!;
+    const classification = orderSection.items.find((i) => i.label === "Classification");
+    expect(classification?.answerText).toBe("Needs Review / Quote");
+    expect(JSON.stringify(form)).not.toContain("1,000");
+    expect(JSON.stringify(form)).not.toContain("1000");
+  });
+});
+
+describe("syncApplianceRemovalOrderToJobber", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("follows Client -> Request for an auto-priced order, using appliance formatters", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence(
+      freshClientAndRequestSequence("client-1", "property-1", "request-1"),
+    );
+
+    const result = await syncApplianceRemovalOrderToJobber(env, applianceBaseRecord());
+
+    expect(result).toEqual({
+      ok: true,
+      clientId: "client-1",
+      requestId: "request-1",
+      propertyId: "property-1",
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+
+    const requestCreateCall = fetchMock.mock.calls[3];
+    const body = JSON.parse(requestCreateCall[1].body);
+    expect(body.variables.input.title).toBe("Appliance Removal — Jane Doe");
+  });
+
+  it("creates Client, Request, and Quote for a review-required appliance order", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      ...freshClientAndRequestSequence("client-1", "property-1", "request-1"),
+      quoteCreateResult({ id: "quote-1", jobberWebUri: "https://x", quoteStatus: "AWAITING_RESPONSE" }),
+    ]);
+
+    const result = await syncApplianceRemovalOrderToJobber(env, applianceReviewRequiredRecord());
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.quoteId).toBe("quote-1");
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+
+    const quoteCall = fetchMock.mock.calls[4];
+    const body = JSON.parse(quoteCall[1].body);
+    expect(body.variables.attributes.title).toBe("Appliance Removal Quote — Jane Doe");
+    expect(body.variables.attributes.lineItems).toEqual([
+      {
+        name: "Refrigerator (Large / Side-by-Side)",
+        quantity: 10,
+        unitPrice: 95,
+        totalPrice: 950,
+        saveToProductsAndServices: false,
+      },
+      {
+        name: "Refrigerant Recovery Fee",
+        quantity: 10,
+        unitPrice: 35,
+        totalPrice: 350,
+        saveToProductsAndServices: false,
+      },
+    ]);
+  });
+
+  it("is idempotent — a record already synced skips Jobber entirely", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([]);
+
+    const record = applianceBaseRecord({
+      jobber: { clientId: "client-1", requestId: "request-1", syncStatus: "synced" },
+    });
+    const result = await syncApplianceRemovalOrderToJobber(env, record);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.requestId).toBe("request-1");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("reuses an existing Client found by email, same dedup logic as Furniture Removal", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      clientsResult([{ id: "existing-client", propertyId: "existing-property" }]),
+      requestCreateResult("request-1"),
+    ]);
+
+    const result = await syncApplianceRemovalOrderToJobber(env, applianceBaseRecord());
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.clientId).toBe("existing-client");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
