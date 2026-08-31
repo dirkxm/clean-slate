@@ -30,6 +30,10 @@ import type { JobberResult } from "./types";
 
 export interface JobberPropertySearchResult {
   id: string;
+  // Modeled as nullable defensively — an existing Property in a real
+  // Jobber account (e.g. one created before this system, or without an
+  // address) is not guaranteed to have one, even though every Property
+  // this system itself creates always supplies one.
   address: {
     street1?: string;
     street2?: string;
@@ -37,7 +41,7 @@ export interface JobberPropertySearchResult {
     province?: string;
     postalCode?: string;
     country?: string;
-  };
+  } | null;
 }
 
 export interface JobberClientSearchResult {

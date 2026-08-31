@@ -215,11 +215,18 @@ function normalizeAddressPart(value: string | null | undefined): string {
  * that actually distinguish one physical property from another here;
  * province is a fixed business-area constant and country is always
  * "US", so neither is discriminating.
+ *
+ * A property with no address at all (possible for a Property that
+ * predates this system, or was created without one) is never a match —
+ * it's treated the same as any other non-matching property, falling
+ * through to creating a new one, rather than crashing.
  */
 function propertyMatchesServiceAddress(
   property: JobberPropertySearchResult,
   customer: CustomerInfo,
 ): boolean {
+  if (!property.address) return false;
+
   return (
     normalizeAddressPart(property.address.street1) ===
       normalizeAddressPart(customer.serviceAddress) &&

@@ -153,7 +153,7 @@ function clientsResult(
   clients: {
     id: string;
     propertyId?: string;
-    properties?: { id: string; address?: MockAddress }[];
+    properties?: { id: string; address?: MockAddress | null }[];
   }[],
 ) {
   return jsonResponse({
@@ -165,7 +165,13 @@ function clientsResult(
           return {
             id: c.id,
             clientProperties: {
-              nodes: properties.map((p) => ({ id: p.id, address: p.address ?? MATCHING_ADDRESS })),
+              // Only default a fully-omitted address to MATCHING_ADDRESS —
+              // an explicit `address: null` (a real Property with no
+              // address at all) must pass through unchanged.
+              nodes: properties.map((p) => ({
+                id: p.id,
+                address: p.address === undefined ? MATCHING_ADDRESS : p.address,
+              })),
             },
           };
         }),
@@ -700,6 +706,23 @@ describe("syncFurnitureRemovalOrderToJobber — property address resolution", ()
     const requestCall = fetchMock.mock.calls[2];
     const body = JSON.parse(requestCall[1].body);
     expect(body.variables.input.propertyId).toBe("norwalk-property");
+  });
+
+  it("treats a property with no address (address: null) as a non-match instead of crashing", async () => {
+    const env = await makeConnectedJobberEnv();
+    const fetchMock = mockFetchSequence([
+      clientsResult([
+        { id: "existing-client", properties: [{ id: "addressless-property", address: null }] },
+      ]),
+      propertyCreateResult("new-property"),
+      requestCreateResult("request-1"),
+    ]);
+
+    const result = await syncFurnitureRemovalOrderToJobber(env, baseRecord());
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.propertyId).toBe("new-property");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 });
 
