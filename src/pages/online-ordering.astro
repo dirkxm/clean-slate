@@ -1,198 +1,44 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
-import Button from "../components/ui/Button.astro";
-import FurnitureRemovalCalculator from "../components/sections/FurnitureRemovalCalculator.astro";
-import ApplianceRemovalCalculator from "../components/sections/ApplianceRemovalCalculator.astro";
-import GeneralJunkRemovalCalculator from "../components/sections/GeneralJunkRemovalCalculator.astro";
-import GarageCleanoutCalculator from "../components/sections/GarageCleanoutCalculator.astro";
-import HouseholdCleanoutCalculator from "../components/sections/HouseholdCleanoutCalculator.astro";
-import EstateCleanoutCalculator from "../components/sections/EstateCleanoutCalculator.astro";
-import PropertyCleanoutCalculator from "../components/sections/PropertyCleanoutCalculator.astro";
-import ConstructionCleanupCalculator from "../components/sections/ConstructionCleanupCalculator.astro";
-import SmallDemolitionCalculator from "../components/sections/SmallDemolitionCalculator.astro";
 import { services } from "../data/services";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Clock,
-  HelpCircle,
-  Wrench,
-} from "lucide-astro";
+import { ArrowRight, Clock, Hammer, Sofa, Truck } from "lucide-astro";
 
-function findService(slug: string) {
-  const service = services.find((item) => item.slug === slug);
-  if (!service) {
-    throw new Error(`Missing service data for slug: ${slug}`);
-  }
-  return service;
+const portableStorage = services.find((item) => item.slug === "portable-storage");
+if (!portableStorage) {
+  throw new Error("Missing service data for slug: portable-storage");
 }
 
-const furnitureRemoval = findService("furniture-removal");
-const junkRemoval = findService("junk-removal");
-const householdCleanouts = findService("household-cleanouts");
-const garageCleanouts = findService("garage-cleanouts");
-const estateCleanouts = findService("estate-cleanouts");
-const propertyCleanouts = findService("property-cleanouts");
-const constructionCleanup = findService("construction-cleanup");
-const smallDemolition = findService("small-demolition");
-const portableStorage = findService("portable-storage");
-
-// Shared Jobber "Junk Removal & Cleanout Request" form. Cleanout,
-// construction, demolition, and general junk removal options link
-// straight to it; Furniture Removal and Appliance Removal keep their
-// on-page pricing calculators.
-const JOBBER_CLEANOUT_REQUEST_URL =
-  "https://clienthub.getjobber.com/hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/requests/5151784/new";
-
-interface OrderingOption {
-  key: string;
-  icon: typeof Wrench;
+interface OrderingLink {
+  icon: typeof Truck;
   title: string;
-  description: string;
-  infoHref?: string;
-  externalHref?: string;
-  available: boolean;
+  href: string;
 }
 
-interface OrderingCategory {
-  name: string;
-  options: OrderingOption[];
-}
-
-// Mirrors Clean Slate's finalized service architecture: Junk Removal,
-// Cleanouts, Construction, and Portable Storage, plus a catch-all for
-// anyone who isn't sure what they need. Furniture Removal and Appliance
-// Removal have working pricing engines so far — everything else is
-// selectable (per architecture) but routes to a quote request rather
-// than a guessed price.
-const categories: OrderingCategory[] = [
+// Each category routes to its own Jobber "public request" intake form.
+// Portable Storage has no form yet — it stays a "Coming Soon" entry.
+const orderingLinks: OrderingLink[] = [
   {
-    name: "Junk Removal",
-    options: [
-      {
-        key: "furniture-removal",
-        icon: furnitureRemoval.icon,
-        title: furnitureRemoval.title,
-        description: furnitureRemoval.short,
-        infoHref: "/services/furniture-removal",
-        available: true,
-      },
-      {
-        key: "appliance-removal",
-        icon: Wrench,
-        title: "Appliance Removal",
-        description:
-          "Refrigerators, washers, dryers, and other unwanted appliances hauled away.",
-        available: true,
-      },
-      {
-        key: "general-junk-removal",
-        icon: junkRemoval.icon,
-        title: "General Junk Removal",
-        description: junkRemoval.short,
-        infoHref: "/services/junk-removal",
-        externalHref: JOBBER_CLEANOUT_REQUEST_URL,
-        available: true,
-      },
-    ],
+    icon: Sofa,
+    title: "Furniture & Appliance Pickup",
+    href: "https://clienthub.getjobber.com/hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/requests/5151715/new",
   },
   {
-    name: "Cleanouts",
-    options: [
-      {
-        key: "household-cleanout",
-        icon: householdCleanouts.icon,
-        title: householdCleanouts.title,
-        description: householdCleanouts.short,
-        infoHref: "/cleanouts",
-        externalHref: JOBBER_CLEANOUT_REQUEST_URL,
-        available: true,
-      },
-      {
-        key: "garage-cleanout",
-        icon: garageCleanouts.icon,
-        title: garageCleanouts.title,
-        description: garageCleanouts.short,
-        infoHref: "/services/garage-cleanouts",
-        externalHref: JOBBER_CLEANOUT_REQUEST_URL,
-        available: true,
-      },
-      {
-        key: "estate-cleanout",
-        icon: estateCleanouts.icon,
-        title: estateCleanouts.title,
-        description: estateCleanouts.short,
-        infoHref: "/services/estate-cleanouts",
-        externalHref: JOBBER_CLEANOUT_REQUEST_URL,
-        available: true,
-      },
-      {
-        key: "property-cleanout",
-        icon: propertyCleanouts.icon,
-        title: propertyCleanouts.title,
-        description: propertyCleanouts.short,
-        infoHref: "/services/property-cleanouts",
-        externalHref: JOBBER_CLEANOUT_REQUEST_URL,
-        available: true,
-      },
-    ],
+    icon: Truck,
+    title: "Junk Removal & Cleanouts",
+    href: "https://clienthub.getjobber.com/hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/requests/5152615/new",
   },
   {
-    name: "Construction",
-    options: [
-      {
-        key: "construction-cleanup",
-        icon: constructionCleanup.icon,
-        title: constructionCleanup.title,
-        description: constructionCleanup.short,
-        infoHref: "/services/construction-cleanup",
-        externalHref: JOBBER_CLEANOUT_REQUEST_URL,
-        available: true,
-      },
-      {
-        key: "small-demolition",
-        icon: smallDemolition.icon,
-        title: smallDemolition.title,
-        description: smallDemolition.short,
-        infoHref: "/services/small-demolition",
-        externalHref: JOBBER_CLEANOUT_REQUEST_URL,
-        available: true,
-      },
-    ],
-  },
-  {
-    name: "Portable Storage",
-    options: [
-      {
-        key: "portable-storage",
-        icon: portableStorage.icon,
-        title: "Portable Storage Rental",
-        description: portableStorage.short,
-        infoHref: "/services/portable-storage",
-        available: false,
-      },
-    ],
-  },
-  {
-    name: "Not Sure?",
-    options: [
-      {
-        key: "other",
-        icon: HelpCircle,
-        title: "Other / Not Sure",
-        description:
-          "Not sure which service you need, or have something else in mind? Tell us what's going on and we'll help you figure it out.",
-        available: false,
-      },
-    ],
+    icon: Hammer,
+    title: "Demolition",
+    href: "https://clienthub.getjobber.com/hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/requests/5152620/new",
   },
 ];
 ---
 
 <BaseLayout
   title="Get Your Price | Clean Slate"
-  description="Choose your Clean Slate service and get your price online. Furniture, appliance, and general junk removal pricing is available now, with more services on the way."
+  description="Tell Clean Slate what you need — furniture and appliance pickup, junk removal and cleanouts, or demolition — and request service online."
 >
 
   <Header />
@@ -214,245 +60,65 @@ const categories: OrderingCategory[] = [
     <section id="ordering-app" class="border-t border-border">
       <div class="container">
 
-        <!-- ---- View: Service Selection ---- -->
-        <div id="view-service-selection">
-          <h2 class="mb-10 text-center text-3xl!">
-            What do you need help with?
-          </h2>
+        <h2 class="mb-10 text-center text-3xl!">
+          What do you need help with?
+        </h2>
 
-          <div class="flex flex-col gap-12">
-            {
-              categories.map((category) => (
-                <div>
-                  <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
-                    {category.name}
-                  </p>
+        <ul class="mx-auto flex max-w-2xl flex-col gap-4">
+          {
+            orderingLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="group flex items-center gap-4 rounded-3xl border border-border bg-white p-6 shadow-soft transition hover:border-primary"
+                >
+                  <link.icon class="text-primary" size={32} strokeWidth={1.5} />
+                  <span class="flex-1 text-lg font-semibold text-heading">
+                    {link.title}
+                  </span>
+                  <ArrowRight
+                    class="text-primary transition group-hover:translate-x-1"
+                    size={20}
+                  />
+                </a>
+              </li>
+            ))
+          }
 
-                  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {category.options.map((option) => (
-                      <div class="flex flex-col rounded-3xl border border-border bg-white p-6 shadow-soft transition">
-                        <div class="mb-4 flex items-start justify-between gap-3">
-                          <option.icon
-                            class={option.available ? "text-primary" : "text-muted"}
-                            size={32}
-                            strokeWidth={1.5}
-                          />
-                          {option.available ? (
-                            <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                              Online Pricing
-                            </span>
-                          ) : (
-                            <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted">
-                              <Clock size={12} />
-                              Coming Soon
-                            </span>
-                          )}
-                        </div>
-
-                        <h3 class="mb-2">{option.title}</h3>
-                        <p class="mb-6 flex-1 text-body">{option.description}</p>
-
-                        {option.externalHref ? (
-                          <a
-                            href={option.externalHref}
-                            class="inline-flex items-center gap-2 font-semibold text-primary transition hover:text-primary-dark"
-                          >
-                            Get Started
-                            <ArrowRight class="transition group-hover:translate-x-1" size={18} />
-                          </a>
-                        ) : (
-                          <button
-                            type="button"
-                            class="ordering-option-select inline-flex items-center gap-2 font-semibold text-primary transition hover:text-primary-dark"
-                            data-key={option.key}
-                            data-title={option.title}
-                          >
-                            {option.available ? "Get Started" : "Select"}
-                            <ArrowRight class="transition group-hover:translate-x-1" size={18} />
-                          </button>
-                        )}
-
-                        {option.infoHref && (
-                          <a
-                            href={option.infoHref}
-                            class="mt-3 text-sm font-medium text-muted hover:text-heading"
-                          >
-                            Learn more about {option.title}
-                          </a>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+          <li>
+            <div class="flex items-center gap-4 rounded-3xl border border-border bg-white p-6 shadow-soft">
+              <portableStorage.icon
+                class="text-muted"
+                size={32}
+                strokeWidth={1.5}
+              />
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="text-lg font-semibold text-heading">
+                    Portable Storage
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted">
+                    <Clock size={12} />
+                    Coming Soon
+                  </span>
                 </div>
-              ))
-            }
-          </div>
-        </div>
+                <p class="mt-2 text-body">{portableStorage.short}</p>
+              </div>
+            </div>
+          </li>
+        </ul>
 
-        <!-- ---- View: Quote Request (services without online pricing yet) ---- -->
-        <div id="view-quote-request" class="mx-auto max-w-2xl text-center" hidden>
-          <button
-            type="button"
-            id="quote-back"
-            class="mb-8 inline-flex items-center gap-1 font-medium text-primary hover:text-primary-dark"
-          >
-            <ArrowLeft size={18} />
-            Back to Services
-          </button>
-
-          <h2 id="quote-heading" class="mb-4">
-            Online Pricing Isn't Available Yet
-          </h2>
-          <p id="quote-body" class="mb-10 text-lg text-body">
-            Contact us and we'll get you a quote right away.
-          </p>
-
-          <div class="flex flex-wrap items-center justify-center gap-4">
-            <Button href="/contact">Contact Us</Button>
-            <Button href="/free-quote" variant="secondary">Request a Quote</Button>
-          </div>
-        </div>
+        <p class="mx-auto mt-10 max-w-2xl text-center text-body">
+          Not sure which category fits your job? Give us a call at (515)
+          202-3593 or <a
+            href="/contact"
+            class="font-semibold text-primary hover:text-primary-dark"
+          >contact us</a> and we'll help you figure out the right fit.
+        </p>
 
       </div>
-
-      <!-- ---- View: Furniture Removal Flow ---- -->
-      <FurnitureRemovalCalculator />
-
-      <!-- ---- View: Appliance Removal Flow ---- -->
-      <ApplianceRemovalCalculator />
-
-      <!-- ---- View: General Junk Removal Flow ---- -->
-      <GeneralJunkRemovalCalculator />
-
-      <!-- ---- View: Garage Cleanout Flow ---- -->
-      <GarageCleanoutCalculator />
-
-      <!-- ---- View: Household Cleanout Flow ---- -->
-      <HouseholdCleanoutCalculator />
-
-      <!-- ---- View: Estate Cleanout Flow ---- -->
-      <EstateCleanoutCalculator />
-
-      <!-- ---- View: Property Cleanout Flow ---- -->
-      <PropertyCleanoutCalculator />
-
-      <!-- ---- View: Construction Cleanup Flow ---- -->
-      <ConstructionCleanupCalculator />
-
-      <!-- ---- View: Small Demolition Flow ---- -->
-      <SmallDemolitionCalculator />
-
     </section>
 
   </main>
 
 </BaseLayout>
-
-<script>
-  import { goBackOneStep, initOrderingNavigation, navigateOrdering } from "../lib/ordering/navigation";
-  import type { OrderingState } from "../lib/ordering/navigation";
-
-  // Maps an ordering-option key to its calculator section's id. Every
-  // calculator follows the same section-id-plus-<h3> convention and
-  // participates in the same shared navigation module, so adding a new
-  // service here is the only wiring a new calculator needs.
-  const CALCULATOR_SECTION_IDS: Record<string, string> = {
-    "furniture-removal": "furniture-calculator",
-    "appliance-removal": "appliance-calculator",
-    "general-junk-removal": "general-junk-calculator",
-    "garage-cleanout": "garage-cleanout-calculator",
-    "household-cleanout": "household-cleanout-calculator",
-    "estate-cleanout": "estate-cleanout-calculator",
-    "property-cleanout": "property-cleanout-calculator",
-    "construction-cleanup": "construction-cleanup-calculator",
-    "small-demolition": "small-demolition-calculator",
-  };
-
-  const selectionView = document.getElementById("view-service-selection")!;
-  const quoteView = document.getElementById("view-quote-request")!;
-  const quoteHeading = document.getElementById("quote-heading")!;
-  const quoteBody = document.getElementById("quote-body")!;
-  const quoteBackBtn = document.getElementById("quote-back")!;
-
-  const calculatorSections = Object.fromEntries(
-    Object.values(CALCULATOR_SECTION_IDS).map((sectionId) => [
-      sectionId,
-      document.getElementById(sectionId)!,
-    ]),
-  );
-
-  function focusHeading(selector: string) {
-    const heading = document.querySelector<HTMLElement>(selector);
-    if (!heading) return;
-    heading.setAttribute("tabindex", "-1");
-    heading.focus();
-  }
-
-  function renderQuoteCopy(state: OrderingState) {
-    if (state.key === "other") {
-      quoteHeading.textContent = "Tell Us What You Need";
-      quoteBody.textContent =
-        "Contact us and we'll help you figure out the right service for your project.";
-    } else {
-      const title = state.title ?? "This Service";
-      quoteHeading.textContent = `Online Pricing Isn't Available Yet for ${title}`;
-      quoteBody.textContent = `We're still building online pricing for ${title}. Contact us and we'll get you a quote right away.`;
-    }
-  }
-
-  // The single place the visible view/step is actually applied — called
-  // on first load, on every forward navigation, and on every Back/
-  // Forward press via popstate, so all three stay perfectly consistent.
-  function applyOrderingState(state: OrderingState) {
-    selectionView.hidden = state.view !== "selection";
-    quoteView.hidden = state.view !== "quote";
-    Object.entries(calculatorSections).forEach(([sectionId, section]) => {
-      section.hidden = state.view !== sectionId;
-    });
-
-    if (state.view === "selection") {
-      focusHeading("#view-service-selection h2");
-      return;
-    }
-
-    if (state.view === "quote") {
-      renderQuoteCopy(state);
-      focusHeading("#quote-heading");
-      return;
-    }
-
-    // A calculator section — tell it (and only it, since every other
-    // calculator is hidden) which step to show for this state.
-    document.getElementById(state.view)?.dispatchEvent(
-      new CustomEvent("calculator-flow:show-step", { detail: { step: state.step ?? 1 } }),
-    );
-    focusHeading(`#${state.view} h3`);
-  }
-
-  initOrderingNavigation(applyOrderingState);
-
-  document
-    .querySelectorAll<HTMLButtonElement>(".ordering-option-select")
-    .forEach((button) => {
-      button.addEventListener("click", () => {
-        const { key, title } = button.dataset;
-
-        const sectionId = key ? CALCULATOR_SECTION_IDS[key] : undefined;
-        if (sectionId) {
-          navigateOrdering({ view: sectionId, step: 1 });
-          return;
-        }
-
-        navigateOrdering({ view: "quote", key, title });
-      });
-    });
-
-  quoteBackBtn.addEventListener("click", () => goBackOneStep());
-
-  // Every calculator's own Back button (including from its first step,
-  // exiting back to service selection) goes through the same shared
-  // history — never a separate "back to selection" event.
-  document.addEventListener("calculator-flow:back-to-selection", () => {
-    goBackOneStep();
-  });
-</script>
