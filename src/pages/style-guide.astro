@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
+import Footer from "../components/layout/Footer.astro";
 import Hero from "../components/sections/Hero.astro";
 import Gallery from "../components/sections/Gallery.astro";
 import FAQ from "../components/sections/FAQ.astro";
@@ -531,11 +532,9 @@ const sandboxAreas = [
       <CTA />
     </div>
 
-    <div class="container border-t border-border py-16">
-      <p class="mb-4 font-mono text-xs text-muted">Footer</p>
-      <div class="rounded-2xl border border-dashed border-border p-10 text-center text-muted">
-        Not built yet. Add it here once it exists.
-      </div>
+    <div class="border-t border-border">
+      <p class="container pt-10 font-mono text-xs text-muted">Footer</p>
+      <Footer />
     </div>
 
     <!-- ================= Sandbox ================= -->
