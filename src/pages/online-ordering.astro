@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
+import Footer from "../components/layout/Footer.astro";
 import { services } from "../data/services";
 import { ArrowRight, Clock, Hammer, Sofa, Truck } from "lucide-astro";
 
@@ -120,5 +121,7 @@ const orderingLinks: OrderingLink[] = [
     </section>
 
   </main>
+
+  <Footer />
 
 </BaseLayout>
