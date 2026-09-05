@@ -1,0 +1,99 @@
+---
+import logo from "../../assets/images/clean-slate-horizontal.svg";
+
+const year = new Date().getFullYear();
+
+const columns = [
+  {
+    heading: "Services",
+    links: [
+      { label: "Furniture Removal", href: "/services/furniture-removal" },
+      { label: "Junk Removal", href: "/services/junk-removal" },
+      { label: "Household Cleanouts", href: "/cleanouts" },
+      { label: "Garage Cleanouts", href: "/services/garage-cleanouts" },
+      { label: "Estate Cleanouts", href: "/services/estate-cleanouts" },
+      { label: "Property Cleanouts", href: "/services/property-cleanouts" },
+      { label: "Construction Cleanup", href: "/services/construction-cleanup" },
+      { label: "Small Demolition", href: "/services/small-demolition" },
+      { label: "Portable Storage", href: "/services/portable-storage" },
+    ],
+  },
+  {
+    heading: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Locations", href: "/locations" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "Contact", href: "/contact" },
+      { label: "Book Online", href: "/online-ordering" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
+      { label: "Terms & Conditions", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" },
+    ],
+  },
+];
+---
+
+<footer class="border-t border-border bg-surface">
+  <div class="container py-16">
+
+    <div class="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
+
+      <div>
+        <a href="/" class="inline-flex">
+          <img src={logo.src} alt="Clean Slate" class="h-7 w-auto" />
+        </a>
+
+        <p class="mt-4 max-w-xs text-sm text-body">
+          Professional junk removal, cleanouts, and construction cleanup
+          throughout the Des Moines metro and Central Iowa.
+        </p>
+
+        <a
+          href="tel:+15152023593"
+          class="mt-4 inline-block font-semibold text-primary hover:text-primary-dark"
+        >
+          (515) 202-3593
+        </a>
+      </div>
+
+      {
+        columns.map((column) => (
+          <div>
+            <h3 class="mb-4 text-sm font-semibold tracking-wide text-heading uppercase">
+              {column.heading}
+            </h3>
+
+            <ul class="flex flex-col gap-2">
+              {column.links.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-sm text-body transition hover:text-primary"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+
+    </div>
+
+    <div class="mt-12 flex flex-col gap-2 border-t border-border pt-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {year} Clean Slate Professional Clean Up Services. All rights reserved.</p>
+
+      <div class="flex gap-4">
+        <a href="/terms" class="transition hover:text-primary">Terms &amp; Conditions</a>
+        <a href="/privacy" class="transition hover:text-primary">Privacy Policy</a>
+      </div>
+    </div>
+
+  </div>
+</footer>

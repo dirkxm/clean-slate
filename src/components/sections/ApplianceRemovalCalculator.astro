@@ -14,6 +14,7 @@ import type {
   DisassemblyType,
 } from "../../lib/pricing/appliance";
 import { ChevronLeft, Check, Minus, Plus, Upload } from "lucide-astro";
+import PickupSchedulerPanel from "./PickupSchedulerPanel.astro";
 
 function formatUsd(cents: number): string {
   return (cents / 100).toLocaleString("en-US", {
@@ -541,6 +542,8 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
               </a>.
             </p>
           </div>
+
+          <PickupSchedulerPanel idPrefix="ac" />
         </div>
 
         <!-- Nav -->
@@ -705,6 +708,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     DisassemblyType,
   } from "../../lib/pricing/appliance";
   import { goBackOneStep, navigateOrdering } from "../../lib/ordering/navigation";
+  import { revealPickupScheduler } from "../../lib/ordering/pickup-scheduler";
 
   const TOTAL_STEPS = 7;
   const MAX_PHOTOS = 5;
@@ -910,7 +914,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     function updateContinueLabel() {
       step7Intro.textContent = lastResult?.requiresReview
         ? "Almost done! We just need a few details so we can review your project and follow up with a quote."
-        : "Almost done! We just need a few details to confirm your booking.";
+        : "Almost done! Add your details, then pick a pickup time. You'll get a confirmation and a deposit request from us once your time is set.";
 
       if (currentStep !== TOTAL_STEPS) {
         continueBtn.textContent = "Continue";
@@ -918,7 +922,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
       }
       continueBtn.textContent = lastResult?.requiresReview
         ? "Request a Quote"
-        : "Continue to Booking";
+        : "Continue to Scheduling";
     }
 
     function renderSummary(result: ApplianceRemovalPricingResult) {
@@ -1275,7 +1279,7 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
         if (result.status === "quote_requested") {
           showReviewPlaceholder();
         } else {
-          showBookingPlaceholder();
+          showBookingPlaceholder(result.onlineBookingUrl ?? null);
         }
       } catch {
         submitting = false;
@@ -1286,10 +1290,29 @@ const refrigerantFeeLabel = formatUsd(REFRIGERANT_RECOVERY_FEE_CENTS);
     }
 
     // ---- Navigation ----
-    function showBookingPlaceholder() {
+    function showBookingPlaceholder(onlineBookingUrl: string | null) {
       bookingRequested = true;
-      bookingPlaceholder.classList.remove("hidden");
-      continueBtn.textContent = "Request Submitted";
+
+      const scheduling = revealPickupScheduler(root, {
+        idPrefix: "ac",
+        bookingUrl: onlineBookingUrl,
+        summary: {
+          service: "Appliance Removal",
+          total: formatCents(lastResult?.finalTotalCents ?? 0),
+          address: `${state.customer.serviceAddress.trim()}, ${state.customer.city.trim()} ${state.customer.zip.trim()}`,
+        },
+      });
+
+      // No booking URL configured (or the panel is missing) — fall back
+      // to the plain "we'll follow up to schedule" confirmation.
+      if (!scheduling) {
+        bookingPlaceholder.classList.remove("hidden");
+      }
+
+      continueBtn.disabled = true;
+      continueBtn.textContent = scheduling
+        ? "Pick a pickup time above"
+        : "Request Submitted";
     }
 
     function showReviewPlaceholder() {

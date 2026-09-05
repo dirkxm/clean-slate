@@ -17,6 +17,7 @@ import {
 } from "../../_lib/orders/storage";
 import { syncFurnitureRemovalOrderToJobber } from "../../_lib/orders/jobber-sync";
 import type { JobberSyncResult } from "../../_lib/orders/jobber-sync";
+import { finalizeSyncedOrder } from "../../_lib/orders/sync-finalize";
 import type {
   FurnitureRemovalOrderRecord,
   FurnitureRemovalOrderRequestBody,
@@ -24,10 +25,12 @@ import type {
   OrdersEnv,
 } from "../../_lib/orders/types";
 import type { JobberAccessTokenEnv } from "../../_lib/jobber/index";
+import type { OnlineBookingEnv } from "../../_lib/jobber/online-booking";
+import type { StaffAlertEnv } from "../../_lib/notify/staff-alert";
 
 interface RequestContext {
   request: Request;
-  env: OrdersEnv & JobberAccessTokenEnv;
+  env: OrdersEnv & JobberAccessTokenEnv & StaffAlertEnv & OnlineBookingEnv;
 }
 
 const MAX_PHOTOS = 5;
@@ -233,6 +236,16 @@ export async function onRequestPost(context: RequestContext): Promise<Response> 
     // only this follow-up status update failed to persist.
   }
 
+  const { onlineBookingUrl } = await finalizeSyncedOrder(env, {
+    serviceLabel: "Furniture Removal",
+    orderId: record.id,
+    status: record.status,
+    customer: record.customer,
+    finalTotalCents: record.pricing.finalTotalCents,
+    requiresReview: record.pricing.requiresReview,
+    jobber: record.jobber,
+  });
+
   return json(200, {
     success: true,
     orderId: record.id,
@@ -240,6 +253,7 @@ export async function onRequestPost(context: RequestContext): Promise<Response> 
     finalTotalCents: record.pricing.finalTotalCents,
     requiresReview: record.pricing.requiresReview,
     jobberSynced: syncResult.ok,
+    onlineBookingUrl,
     ...(syncResult.ok ? {} : { jobberSyncError: syncResult.error }),
   });
 }
