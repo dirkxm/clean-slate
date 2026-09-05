@@ -1,0 +1,70 @@
+---
+/**
+ * Stage 1 pickup-time hand-off, shown on the final wizard step of the
+ * three instant-booking calculators (Furniture / Appliance / General
+ * Junk Removal) after a successful submit that priced below the review
+ * threshold. Hidden by default; revealed by `revealPickupScheduler`
+ * (src/lib/ordering/pickup-scheduler.ts) once the order API hands back
+ * an `onlineBookingUrl`. The iframe `src` and the fallback link `href`
+ * are filled in by that helper — never rendered here.
+ *
+ * `idPrefix` matches the owning calculator: "fc", "ac", or "gj".
+ */
+interface Props {
+  idPrefix: string;
+}
+
+const { idPrefix } = Astro.props;
+---
+
+<div id={`${idPrefix}-pickup-scheduler`} class="mt-8 hidden" role="region" aria-label="Choose your pickup time">
+  <div class="rounded-2xl border border-primary/30 bg-primary/5 p-6">
+    <p class="font-semibold text-heading">Almost done &mdash; pick your pickup time</p>
+    <p class="mt-2 text-sm text-body">
+      Your details are saved. Choose a pickup window below to lock in your
+      appointment. You'll get a confirmation and a deposit request from us
+      once your time is set &mdash; or call or text us at
+      <a href="tel:+15152023593" class="font-semibold text-primary hover:text-primary-dark">
+        (515) 202-3593
+      </a>.
+    </p>
+
+    <dl class="mt-4 grid gap-x-6 gap-y-2 border-t border-primary/20 pt-4 text-sm sm:grid-cols-2">
+      <div class="flex justify-between gap-4 sm:block">
+        <dt class="text-muted">Service</dt>
+        <dd class="font-medium text-heading" data-role="summary-service">&mdash;</dd>
+      </div>
+      <div class="flex justify-between gap-4 sm:block">
+        <dt class="text-muted">Estimated total</dt>
+        <dd class="font-medium text-heading" data-role="summary-total">&mdash;</dd>
+      </div>
+      <div class="flex justify-between gap-4 sm:col-span-2 sm:block">
+        <dt class="text-muted">Service address</dt>
+        <dd class="font-medium text-heading" data-role="summary-address">&mdash;</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="mt-4 overflow-hidden rounded-2xl border border-border bg-white">
+    <iframe
+      data-role="pickup-iframe"
+      title="Schedule your pickup time"
+      loading="lazy"
+      class="h-[46rem] w-full border-0"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </div>
+
+  <p class="mt-3 text-center text-sm text-muted">
+    Trouble loading the scheduler?
+    <a
+      data-role="pickup-link"
+      href="#"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="font-semibold text-primary hover:text-primary-dark"
+    >
+      Open it in a new tab
+    </a>
+  </p>
+</div>
