@@ -21,6 +21,11 @@ const canonicalPath = Astro.url.pathname.endsWith("/")
   : `${Astro.url.pathname}/`;
 const canonicalURL = new URL(canonicalPath, site.url);
 
+// Absolute URL for the social-share image (Open Graph / Twitter require
+// a fully-qualified URL). Built from the same site.ts domain as the
+// canonical tag so it can never drift.
+const ogImageURL = new URL(site.ogImage, site.url);
+
 // Site-wide LocalBusiness schema. Service-area business: no street
 // address, coverage expressed via areaServed (pulled from the same
 // src/data/locations.ts as every on-page "areas served" list).
@@ -53,6 +58,25 @@ const localBusinessSchema = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
 
     <script
       type="application/ld+json"
