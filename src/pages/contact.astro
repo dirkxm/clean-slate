@@ -8,8 +8,8 @@ import { Phone, MapPin } from "lucide-astro";
 const contactInfo = [
   {
     icon: Phone,
-    title: "Call or Text",
-    description: "Have a quick question? Give us a call or send us a text.",
+    title: "Text or Call",
+    description: "Have a quick question? Send us a text or give us a call.",
   },
   {
     icon: MapPin,
@@ -56,7 +56,7 @@ const contactInfo = [
 
                 <h3 class="mb-2">{item.title}</h3>
 
-                {item.title === "Call or Text" ? (
+                {item.title === "Text or Call" ? (
                   <p class="text-body">
                     {item.description}{" "}
                     <a
@@ -108,7 +108,7 @@ const contactInfo = [
         </div>
 
         <p class="mt-8 text-sm text-muted">
-          Or call or text us directly at{" "}
+          Or text or call us directly at{" "}
           <a
             href="tel:+15152023593"
             class="font-semibold text-primary hover:text-primary-dark"

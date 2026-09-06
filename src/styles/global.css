@@ -166,6 +166,12 @@ svg {
   margin-inline: auto !important;
 }
 
+/* The header is fixed + transparent; reserve clear space beneath it so
+   page content never sits tight under the main nav. */
+main {
+  padding-top: clamp(2.5rem, 4vw, 4rem);
+}
+
 section {
   padding-block: clamp(3rem, 6vw, 5rem);
 }
