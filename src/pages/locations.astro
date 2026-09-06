@@ -4,6 +4,7 @@ import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import Button from "../components/ui/Button.astro";
 import CTA from "../components/sections/CTA.astro";
+import { locations } from "../data/locations";
 import {
   ArrowRight,
   Home,
@@ -12,56 +13,6 @@ import {
   Sofa,
   HardHat,
 } from "lucide-astro";
-
-const cities = [
-  {
-    name: "Norwalk",
-    slug: "norwalk",
-    description:
-      "Junk removal, furniture removal, cleanouts, construction cleanup, and more.",
-  },
-  {
-    name: "West Des Moines",
-    slug: "west-des-moines",
-    description:
-      "Professional hauling and cleanout services for homes, rentals, and renovation projects.",
-  },
-  {
-    name: "Waukee",
-    slug: "waukee",
-    description:
-      "Furniture removal, property cleanouts, garage cleanouts, and more.",
-  },
-  {
-    name: "Ankeny",
-    slug: "ankeny",
-    description:
-      "Reliable junk removal and cleanout services without the truck or dump run.",
-  },
-  {
-    name: "Des Moines",
-    slug: "des-moines",
-    description:
-      "Residential and property cleanout services throughout the Des Moines area.",
-  },
-  {
-    name: "Indianola",
-    slug: "indianola",
-    description:
-      "Furniture removal, cleanouts, remodeling debris, and general hauling.",
-  },
-  {
-    name: "Clive",
-    slug: "clive",
-    description:
-      "Professional removal services for homes, rentals, and renovation projects.",
-  },
-  {
-    name: "Urbandale",
-    slug: "urbandale",
-    description: "Clean Slate handles the lifting, loading, hauling, and removal.",
-  },
-];
 
 const services = [
   {
@@ -147,7 +98,7 @@ const services = [
 
         <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {
-            cities.map((city) => (
+            locations.map((city) => (
               <a
                 href={`/locations/${city.slug}`}
                 class="group flex items-center gap-2"

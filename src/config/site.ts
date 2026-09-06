@@ -42,21 +42,10 @@ export const site = {
   // =====================================================
   // Service Area
   // =====================================================
-
-  serviceArea: [
-    "Des Moines",
-    "West Des Moines",
-    "Waukee",
-    "Ankeny",
-    "Johnston",
-    "Urbandale",
-    "Norwalk",
-    "Clive",
-    "Grimes",
-    "Altoona",
-    "Indianola",
-    "Pleasant Hill",
-  ],
+  //
+  // The list of served cities lives in src/data/locations.ts (one entry
+  // per city that has a dedicated /locations/<slug> page). Import
+  // `locationNames` from there rather than duplicating a list here.
 
   // =====================================================
   // Navigation

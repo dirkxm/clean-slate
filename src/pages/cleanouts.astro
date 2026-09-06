@@ -5,6 +5,7 @@ import Footer from "../components/layout/Footer.astro";
 import Button from "../components/ui/Button.astro";
 import { Image } from "astro:assets";
 import heroImage from "../assets/images/clean-slate-haul-away.jpg";
+import { locationNames } from "../data/locations";
 import {
   Check,
   Home,
@@ -135,9 +136,7 @@ const whyChooseUs = [
           </div>
 
           <p class="mt-8 text-sm text-muted">
-            Serving Des Moines, West Des Moines, Waukee, Norwalk, Ankeny,
-            Urbandale, Clive, Johnston, Grimes, Indianola, Pleasant Hill,
-            Altoona and surrounding communities.
+            Serving {locationNames.join(", ")} and surrounding communities.
           </p>
 
         </div>
