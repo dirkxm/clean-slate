@@ -87,7 +87,6 @@ export const services: Service[] = [
       "Full-service house and household cleanouts — furniture, belongings, boxes, and more.",
     image: householdCleanoutsImage,
     icon: Home,
-    href: "/cleanouts",
   },
 
   {
