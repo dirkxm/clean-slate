@@ -70,116 +70,115 @@ const pricedCategories = [
 
     <!-- ================= Pricing by Service ================= -->
     <section class="bg-primary-dark">
-      <div class="container">
+      <div class="container grid gap-16 lg:grid-cols-2 lg:items-start">
 
-        <ul class="max-w-2xl divide-y divide-white/15">
-          {
-            pricedCategories.map((category) => (
-              <li class="flex gap-4 py-6 first:pt-0">
-                <category.icon
-                  class="mt-1 shrink-0 text-accent"
-                  size={24}
-                  strokeWidth={1.5}
-                />
+        <div>
+          <ul class="divide-y divide-white/15">
+            {
+              pricedCategories.map((category) => (
+                <li class="flex gap-4 py-6 first:pt-0">
+                  <category.icon
+                    class="mt-1 shrink-0 text-accent"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
 
-                <div>
-                  <div class="flex flex-wrap items-baseline gap-x-3">
-                    <h3 class="text-xl! text-white!">{category.title}</h3>
-                    <span class="text-lg font-semibold text-accent">
-                      {category.price}
-                    </span>
+                  <div>
+                    <div class="flex flex-wrap items-baseline gap-x-3">
+                      <h3 class="text-xl! text-white!">{category.title}</h3>
+                      <span class="text-lg font-semibold text-accent">
+                        {category.price}
+                      </span>
+                    </div>
+
+                    <p class="mt-1 text-white/70">{category.description}</p>
                   </div>
+                </li>
+              ))
+            }
+          </ul>
 
-                  <p class="mt-1 text-white/70">{category.description}</p>
+          <div class="mt-10">
+            <Button href="/online-ordering" variant="secondary">
+              Get Your Price
+            </Button>
+          </div>
+
+          <!-- Portable Storage sits after the button — no online pricing yet. -->
+          <div class="mt-12 border-t border-white/15 pt-8">
+            <div class="flex gap-4">
+              <Package
+                class="mt-1 shrink-0 text-white/40"
+                size={24}
+                strokeWidth={1.5}
+              />
+
+              <div>
+                <div class="flex flex-wrap items-baseline gap-x-3">
+                  <h3 class="text-xl! text-white!">Portable Storage</h3>
+                  <span class="text-lg font-semibold text-white/50">
+                    Coming Soon
+                  </span>
                 </div>
-              </li>
-            ))
-          }
-        </ul>
 
-        <div class="mt-10">
-          <Button href="/online-ordering" variant="secondary">
-            Get Your Price
-          </Button>
-        </div>
-
-        <!-- Portable Storage sits after the button — no online pricing yet. -->
-        <div class="mt-12 max-w-2xl border-t border-white/15 pt-8">
-          <div class="flex gap-4">
-            <Package
-              class="mt-1 shrink-0 text-white/40"
-              size={24}
-              strokeWidth={1.5}
-            />
-
-            <div>
-              <div class="flex flex-wrap items-baseline gap-x-3">
-                <h3 class="text-xl! text-white!">Portable Storage</h3>
-                <span class="text-lg font-semibold text-white/50">
-                  Coming Soon
-                </span>
+                <p class="mt-1 text-white/70">
+                  Pricing will be available soon.{" "}
+                  <a
+                    href="/contact"
+                    class="font-semibold text-accent hover:underline"
+                  >
+                    Contact us
+                  </a>{" "}
+                  for early availability.
+                </p>
               </div>
-
-              <p class="mt-1 text-white/70">
-                Pricing will be available soon.{" "}
-                <a
-                  href="/contact"
-                  class="font-semibold text-accent hover:underline"
-                >
-                  Contact us
-                </a>{" "}
-                for early availability.
-              </p>
             </div>
           </div>
         </div>
 
-      </div>
-    </section>
+        <div>
+          <h3 class="mb-4 text-xl! text-white!">
+            Why Your Final Price Might Change
+          </h3>
 
-    <!-- ================= Why Your Final Price Might Change ================= -->
-    <section class="border-t border-border">
-      <div class="container">
+          <p class="text-white/70">
+            The price you see online or receive in a quote is based on the
+            details you provide. A few things can affect your final price
+            once we're on site:
+          </p>
 
-        <h2 class="mb-6 max-w-3xl">Why Your Final Price Might Change</h2>
+          <ul class="mt-4 list-disc space-y-3 pl-5 text-white/70">
+            <li>
+              <span class="font-semibold text-white">More or less than described</span>
+              {" "}&mdash; if the job is smaller than expected, we'll refund
+              the difference. If it turns out to be larger, we'll walk you
+              through it and confirm before doing any additional work.
+            </li>
+            <li>
+              <span class="font-semibold text-white">Access to the job site</span>
+              {" "}&mdash; stairs, long carries, tight spaces, or limited
+              parking can add time and labor.
+            </li>
+            <li>
+              <span class="font-semibold text-white">Type of materials</span>
+              {" "}&mdash; certain items (like appliances with refrigerant,
+              or debris requiring special disposal) carry additional
+              handling requirements.
+            </li>
+            <li>
+              <span class="font-semibold text-white">Added items or scope</span>
+              {" "}&mdash; if you'd like us to take extra items once we've
+              arrived, we're happy to &mdash; we'll just confirm the added
+              cost with you first.
+            </li>
+          </ul>
 
-        <p class="max-w-2xl text-lg text-body">
-          The price you see online or receive in a quote is based on the
-          details you provide. A few things can affect your final price
-          once we're on site:
-        </p>
-
-        <ul class="mt-6 max-w-2xl list-disc space-y-3 pl-5 text-lg text-body">
-          <li>
-            <span class="font-semibold text-heading">More or less than described</span>
-            {" "}&mdash; if the job is smaller than expected, we'll refund
-            the difference. If it turns out to be larger, we'll walk you
-            through it and confirm before doing any additional work.
-          </li>
-          <li>
-            <span class="font-semibold text-heading">Access to the job site</span>
-            {" "}&mdash; stairs, long carries, tight spaces, or limited
-            parking can add time and labor.
-          </li>
-          <li>
-            <span class="font-semibold text-heading">Type of materials</span>
-            {" "}&mdash; certain items (like appliances with refrigerant,
-            or debris requiring special disposal) carry additional
-            handling requirements.
-          </li>
-          <li>
-            <span class="font-semibold text-heading">Added items or scope</span>
-            {" "}&mdash; if you'd like us to take extra items once we've
-            arrived, we're happy to &mdash; we'll just confirm the added
-            cost with you first.
-          </li>
-        </ul>
-
-        <p class="mt-6 max-w-2xl text-lg text-body">
-          You'll never be charged for a change in price without knowing
-          about it first. We'll always talk it through with you before
-          doing any work beyond what was quoted or booked.
-        </p>
+          <p class="mt-4 text-white/70">
+            You'll never be charged for a change in price without knowing
+            about it first. We'll always talk it through with you before
+            doing any work beyond what was quoted or booked.
+          </p>
+        </div>
 
       </div>
     </section>
