@@ -108,7 +108,7 @@ export const site = {
   // page itself and is excluded from the sitemap (see astro.config.mjs).
   // Remove a path here to take that page live. Use the trailing-slash
   // form, e.g. "/pricing/".
-  draftPages: ["/pricing/"] as string[],
+  draftPages: [] as string[],
 };
 
 export type Site = typeof site;
