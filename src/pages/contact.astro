@@ -3,13 +3,23 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import Button from "../components/ui/Button.astro";
-import { Phone, MapPin } from "lucide-astro";
+import { site } from "../config/site";
+import { Phone, Mail, MapPin } from "lucide-astro";
 
 const contactInfo = [
   {
     icon: Phone,
     title: "Text or Call",
     description: "Have a quick question? Send us a text or give us a call.",
+    linkHref: `tel:+1${site.phoneRaw}`,
+    linkText: site.phone,
+  },
+  {
+    icon: Mail,
+    title: "Email",
+    description: "Prefer to email? Send us a note and we'll get back to you.",
+    linkHref: `mailto:${site.email}`,
+    linkText: site.email,
   },
   {
     icon: MapPin,
@@ -56,19 +66,20 @@ const contactInfo = [
 
                 <h3 class="mb-2">{item.title}</h3>
 
-                {item.title === "Text or Call" ? (
-                  <p class="text-body">
-                    {item.description}{" "}
-                    <a
-                      href="tel:+15152023593"
-                      class="font-semibold text-primary hover:text-primary-dark"
-                    >
-                      (515) 202-3593
-                    </a>
-                  </p>
-                ) : (
-                  <p class="text-body">{item.description}</p>
-                )}
+                <p class="text-body">
+                  {item.description}
+                  {item.linkHref && (
+                    <>
+                      {" "}
+                      <a
+                        href={item.linkHref}
+                        class="font-semibold break-words text-primary hover:text-primary-dark"
+                      >
+                        {item.linkText}
+                      </a>
+                    </>
+                  )}
+                </p>
               </div>
             ))
           }
@@ -107,10 +118,10 @@ const contactInfo = [
         <p class="mt-8 text-sm text-muted">
           Or text or call us directly at{" "}
           <a
-            href="tel:+15152023593"
+            href="tel:+15155199878"
             class="font-semibold text-primary hover:text-primary-dark"
           >
-            (515) 202-3593
+            (515) 519-9878
           </a>
         </p>
 
