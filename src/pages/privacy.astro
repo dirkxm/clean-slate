@@ -2,11 +2,12 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
+import { site } from "../config/site";
 ---
 
 <BaseLayout
   title="Privacy Policy | Clean Slate"
-  description="How Clean Slate Professional Clean Up Services collects, uses, and protects information when you visit our website or request our services."
+  description={`How ${site.legalName} collects, uses, and protects information when you visit our website or request our services.`}
 >
 
   <Header />
@@ -22,7 +23,7 @@ import Footer from "../components/layout/Footer.astro";
         <div class="legal-prose text-body">
 
           <p>
-            Clean Slate Professional Clean Up Services (&ldquo;Clean Slate,&rdquo;
+            {site.legalName} (&ldquo;Clean Slate,&rdquo;
             &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) respects
             your privacy. This Privacy Policy explains how we collect, use, and
             protect information when you visit our website or request or purchase

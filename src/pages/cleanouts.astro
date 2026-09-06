@@ -6,6 +6,7 @@ import Button from "../components/ui/Button.astro";
 import { Image } from "astro:assets";
 import heroImage from "../assets/images/clean-slate-haul-away.jpg";
 import { locationNames } from "../data/locations";
+import { site } from "../config/site";
 import {
   Check,
   Home,
@@ -264,7 +265,7 @@ const whyChooseUs = [
         </div>
 
         <p class="mt-12 text-sm text-muted">
-          Clean Slate Professional Clean Up Services
+          {site.legalName}
           <br />
           Des Moines Metro &bull; Iowa
         </p>
