@@ -3,6 +3,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import CTA from "../components/sections/CTA.astro";
+import { User } from "lucide-astro";
+
+// Team photos and bio copy to be added later. When photos are ready,
+// import each and swap the placeholder avatar for an <Image />.
+const team = [
+  { name: "Melissa Dirkx", role: "Client Services Manager" },
+  { name: "Travis Kersey", role: "Operations Manager" },
+  { name: "Matt Dirkx", role: "Logistics Manager" },
+];
 ---
 
 <BaseLayout
@@ -49,6 +58,31 @@ import CTA from "../components/sections/CTA.astro";
           will get back to you.
         </p>
 
+
+      </div>
+    </section>
+
+    <!-- ================= Meet the Team ================= -->
+    <section class="border-t border-border">
+      <div class="container">
+
+        <h2 class="mb-12 max-w-3xl">Meet the Team</h2>
+
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            team.map((member) => (
+              <div class="flex flex-col items-start">
+                {/* Placeholder avatar — replace with <Image /> once photos are available. */}
+                <div class="mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-primary/10">
+                  <User class="text-primary/40" size={48} strokeWidth={1.5} />
+                </div>
+
+                <h3 class="mb-1">{member.name}</h3>
+                <p class="text-body">{member.role}</p>
+              </div>
+            ))
+          }
+        </div>
 
       </div>
     </section>
