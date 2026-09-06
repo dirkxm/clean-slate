@@ -22,6 +22,12 @@ export interface Location {
 
 export const locations: Location[] = [
   {
+    name: "Altoona",
+    slug: "altoona",
+    description:
+      "Home cleanouts, rental turnovers, and renovation debris near the retail and entertainment corridor.",
+  },
+  {
     name: "Ankeny",
     slug: "ankeny",
     description:
@@ -40,16 +46,34 @@ export const locations: Location[] = [
       "Residential and property cleanout services throughout the Des Moines area.",
   },
   {
+    name: "Grimes",
+    slug: "grimes",
+    description:
+      "Removal and cleanout services for the growing neighborhoods and businesses along the Highway 141 corridor.",
+  },
+  {
     name: "Indianola",
     slug: "indianola",
     description:
       "Furniture removal, cleanouts, remodeling debris, and general hauling.",
   },
   {
+    name: "Johnston",
+    slug: "johnston",
+    description:
+      "New-construction move-ins and established-home cleanouts in one of the metro's fastest-growing communities.",
+  },
+  {
     name: "Norwalk",
     slug: "norwalk",
     description:
       "Junk removal, furniture removal, cleanouts, construction cleanup, and more.",
+  },
+  {
+    name: "Pleasant Hill",
+    slug: "pleasant-hill",
+    description:
+      "Suburban and acreage-property cleanouts just east of Des Moines.",
   },
   {
     name: "Urbandale",
