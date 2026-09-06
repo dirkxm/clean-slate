@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { site } from "../config/site";
 
 interface Props {
   title?: string;
@@ -10,6 +11,14 @@ const {
   title = "Clean Slate",
   description = "Professional construction cleanup, junk removal, and portable storage throughout Central Iowa.",
 } = Astro.props;
+
+// Self-referencing canonical URL. Always built from the site.ts domain
+// plus this page's own path, so it can never drift from the sitemap.
+// Trailing slash matches Astro's directory build output and @astrojs/sitemap.
+const canonicalPath = Astro.url.pathname.endsWith("/")
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
+const canonicalURL = new URL(canonicalPath, site.url);
 ---
 
 <!doctype html>
@@ -20,6 +29,7 @@ const {
 
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
 
     <slot name="head" />
   </head>

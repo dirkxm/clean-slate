@@ -22,11 +22,11 @@ export const site = {
   // Contact
   // =====================================================
 
-  phone: "(515) 555-1234",
+  phone: "(515) 202-3593",
 
-  phoneRaw: "5155551234",
+  phoneRaw: "5152023593",
 
-  email: "hello@clean-slate-dsm.com",
+  email: "matt@mattdirkx.com",
 
   // =====================================================
   // Address
