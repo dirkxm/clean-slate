@@ -12,6 +12,21 @@ import SectionHeading from "../components/ui/SectionHeading.astro";
 import ServiceCard from "../components/cards/ServiceCard.astro";
 import { HardHat, Star, Check } from "lucide-astro";
 
+// Sample data for the FAQ component preview below. The real FAQ content
+// lives on /services.
+const sampleFaqs = [
+  {
+    question: "Can I get a price and book online?",
+    answer:
+      "Yes. Tell us what you need, provide the job details, choose a time, and we'll calculate your price before you book.",
+  },
+  {
+    question: "Can I talk to someone if I have a question?",
+    answer:
+      "Absolutely. Call or text us and you'll reach a real person who can help you figure out the right option for your project.",
+  },
+];
+
 const colors = [
   { name: "Background", token: "--color-background", hex: "#f8f7f4" },
   { name: "Surface", token: "--color-surface", hex: "#ffffff" },
@@ -524,7 +539,7 @@ const sandboxAreas = [
 
     <div class="border-t border-border">
       <p class="container pt-10 font-mono text-xs text-muted">FAQ</p>
-      <FAQ />
+      <FAQ faqs={sampleFaqs} />
     </div>
 
     <div class="border-t border-border">
