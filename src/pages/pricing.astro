@@ -4,32 +4,34 @@ import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import Button from "../components/ui/Button.astro";
 import CTA from "../components/sections/CTA.astro";
-import { ArrowRight, Sofa, Building2, HardHat } from "lucide-astro";
+import { site } from "../config/site";
+import { Sofa, Truck, Hammer, Package } from "lucide-astro";
 
-const pricingCategories = [
+// While "/pricing/" is in site.draftPages this page is noindex + kept
+// out of the sitemap. Remove it from that array to take pricing live.
+const isDraft = site.draftPages.includes("/pricing/");
+
+const pricedCategories = [
   {
     icon: Sofa,
-    title: "Junk Removal",
-    tagline: "We lift it. We load it. We haul it away.",
-    description: "Pricing is based on the amount and type of items being removed.",
-    cta: "Get Your Price",
-    href: "/online-ordering",
+    title: "Furniture & Appliance Removal",
+    price: "Starting at $65",
+    description:
+      "Single items typically range $50–$130 depending on size — from a couch or mattress up to a large refrigerator. Multiple items are priced together.",
   },
   {
-    icon: Building2,
-    title: "Cleanouts",
-    tagline: "One room or an entire property.",
-    description: "Pricing depends on the size and scope of the cleanout.",
-    cta: "Get Your Price",
-    href: "/online-ordering",
+    icon: Truck,
+    title: "Junk Removal & Cleanouts",
+    price: "Starting at $100",
+    description:
+      "A small load or single-room cleanout starts around $100. Larger cleanouts — garage, estate, full property — scale with size and volume, typically ranging up to $550 for a large full-property job.",
   },
   {
-    icon: HardHat,
-    title: "Construction",
-    tagline: "Keep your project moving.",
-    description: "Pricing depends on the scope of the work and amount of debris.",
-    cta: "Get Your Price",
-    href: "/online-ordering",
+    icon: Hammer,
+    title: "Demolition & Construction Cleanup",
+    price: "$150–$500",
+    description:
+      "Priced by scope — from a single-room tear-out to a full renovation's worth of debris.",
   },
 ];
 ---
@@ -38,6 +40,10 @@ const pricingCategories = [
   title="Junk Removal & Cleanout Pricing in Des Moines | Clean Slate"
   description="See how Clean Slate pricing works for junk removal, furniture removal, and cleanout services throughout the Des Moines metro. Book online."
 >
+
+  {isDraft && (
+    <meta slot="head" name="robots" content="noindex,nofollow" />
+  )}
 
   <Header />
 
@@ -59,46 +65,120 @@ const pricingCategories = [
           online, you'll see current pricing during the booking process.
         </p>
 
-        <div class="mt-10">
-          <Button href="/online-ordering" size="sm">Book Online</Button>
-        </div>
-
       </div>
     </section>
 
-    <!-- ================= What We Offer ================= -->
+    <!-- ================= Pricing by Service ================= -->
     <section class="bg-primary-dark">
-      <div class="container">
+      <div class="container grid gap-16 lg:grid-cols-2 lg:items-start">
 
-        <div class="grid gap-6 sm:grid-cols-2">
-          {
-            pricingCategories.map((category) => (
-              <a
-                href={category.href}
-                class="group flex flex-col rounded-3xl border border-white/15 p-5 transition duration-300 hover:-translate-y-1 hover:border-accent"
-              >
-                <category.icon
-                  class="mb-1 text-accent"
-                  size={20}
-                  strokeWidth={1.5}
-                />
-
-                <h3 class="mb-1 text-xl! text-white! group-hover:text-accent!">{category.title}</h3>
-
-                <p class="mt-0! mb-1 text-white">{category.tagline}</p>
-
-                <p class="mt-0! mb-2 text-white/70">{category.description}</p>
-
-                <span class="mt-auto inline-flex items-center gap-2 font-semibold text-accent">
-                  {category.cta}
-                  <ArrowRight
-                    class="transition group-hover:translate-x-1"
-                    size={16}
+        <div>
+          <ul class="divide-y divide-white/15">
+            {
+              pricedCategories.map((category) => (
+                <li class="flex gap-4 py-6 first:pt-0">
+                  <category.icon
+                    class="mt-1 shrink-0 text-accent"
+                    size={24}
+                    strokeWidth={1.5}
                   />
-                </span>
-              </a>
-            ))
-          }
+
+                  <div>
+                    <div class="flex flex-wrap items-baseline gap-x-3">
+                      <h3 class="text-xl! text-white!">{category.title}</h3>
+                      <span class="text-lg font-semibold text-accent">
+                        {category.price}
+                      </span>
+                    </div>
+
+                    <p class="mt-1 text-white/70">{category.description}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="mt-10">
+            <Button href="/online-ordering" variant="secondary">
+              Get Your Price
+            </Button>
+          </div>
+
+          <!-- Portable Storage sits after the button — no online pricing yet. -->
+          <div class="mt-12 border-t border-white/15 pt-8">
+            <div class="flex gap-4">
+              <Package
+                class="mt-1 shrink-0 text-white/40"
+                size={24}
+                strokeWidth={1.5}
+              />
+
+              <div>
+                <div class="flex flex-wrap items-baseline gap-x-3">
+                  <h3 class="text-xl! text-white!">Portable Storage</h3>
+                  <span class="text-lg font-semibold text-white/50">
+                    Coming Soon
+                  </span>
+                </div>
+
+                <p class="mt-1 text-white/70">
+                  Pricing will be available soon.{" "}
+                  <a
+                    href="/contact"
+                    class="font-semibold text-accent hover:underline"
+                  >
+                    Contact us
+                  </a>{" "}
+                  for early availability.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-4 text-xl! text-white!">
+            Why Your Final Price Might Change
+          </h3>
+
+          <p class="text-white/70">
+            The price you see online or receive in a quote is based on the
+            details you provide. A few things can affect your final price
+            once we're on site:
+          </p>
+
+          <ul class="mt-4 list-disc space-y-3 pl-5 text-white/70">
+            <li>
+              <span class="font-semibold text-white">More or less than described</span>
+              {" "}&mdash;{" "}
+              <span class="font-semibold text-white">if the job is smaller than expected, we'll refund the difference</span>.
+              If it turns out to be larger, we'll walk you through it and
+              confirm before doing any additional work.
+            </li>
+            <li>
+              <span class="font-semibold text-white">Access to the job site</span>
+              {" "}&mdash; stairs, long carries, tight spaces, or limited
+              parking can add time and labor.
+            </li>
+            <li>
+              <span class="font-semibold text-white">Type of materials</span>
+              {" "}&mdash; certain items (like appliances with refrigerant,
+              or debris requiring special disposal) carry additional
+              handling requirements.
+            </li>
+            <li>
+              <span class="font-semibold text-white">Added items or scope</span>
+              {" "}&mdash; if you'd like us to take extra items once we've
+              arrived, we're happy to &mdash; we'll just confirm the added
+              cost with you first.
+            </li>
+          </ul>
+
+          <p class="mt-4 text-white/70">
+            You'll never be charged for a change in price without knowing
+            about it first. We'll always talk it through with you before
+            doing any work beyond what was quoted or booked.
+          </p>
         </div>
 
       </div>

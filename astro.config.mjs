@@ -6,9 +6,10 @@ import tailwindcss from '@tailwindcss/vite';
 
 import { site } from './src/config/site.ts';
 
-// Pages that must never appear in the sitemap: noindex/internal only.
-// Keep in sync with any page that sets <meta name="robots" content="noindex">.
-const SITEMAP_EXCLUDE = ['/style-guide/', '/jobber-connected/'];
+// Pages kept out of the sitemap: permanently-internal pages plus any
+// draft pages listed in src/config/site.ts (draftPages). Draft pages
+// also mark themselves noindex; permanent ones set it in their own head.
+const SITEMAP_EXCLUDE = ['/style-guide/', '/jobber-connected/', ...site.draftPages];
 
 // https://astro.build/config
 export default defineConfig({
