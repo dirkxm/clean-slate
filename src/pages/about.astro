@@ -3,14 +3,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import CTA from "../components/sections/CTA.astro";
-import { User } from "lucide-astro";
+import { Image } from "astro:assets";
+import melissaPhoto from "../assets/images/melissa.webp";
+import travisPhoto from "../assets/images/travis.webp";
+import mattPhoto from "../assets/images/matt.webp";
 
-// Team photos and bio copy to be added later. When photos are ready,
-// import each and swap the placeholder avatar for an <Image />.
 const team = [
-  { name: "Melissa Dirkx", role: "Client Services Manager" },
-  { name: "Travis Kersey", role: "Operations Manager" },
-  { name: "Matt Dirkx", role: "Logistics Manager" },
+  { name: "Melissa Dirkx", role: "Client Services Manager", photo: melissaPhoto },
+  { name: "Travis Kersey", role: "Operations Manager", photo: travisPhoto },
+  { name: "Matt Dirkx", role: "Logistics Manager", photo: mattPhoto },
 ];
 ---
 
@@ -71,14 +72,17 @@ const team = [
         <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {
             team.map((member) => (
-              <div class="flex flex-col items-start">
-                {/* Placeholder avatar — replace with <Image /> once photos are available. */}
-                <div class="mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-primary/10">
-                  <User class="text-primary/40" size={48} strokeWidth={1.5} />
-                </div>
+              <div class="flex flex-col items-center text-center">
+                <Image
+                  src={member.photo}
+                  alt={member.name}
+                  width={400}
+                  height={400}
+                  class="mb-4 h-50 w-50 rounded-full border-4 border-primary object-cover"
+                />
 
                 <h3 class="mb-1">{member.name}</h3>
-                <p class="text-body">{member.role}</p>
+                <p class="mt-0 text-body">{member.role}</p>
               </div>
             ))
           }

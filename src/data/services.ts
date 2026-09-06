@@ -14,7 +14,7 @@ import type { ImageMetadata } from "astro";
 
 import furnitureRemovalImage from "../assets/images/furniture-haul-away.webp";
 import junkRemovalImage from "../assets/images/clean-slate-haul-away.webp";
-import householdCleanoutsImage from "../assets/images/clean-slate-haul-away.webp";
+import householdCleanoutsImage from "../assets/images/household-cleanout.webp";
 import garageCleanoutImage from "../assets/images/garage-cleanout.webp";
 import estateCleanoutImage from "../assets/images/estate-cleanout.webp";
 import propertyCleanoutImage from "../assets/images/property-cleanout.webp";
