@@ -6,11 +6,15 @@ import { locationNames } from "../data/locations";
 interface Props {
   title?: string;
   description?: string;
+  // Overrides the text used for og:description / twitter:description.
+  // Defaults to `description` (the same text as the meta description).
+  ogDescription?: string;
 }
 
 const {
   title = "Clean Slate",
   description = "Professional construction cleanup, junk removal, and portable storage throughout Central Iowa.",
+  ogDescription = description,
 } = Astro.props;
 
 // Self-referencing canonical URL. Always built from the site.ts domain
@@ -67,7 +71,7 @@ const localBusinessSchema = {
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={ogImageURL} />
     <meta property="og:image:width" content="1200" />
@@ -75,7 +79,7 @@ const localBusinessSchema = {
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={ogImageURL} />
 
     <script
