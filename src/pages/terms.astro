@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
+import { site } from "../config/site";
 ---
 
 <BaseLayout
@@ -22,7 +23,7 @@ import Footer from "../components/layout/Footer.astro";
         <div class="legal-prose text-body">
 
           <p>
-            Welcome to Clean Slate Professional Clean Up Services
+            Welcome to {site.legalName}
             (&ldquo;Clean Slate,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or
             &ldquo;our&rdquo;). These Terms &amp; Conditions govern your use of
             our website and your purchase or booking of junk removal, cleanout,
@@ -226,9 +227,8 @@ import Footer from "../components/layout/Footer.astro";
 
           <h2>17. Contact</h2>
           <p>
-            Questions about these Terms or our services may be directed to Clean
-            Slate Professional Clean Up Services through the contact information
-            provided on our website.
+            Questions about these Terms or our services may be directed to {site.legalName}
+            through the contact information provided on our website.
           </p>
 
           <p>

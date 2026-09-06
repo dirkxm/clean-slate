@@ -1,5 +1,5 @@
 ---
-import { site } from "../../config/site";
+import { locationNames } from "../../data/locations";
 import { ArrowRight } from "lucide-astro";
 ---
 
@@ -16,7 +16,7 @@ import { ArrowRight } from "lucide-astro";
 
     <ul class="mx-auto mt-8 max-w-md columns-2 gap-x-12 text-xl text-body">
       {
-        site.serviceArea.map((city) => (
+        locationNames.map((city) => (
           <li class="mb-2">{city}</li>
         ))
       }

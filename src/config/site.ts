@@ -5,14 +5,14 @@ export const site = {
 
   name: "Clean Slate",
 
-  legalName: "Clean Slate Services",
+  legalName: "Clean Slate Services, LLC",
 
   tagline: "Construction Cleanup & Haul Away • Commercial & Residential",
 
   description:
     "Professional construction cleanup, junk removal, and portable storage throughout the Des Moines metro and Central Iowa.",
 
-  url: "https://cleanslate.services",
+  url: "https://clean-slate-dsm.com",
 
   logo: "/logo.svg",
 
@@ -22,11 +22,11 @@ export const site = {
   // Contact
   // =====================================================
 
-  phone: "(515) 555-1234",
+  phone: "(515) 202-3593",
 
-  phoneRaw: "5155551234",
+  phoneRaw: "5152023593",
 
-  email: "hello@cleanslate.services",
+  email: "matt@mattdirkx.com",
 
   // =====================================================
   // Address
@@ -42,21 +42,10 @@ export const site = {
   // =====================================================
   // Service Area
   // =====================================================
-
-  serviceArea: [
-    "Des Moines",
-    "West Des Moines",
-    "Waukee",
-    "Ankeny",
-    "Johnston",
-    "Urbandale",
-    "Norwalk",
-    "Clive",
-    "Grimes",
-    "Altoona",
-    "Indianola",
-    "Pleasant Hill",
-  ],
+  //
+  // The list of served cities lives in src/data/locations.ts (one entry
+  // per city that has a dedicated /locations/<slug> page). Import
+  // `locationNames` from there rather than duplicating a list here.
 
   // =====================================================
   // Navigation

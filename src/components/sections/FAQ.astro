@@ -9,46 +9,13 @@ interface FaqItem {
 
 interface Props {
   title?: string;
-  faqs?: FaqItem[];
+  faqs: FaqItem[];
   closingNote?: string;
 }
 
-const defaultFaqs: FaqItem[] = [
-  {
-    question: "How quickly can you schedule a job?",
-    answer:
-      "Placeholder text. Most jobs can be scheduled within a few business days, with same-day service often available depending on your location and project size.",
-  },
-  {
-    question: "What areas do you service?",
-    answer:
-      "Placeholder text. We serve the Des Moines metro and surrounding Central Iowa communities. Contact us to confirm coverage for your address.",
-  },
-  {
-    question: "What types of cleanup do you handle?",
-    answer:
-      "Placeholder text. Construction cleanup, junk removal, estate and garage cleanouts, and property cleanouts for both commercial and residential jobs.",
-  },
-  {
-    question: "How is pricing determined?",
-    answer:
-      "Placeholder text. Pricing depends on project size, material type, and timeline. We provide a free, no-obligation quote before any work begins.",
-  },
-  {
-    question: "Do you offer same-day junk removal?",
-    answer:
-      "Placeholder text. Same-day and next-day service is often available. Reach out and we'll do our best to accommodate your timeline.",
-  },
-  {
-    question: "What happens to the debris you remove?",
-    answer:
-      "Placeholder text. We sort materials where possible and prioritize responsible disposal and recycling in accordance with local regulations.",
-  },
-];
-
 const {
   title = "Questions? We've Got Answers.",
-  faqs = defaultFaqs,
+  faqs,
   closingNote,
 } = Astro.props;
 ---
