@@ -47,20 +47,31 @@ const services = [
 
 const furnitureItems = [
   "Couches & sofas",
-  "Mattresses & bed frames",
-  "Tables & dressers",
-  "Appliances",
-  "Boxes & household items",
-  "General household junk",
+  "Sectionals",
+  "Recliners & chairs",
+  "Tables & desks",
+  "Dressers & cabinets",
+  "Bed frames",
+  "Mattresses & box springs",
+  "Entertainment centers",
+  "Patio furniture",
+];
+
+const largeItems = [
+  "Refrigerators",
+  "Freezers",
+  "Washers & dryers",
+  "Exercise equipment",
+  "Other unwanted household items",
 ];
 
 const debrisItems = [
-  "Construction debris",
-  "Renovation materials",
-  "Garage & basement contents",
-  "Yard & outdoor debris",
+  "Builder leftovers & packaging",
+  "Move-in and downsizing clutter",
+  "Garage, shed & outbuilding contents",
+  "Acreage & yard debris",
+  "Boxes and miscellaneous items",
   "General unwanted items",
-  "Property debris",
 ];
 ---
 
@@ -120,8 +131,10 @@ const debrisItems = [
         </h2>
 
         <p class="max-w-2xl text-lg text-body">
-          From a single item to a full property, Clean Slate offers a
-          range of removal and cleanout services throughout Norwalk.
+          Clean Slate provides full-service removal and cleanout services
+          throughout Norwalk — from the newer subdivisions filling in
+          south of the Des Moines airport to the larger acreage lots on
+          the edges of town.
         </p>
 
         <div class="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -179,9 +192,9 @@ const debrisItems = [
 
         <h2 class="mb-12 text-white!">What We Remove</h2>
 
-        <div class="grid gap-12 sm:grid-cols-2">
+        <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <h3 class="mb-6 text-white!">Furniture &amp; Household Items</h3>
+            <h3 class="mb-6 text-white!">Furniture</h3>
             <ul class="flex flex-col gap-4">
               {
                 furnitureItems.map((item) => (
@@ -195,7 +208,21 @@ const debrisItems = [
           </div>
 
           <div>
-            <h3 class="mb-6 text-white!">Debris &amp; Materials</h3>
+            <h3 class="mb-6 text-white!">Large Household Items</h3>
+            <ul class="flex flex-col gap-4">
+              {
+                largeItems.map((item) => (
+                  <li class="flex items-center gap-3">
+                    <Check class="shrink-0 text-accent" size={20} />
+                    <span class="font-medium text-white">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="mb-6 text-white!">New-Construction &amp; Outbuilding Debris</h3>
             <ul class="flex flex-col gap-4">
               {
                 debrisItems.map((item) => (
@@ -209,9 +236,7 @@ const debrisItems = [
           </div>
         </div>
 
-        <p class="mt-10 text-white/70">
-          Have something you're not sure about? Just ask.
-        </p>
+        <p class="mt-10 text-white/70">Not sure if we can take it? Just ask.</p>
 
       </div>
     </section>
