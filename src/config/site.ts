@@ -12,7 +12,7 @@ export const site = {
   description:
     "Professional construction cleanup, junk removal, and portable storage throughout the Des Moines metro and Central Iowa.",
 
-  url: "https://cleanslate.services",
+  url: "https://clean-slate-dsm.com",
 
   logo: "/logo.svg",
 
@@ -26,7 +26,7 @@ export const site = {
 
   phoneRaw: "5155551234",
 
-  email: "hello@cleanslate.services",
+  email: "hello@clean-slate-dsm.com",
 
   // =====================================================
   // Address
