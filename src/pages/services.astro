@@ -45,12 +45,34 @@ const faqs = [
       "Yes. We work with homeowners, contractors, property managers, investors, and others who need reliable cleanup and removal services.",
   },
 ];
+
+// /services is the site's single canonical FAQ (the homepage FAQ was
+// removed). FAQPage schema lives here and nowhere else.
+const faqPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+};
 ---
 
 <BaseLayout
   title="Services — Clean Slate"
   description="Construction cleanup, junk removal, portable storage, and property cleanouts throughout Central Iowa."
 >
+
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(faqPageSchema)}
+  />
 
   <Header />
 

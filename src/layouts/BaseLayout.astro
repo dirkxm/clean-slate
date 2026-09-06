@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { site } from "../config/site";
+import { locationNames } from "../data/locations";
 
 interface Props {
   title?: string;
@@ -19,6 +20,27 @@ const canonicalPath = Astro.url.pathname.endsWith("/")
   ? Astro.url.pathname
   : `${Astro.url.pathname}/`;
 const canonicalURL = new URL(canonicalPath, site.url);
+
+// Site-wide LocalBusiness schema. Service-area business: no street
+// address, coverage expressed via areaServed (pulled from the same
+// src/data/locations.ts as every on-page "areas served" list).
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": new URL("#business", site.url).href,
+  name: site.name,
+  description: site.description,
+  url: site.url,
+  telephone: `+1${site.phoneRaw}`,
+  email: site.email,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: site.address.city,
+    addressRegion: site.address.state,
+    addressCountry: site.address.country,
+  },
+  areaServed: locationNames.map((name) => ({ "@type": "City", name })),
+};
 ---
 
 <!doctype html>
@@ -30,6 +52,12 @@ const canonicalURL = new URL(canonicalPath, site.url);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(localBusinessSchema)}
+    />
 
     <slot name="head" />
   </head>
