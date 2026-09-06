@@ -98,6 +98,17 @@ export const site = {
     "Construction Cleanup Des Moines",
     "Junk Removal Des Moines",
   ],
+
+  // =====================================================
+  // Draft pages
+  // =====================================================
+  //
+  // Pages whose content is not yet signed off for public search.
+  // Each listed path is marked <meta robots="noindex,nofollow"> by the
+  // page itself and is excluded from the sitemap (see astro.config.mjs).
+  // Remove a path here to take that page live. Use the trailing-slash
+  // form, e.g. "/pricing/".
+  draftPages: ["/pricing/"] as string[],
 };
 
 export type Site = typeof site;

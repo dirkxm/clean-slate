@@ -4,32 +4,49 @@ import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import Button from "../components/ui/Button.astro";
 import CTA from "../components/sections/CTA.astro";
-import { ArrowRight, Sofa, Building2, HardHat } from "lucide-astro";
+import { site } from "../config/site";
+import { ArrowRight, Sofa, Truck, Hammer, Package } from "lucide-astro";
+
+// While "/pricing/" is in site.draftPages this page is noindex + kept
+// out of the sitemap. Remove it from that array to take pricing live.
+const isDraft = site.draftPages.includes("/pricing/");
 
 const pricingCategories = [
   {
     icon: Sofa,
-    title: "Junk Removal",
-    tagline: "We lift it. We load it. We haul it away.",
-    description: "Pricing is based on the amount and type of items being removed.",
-    cta: "Get Your Price",
+    title: "Furniture & Appliance Removal",
+    price: "Starting at $65",
+    description:
+      "Single items typically range $50–$130 depending on size — from a couch or mattress up to a large refrigerator. Multiple items are priced together.",
     href: "/online-ordering",
+    cta: "Get Your Price",
   },
   {
-    icon: Building2,
-    title: "Cleanouts",
-    tagline: "One room or an entire property.",
-    description: "Pricing depends on the size and scope of the cleanout.",
-    cta: "Get Your Price",
+    icon: Truck,
+    title: "Junk Removal & Cleanouts",
+    price: "Starting at $100",
+    description:
+      "A small load or single-room cleanout starts around $100. Larger cleanouts — garage, estate, full property — scale with size and volume, typically ranging up to $550 for a large full-property job.",
     href: "/online-ordering",
+    cta: "Get Your Price",
   },
   {
-    icon: HardHat,
-    title: "Construction",
-    tagline: "Keep your project moving.",
-    description: "Pricing depends on the scope of the work and amount of debris.",
-    cta: "Get Your Price",
+    icon: Hammer,
+    title: "Demolition & Construction Cleanup",
+    price: "$150–$500",
+    description:
+      "Priced by scope — from a single-room tear-out to a full renovation's worth of debris.",
     href: "/online-ordering",
+    cta: "Get Your Price",
+  },
+  {
+    icon: Package,
+    title: "Portable Storage",
+    price: "Coming Soon",
+    description:
+      "Pricing will be available soon. Contact us for early availability.",
+    href: "/contact",
+    cta: "Contact Us",
   },
 ];
 ---
@@ -38,6 +55,10 @@ const pricingCategories = [
   title="Junk Removal & Cleanout Pricing in Des Moines | Clean Slate"
   description="See how Clean Slate pricing works for junk removal, furniture removal, and cleanout services throughout the Des Moines metro. Book online."
 >
+
+  {isDraft && (
+    <meta slot="head" name="robots" content="noindex,nofollow" />
+  )}
 
   <Header />
 
@@ -66,7 +87,7 @@ const pricingCategories = [
       </div>
     </section>
 
-    <!-- ================= What We Offer ================= -->
+    <!-- ================= Pricing by Service ================= -->
     <section class="bg-primary-dark">
       <div class="container">
 
@@ -75,19 +96,23 @@ const pricingCategories = [
             pricingCategories.map((category) => (
               <a
                 href={category.href}
-                class="group flex flex-col rounded-3xl border border-white/15 p-5 transition duration-300 hover:-translate-y-1 hover:border-accent"
+                class="group flex flex-col rounded-3xl border border-white/15 p-6 transition duration-300 hover:-translate-y-1 hover:border-accent"
               >
                 <category.icon
-                  class="mb-1 text-accent"
-                  size={20}
+                  class="mb-3 text-accent"
+                  size={24}
                   strokeWidth={1.5}
                 />
 
-                <h3 class="mb-1 text-xl! text-white! group-hover:text-accent!">{category.title}</h3>
+                <h3 class="mb-2 text-xl! text-white! group-hover:text-accent!">
+                  {category.title}
+                </h3>
 
-                <p class="mt-0! mb-1 text-white">{category.tagline}</p>
+                <p class="mt-0! mb-3 text-2xl font-semibold text-accent">
+                  {category.price}
+                </p>
 
-                <p class="mt-0! mb-2 text-white/70">{category.description}</p>
+                <p class="mt-0! mb-4 text-white/70">{category.description}</p>
 
                 <span class="mt-auto inline-flex items-center gap-2 font-semibold text-accent">
                   {category.cta}
