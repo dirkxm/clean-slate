@@ -29,6 +29,7 @@ const localBusinessSchema = {
   "@type": "LocalBusiness",
   "@id": new URL("#business", site.url).href,
   name: site.name,
+  legalName: site.legalName,
   description: site.description,
   url: site.url,
   telephone: `+1${site.phoneRaw}`,

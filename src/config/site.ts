@@ -5,7 +5,7 @@ export const site = {
 
   name: "Clean Slate",
 
-  legalName: "Clean Slate Services",
+  legalName: "Clean Slate Services, LLC",
 
   tagline: "Construction Cleanup & Haul Away • Commercial & Residential",
 

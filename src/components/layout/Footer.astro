@@ -1,5 +1,6 @@
 ---
 import logo from "../../assets/images/clean-slate-horizontal.svg";
+import { site } from "../../config/site";
 
 const year = new Date().getFullYear();
 
@@ -87,7 +88,7 @@ const columns = [
     </div>
 
     <div class="mt-12 flex flex-col gap-2 border-t border-border pt-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-      <p>&copy; {year} Clean Slate Professional Clean Up Services. All rights reserved.</p>
+      <p>&copy; {year} {site.legalName}. All rights reserved.</p>
 
       <div class="flex gap-4">
         <a href="/terms" class="transition hover:text-primary">Terms &amp; Conditions</a>
