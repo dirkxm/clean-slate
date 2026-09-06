@@ -14,9 +14,56 @@ import Footer from "../components/layout/Footer.astro";
   <main>
 
     <section>
-      <div class="container">
+      <div class="container max-w-3xl">
 
-        <h1 class="mt-12 mb-12">Free Quote</h1>
+        <h1 class="mt-12 mb-6">Request a Free Quote</h1>
+
+        <p class="text-lg text-body">
+          This form is for jobs that don't fit our instant online pricing &mdash;
+          large or unusual projects, Portable Storage, or anything you're not
+          sure how to categorize. Tell us what's going on and we'll follow up
+          with a quote.
+        </p>
+
+        <p class="mt-4 text-lg text-body">
+          Already know what you need?{" "}
+          <a
+            href="/online-ordering"
+            class="font-semibold text-primary hover:text-primary-dark"
+          >
+            Get your price and book online
+          </a>.
+        </p>
+
+        <!-- ==============================================================
+             Jobber "Request a Quote" form embed goes here.
+             Replace the .quote-form-fallback block below with the embed
+             snippet once it's available.
+             ============================================================== -->
+        <div
+          class="quote-form-fallback mt-10 rounded-3xl border border-border bg-surface p-8 text-center"
+        >
+          <p class="text-lg font-semibold text-heading">
+            Our online quote form is on the way.
+          </p>
+          <p class="mt-2 text-body">
+            In the meantime, call or text us at{" "}
+            <a
+              href="tel:+15152023593"
+              class="font-semibold text-primary hover:text-primary-dark"
+            >
+              (515) 202-3593
+            </a>{" "}
+            or{" "}
+            <a
+              href="/contact"
+              class="font-semibold text-primary hover:text-primary-dark"
+            >
+              send us a message
+            </a>{" "}
+            and we'll get you a quote right away.
+          </p>
+        </div>
 
       </div>
     </section>
