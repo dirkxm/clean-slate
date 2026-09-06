@@ -25,17 +25,18 @@ import portableStorageImage from "../assets/images/temporary-storage.jpg";
 /**
  * Clean Slate's finalized service architecture:
  *
- *   Junk Removal      → Furniture Removal, Appliance Removal, General Junk Removal
  *   Cleanouts         → Household Cleanouts, Garage Cleanouts, Estate Cleanouts, Property Cleanouts
  *   Construction      → Construction Cleanup, Small Demolition
+ *   Junk Removal      → Furniture & Appliance Removal, General Junk Removal
  *   Portable Storage  → Portable Storage Rental
  *
  * `category` groups a service under one of the four umbrellas above and
  * drives ordering/grouping in navigation, the services grid, and online
- * ordering. Services without a dedicated marketing page yet (Appliance
- * Removal, General Junk Removal as a *distinct* page) are intentionally
- * not listed here — see online-ordering.astro, which is where a customer
- * can still select them even without a page to link to.
+ * ordering. Cleanouts and Construction come before Junk Removal in every
+ * ordered list. Services without a dedicated marketing page yet (General
+ * Junk Removal as a *distinct* page) are intentionally not listed here —
+ * see online-ordering.astro, which is where a customer can still select
+ * them even without a page to link to.
  */
 export type ServiceCategory =
   | "Junk Removal"
@@ -56,28 +57,6 @@ export interface Service {
 }
 
 export const services: Service[] = [
-  {
-    title: "Furniture Removal",
-    slug: "furniture-removal",
-    category: "Junk Removal",
-    hook: "Get the old furniture out.",
-    short:
-      "Couches, mattresses, dressers, and other bulky furniture hauled away.",
-    image: furnitureRemovalImage,
-    icon: Sofa,
-  },
-
-  {
-    title: "Junk Removal",
-    slug: "junk-removal",
-    category: "Junk Removal",
-    hook: "Get rid of the stuff taking up space.",
-    short:
-      "Furniture, household junk, appliances, debris, and other unwanted items hauled away.",
-    image: junkRemovalImage,
-    icon: Truck,
-  },
-
   {
     title: "Household Cleanouts",
     slug: "household-cleanouts",
@@ -142,6 +121,28 @@ export const services: Service[] = [
       "Small demolition and tear-out projects, plus the cleanup and hauling that follows.",
     image: smallDemolitionImage,
     icon: Hammer,
+  },
+
+  {
+    title: "Furniture & Appliance Removal",
+    slug: "furniture-removal",
+    category: "Junk Removal",
+    hook: "Get the old furniture and appliances out.",
+    short:
+      "Couches, mattresses, dressers, refrigerators, washers, and other bulky items hauled away.",
+    image: furnitureRemovalImage,
+    icon: Sofa,
+  },
+
+  {
+    title: "Junk Removal",
+    slug: "junk-removal",
+    category: "Junk Removal",
+    hook: "Get rid of the stuff taking up space.",
+    short:
+      "Furniture, household junk, appliances, debris, and other unwanted items hauled away.",
+    image: junkRemovalImage,
+    icon: Truck,
   },
 
   {
