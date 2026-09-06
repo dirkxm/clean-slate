@@ -16,7 +16,7 @@ export const site = {
 
   logo: "/logo.svg",
 
-  ogImage: "/images/og-image.jpg",
+  ogImage: "/open-graph-image.jpg",
 
   // =====================================================
   // Contact
