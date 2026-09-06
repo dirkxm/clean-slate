@@ -35,35 +35,41 @@ import Footer from "../components/layout/Footer.astro";
           </a>.
         </p>
 
-        <!-- ==============================================================
-             Jobber "Request a Quote" form embed goes here.
-             Replace the .quote-form-fallback block below with the embed
-             snippet once it's available.
-             ============================================================== -->
-        <div
-          class="quote-form-fallback mt-10 rounded-3xl border border-border bg-surface p-8 text-center"
-        >
-          <p class="text-lg font-semibold text-heading">
-            Our online quote form is on the way.
-          </p>
-          <p class="mt-2 text-body">
-            In the meantime, call or text us at{" "}
-            <a
-              href="tel:+15152023593"
-              class="font-semibold text-primary hover:text-primary-dark"
-            >
-              (515) 202-3593
-            </a>{" "}
-            or{" "}
-            <a
-              href="/contact"
-              class="font-semibold text-primary hover:text-primary-dark"
-            >
-              send us a message
-            </a>{" "}
-            and we'll get you a quote right away.
-          </p>
-        </div>
+        <!-- Jobber embedded "Request a Quote" work request form (form_id 5151784). -->
+        <div id="936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b-5151784" class="mt-10"></div>
+        <link
+          rel="stylesheet"
+          href="https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css"
+          media="screen"
+        />
+        <script
+          is:inline
+          src="https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js"
+          clienthub_id="936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b-5151784"
+          form_url="https://clienthub.getjobber.com/client_hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/work_request/embedded_work_request_form?form_id=5151784"
+        ></script>
+
+        <noscript>
+          <div class="mt-10 rounded-3xl border border-border bg-surface p-8 text-center">
+            <p class="text-body">
+              The quote form needs JavaScript to load. Call or text us at{" "}
+              <a
+                href="tel:+15152023593"
+                class="font-semibold text-primary hover:text-primary-dark"
+              >
+                (515) 202-3593
+              </a>{" "}
+              or{" "}
+              <a
+                href="/contact"
+                class="font-semibold text-primary hover:text-primary-dark"
+              >
+                send us a message
+              </a>{" "}
+              and we'll get you a quote right away.
+            </p>
+          </div>
+        </noscript>
 
       </div>
     </section>
