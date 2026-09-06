@@ -12,15 +12,15 @@ import {
 import type { ComponentProps } from "astro/types";
 import type { ImageMetadata } from "astro";
 
-import furnitureRemovalImage from "../assets/images/furniture-haul-away.jpg";
-import junkRemovalImage from "../assets/images/clean-slate-haul-away.jpg";
-import householdCleanoutsImage from "../assets/images/clean-slate-haul-away.jpg";
-import garageCleanoutImage from "../assets/images/garage-cleanout.jpg";
-import estateCleanoutImage from "../assets/images/estate-cleanout.jpg";
-import propertyCleanoutImage from "../assets/images/property-cleanout.jpg";
-import constructionCleanupImage from "../assets/images/construction-cleanup-pile.jpg";
-import smallDemolitionImage from "../assets/images/small-demolition.jpg";
-import portableStorageImage from "../assets/images/temporary-storage.jpg";
+import furnitureRemovalImage from "../assets/images/furniture-haul-away.webp";
+import junkRemovalImage from "../assets/images/clean-slate-haul-away.webp";
+import householdCleanoutsImage from "../assets/images/clean-slate-haul-away.webp";
+import garageCleanoutImage from "../assets/images/garage-cleanout.webp";
+import estateCleanoutImage from "../assets/images/estate-cleanout.webp";
+import propertyCleanoutImage from "../assets/images/property-cleanout.webp";
+import constructionCleanupImage from "../assets/images/construction-cleanup-pile.webp";
+import smallDemolitionImage from "../assets/images/small-demolition.webp";
+import portableStorageImage from "../assets/images/temporary-storage.webp";
 
 /**
  * Clean Slate's finalized service architecture:
