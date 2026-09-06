@@ -5,21 +5,19 @@ import Footer from "../components/layout/Footer.astro";
 import Button from "../components/ui/Button.astro";
 import CTA from "../components/sections/CTA.astro";
 import { site } from "../config/site";
-import { ArrowRight, Sofa, Truck, Hammer, Package } from "lucide-astro";
+import { Sofa, Truck, Hammer, Package } from "lucide-astro";
 
 // While "/pricing/" is in site.draftPages this page is noindex + kept
 // out of the sitemap. Remove it from that array to take pricing live.
 const isDraft = site.draftPages.includes("/pricing/");
 
-const pricingCategories = [
+const pricedCategories = [
   {
     icon: Sofa,
     title: "Furniture & Appliance Removal",
     price: "Starting at $65",
     description:
       "Single items typically range $50–$130 depending on size — from a couch or mattress up to a large refrigerator. Multiple items are priced together.",
-    href: "/online-ordering",
-    cta: "Get Your Price",
   },
   {
     icon: Truck,
@@ -27,8 +25,6 @@ const pricingCategories = [
     price: "Starting at $100",
     description:
       "A small load or single-room cleanout starts around $100. Larger cleanouts — garage, estate, full property — scale with size and volume, typically ranging up to $550 for a large full-property job.",
-    href: "/online-ordering",
-    cta: "Get Your Price",
   },
   {
     icon: Hammer,
@@ -36,17 +32,6 @@ const pricingCategories = [
     price: "$150–$500",
     description:
       "Priced by scope — from a single-room tear-out to a full renovation's worth of debris.",
-    href: "/online-ordering",
-    cta: "Get Your Price",
-  },
-  {
-    icon: Package,
-    title: "Portable Storage",
-    price: "Coming Soon",
-    description:
-      "Pricing will be available soon. Contact us for early availability.",
-    href: "/contact",
-    cta: "Contact Us",
   },
 ];
 ---
@@ -80,10 +65,6 @@ const pricingCategories = [
           online, you'll see current pricing during the booking process.
         </p>
 
-        <div class="mt-10">
-          <Button href="/online-ordering" size="sm">Book Online</Button>
-        </div>
-
       </div>
     </section>
 
@@ -91,39 +72,66 @@ const pricingCategories = [
     <section class="bg-primary-dark">
       <div class="container">
 
-        <div class="grid gap-6 sm:grid-cols-2">
+        <ul class="max-w-2xl divide-y divide-white/15">
           {
-            pricingCategories.map((category) => (
-              <a
-                href={category.href}
-                class="group flex flex-col rounded-3xl border border-white/15 p-6 transition duration-300 hover:-translate-y-1 hover:border-accent"
-              >
+            pricedCategories.map((category) => (
+              <li class="flex gap-4 py-6 first:pt-0">
                 <category.icon
-                  class="mb-3 text-accent"
+                  class="mt-1 shrink-0 text-accent"
                   size={24}
                   strokeWidth={1.5}
                 />
 
-                <h3 class="mb-2 text-xl! text-white! group-hover:text-accent!">
-                  {category.title}
-                </h3>
+                <div>
+                  <div class="flex flex-wrap items-baseline gap-x-3">
+                    <h3 class="text-xl! text-white!">{category.title}</h3>
+                    <span class="text-lg font-semibold text-accent">
+                      {category.price}
+                    </span>
+                  </div>
 
-                <p class="mt-0! mb-3 text-2xl font-semibold text-accent">
-                  {category.price}
-                </p>
-
-                <p class="mt-0! mb-4 text-white/70">{category.description}</p>
-
-                <span class="mt-auto inline-flex items-center gap-2 font-semibold text-accent">
-                  {category.cta}
-                  <ArrowRight
-                    class="transition group-hover:translate-x-1"
-                    size={16}
-                  />
-                </span>
-              </a>
+                  <p class="mt-1 text-white/70">{category.description}</p>
+                </div>
+              </li>
             ))
           }
+        </ul>
+
+        <div class="mt-10">
+          <Button href="/online-ordering" variant="secondary">
+            Get Your Price
+          </Button>
+        </div>
+
+        <!-- Portable Storage sits after the button — no online pricing yet. -->
+        <div class="mt-12 max-w-2xl border-t border-white/15 pt-8">
+          <div class="flex gap-4">
+            <Package
+              class="mt-1 shrink-0 text-white/40"
+              size={24}
+              strokeWidth={1.5}
+            />
+
+            <div>
+              <div class="flex flex-wrap items-baseline gap-x-3">
+                <h3 class="text-xl! text-white!">Portable Storage</h3>
+                <span class="text-lg font-semibold text-white/50">
+                  Coming Soon
+                </span>
+              </div>
+
+              <p class="mt-1 text-white/70">
+                Pricing will be available soon.{" "}
+                <a
+                  href="/contact"
+                  class="font-semibold text-accent hover:underline"
+                >
+                  Contact us
+                </a>{" "}
+                for early availability.
+              </p>
+            </div>
+          </div>
         </div>
 
       </div>
