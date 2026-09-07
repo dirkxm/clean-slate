@@ -16,7 +16,7 @@ const columns = [
       { label: "Small Demolition", href: "/services/small-demolition" },
       { label: "Furniture & Appliance Removal", href: "/services/furniture-removal" },
       { label: "Junk Removal", href: "/services/junk-removal" },
-      { label: "Portable Storage", href: "/services/portable-storage" },
+      { label: "Portable Storage", href: "/services/portable-storage", comingSoon: true },
     ],
   },
   {
@@ -81,6 +81,9 @@ const columns = [
                     class="text-sm text-body transition hover:text-primary"
                   >
                     {link.label}
+                    {"comingSoon" in link && link.comingSoon && (
+                      <span class="ml-1.5 text-xs text-muted">(Coming Soon)</span>
+                    )}
                   </a>
                 </li>
               ))}

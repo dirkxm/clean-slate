@@ -54,6 +54,8 @@ export interface Service {
   icon: (props: ComponentProps<typeof Sofa>) => any;
   /** Overrides the default `/services/{slug}` link, for services whose page lives elsewhere. */
   href?: string;
+  /** Service is not yet bookable — surfaces a "Coming Soon" badge on cards. */
+  comingSoon?: boolean;
 }
 
 export const services: Service[] = [
@@ -154,5 +156,6 @@ export const services: Service[] = [
       "Secure portable storage for renovations, moves, remodeling projects, and temporary storage needs.",
     image: portableStorageImage,
     icon: Package,
+    comingSoon: true,
   },
 ];

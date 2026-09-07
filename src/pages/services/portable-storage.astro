@@ -56,8 +56,8 @@ const perfectFor = [
 const steps = [
   {
     number: "01",
-    title: "Book Online",
-    description: "Choose your portable storage option and schedule a delivery time that works for you.",
+    title: "Reach Out",
+    description: "Contact us to go over your project, choose a portable storage option, and set up a delivery time that works for you.",
   },
   {
     number: "02",
@@ -115,7 +115,7 @@ const storableItems = [
 const storageFaqs = [
   {
     question: "How long can I keep the portable storage unit?",
-    answer: "Rental periods depend on the portable storage option you select. Current availability and pricing are available when you book online.",
+    answer: "Rental periods depend on the portable storage option you select. Contact us for current availability and pricing.",
   },
   {
     question: "Where can the portable storage unit be placed?",
@@ -160,6 +160,11 @@ const storageFaqs = [
 
         <div>
 
+          <span class="mb-6 inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted">
+            <Clock size={12} />
+            Coming Soon
+          </span>
+
           <h1 class="mb-6">
             Temporary Storage Delivered to Your Driveway
           </h1>
@@ -175,8 +180,19 @@ const storageFaqs = [
             without making trips to a storage facility.
           </p>
 
+          <p class="mt-4 max-w-xl text-body">
+            Portable storage isn't bookable online just yet.{" "}
+            <a
+              href="/contact"
+              class="font-semibold text-primary hover:text-primary-dark"
+            >
+              Contact us
+            </a>{" "}
+            for early availability.
+          </p>
+
           <div class="mt-10 flex flex-wrap items-center gap-4">
-            <Button href="/online-ordering" size="sm">Get Your Price &amp; Book Online</Button>
+            <Button href="/contact" size="sm">Contact Us for Early Availability</Button>
 
             <a
               href="tel:+15155199878"
@@ -346,7 +362,9 @@ const storageFaqs = [
 
     <CTA
       title="Ready for More Space?"
-      description="Get portable storage delivered to your driveway. Book online and create the extra space you need for your move, remodel, renovation, or home project."
+      description="Portable storage delivered to your driveway is coming soon. Contact us for early availability and to create the extra space you need for your move, remodel, renovation, or home project."
+      buttonLabel="Contact Us for Early Availability"
+      buttonHref="/contact"
     />
 
   </main>

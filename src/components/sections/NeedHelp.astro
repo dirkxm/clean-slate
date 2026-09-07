@@ -22,7 +22,7 @@ const options = [
     question: "I need somewhere to put it.",
     detail: "You need a container or storage space at your property.",
     links: [
-      { label: "Portable Storage", href: "/services/portable-storage" },
+      { label: "Portable Storage", href: "/services/portable-storage", comingSoon: true },
     ],
   },
 ];
@@ -53,6 +53,9 @@ const options = [
                   class="group inline-flex items-center gap-2 font-semibold text-primary transition hover:text-primary-dark"
                 >
                   {link.label}
+                  {"comingSoon" in link && link.comingSoon && (
+                    <span class="text-xs font-medium text-muted">(Coming Soon)</span>
+                  )}
                   <ArrowRight
                     class="transition group-hover:translate-x-1"
                     size={16}
