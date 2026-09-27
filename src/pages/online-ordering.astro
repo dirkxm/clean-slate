@@ -14,6 +14,8 @@ interface OrderingLink {
   icon: typeof Truck;
   title: string;
   href: string;
+  /** Short pill shown next to the title — for entries that aren't instant-priced. */
+  badge?: string;
 }
 
 // Each category routes to its own Jobber "public request" intake form.
@@ -32,7 +34,10 @@ const orderingLinks: OrderingLink[] = [
   {
     icon: Hammer,
     title: "Demolition & Construction Cleanup",
-    href: "https://clienthub.getjobber.com/hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/requests/5152620/new",
+    // Demolition is scope-priced, not instant — routes to the same
+    // Jobber request form, just flagged as needing a quote.
+    href: "https://clienthub.getjobber.com/hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/requests/5227337/new",
+    badge: "Quote Required",
   },
 ];
 ---
@@ -47,12 +52,21 @@ const orderingLinks: OrderingLink[] = [
   <main>
 
     <!-- ================= Hero ================= -->
-    <section>
+    <section class="py-8! sm:py-10!">
       <div class="container text-center">
-        <h1 class="mb-4">Get Your Price</h1>
+        <h1 class="mb-3">Get Your Price</h1>
         <p class="mx-auto max-w-2xl text-lg text-body">
-          Choose what you need and we'll guide you through a few quick
-          questions.
+          Book online for instant pricing on junk removal &amp; cleanouts
+          and furniture &amp; appliance removal. Demolition &amp;
+          Construction Cleanup requires a quote. Have something that
+          doesn't fit those categories, or a larger project? We're happy
+          to help.
+        </p>
+        <p class="mx-auto mt-4 max-w-2xl text-sm text-muted">
+          Prices shown are based on the details you provide. Once we're
+          on site, if the job is smaller than described we'll refund the
+          difference — if it's larger, we'll confirm with you before
+          doing any additional work.
         </p>
       </div>
     </section>
@@ -74,8 +88,15 @@ const orderingLinks: OrderingLink[] = [
                   class="group flex items-center gap-4 rounded-3xl border border-border bg-white p-6 shadow-soft transition hover:border-primary"
                 >
                   <link.icon class="text-primary" size={32} strokeWidth={1.5} />
-                  <span class="flex-1 text-lg font-semibold text-heading">
-                    {link.title}
+                  <span class="flex flex-1 flex-wrap items-center gap-3">
+                    <span class="text-lg font-semibold text-heading">
+                      {link.title}
+                    </span>
+                    {link.badge && (
+                      <span class="inline-flex items-center whitespace-nowrap rounded-full bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted">
+                        {link.badge}
+                      </span>
+                    )}
                   </span>
                   <ArrowRight
                     class="text-primary transition group-hover:translate-x-1"

@@ -26,14 +26,11 @@ const pricedCategories = [
     description:
       "A small load or single-room cleanout starts around $100. Larger cleanouts — garage, estate, full property — scale with size and volume, typically ranging up to $550 for a large full-property job.",
   },
-  {
-    icon: Hammer,
-    title: "Demolition & Construction Cleanup",
-    price: "$150–$500",
-    description:
-      "Priced by scope — from a single-room tear-out to a full renovation's worth of debris.",
-  },
 ];
+
+// Demolition & Construction Cleanup is quote-based, not instant-priced —
+// it gets its own block (below) with its own CTA rather than sitting in
+// the instant-pricing list above.
 ---
 
 <BaseLayout
@@ -104,7 +101,43 @@ const pricedCategories = [
             </Button>
           </div>
 
-          <!-- Portable Storage sits after the button — no online pricing yet. -->
+          <!-- Demolition & Construction Cleanup is quote-based, not instant-priced — its own block and CTA. -->
+          <div class="mt-12 border-t border-white/15 pt-8">
+            <div class="flex gap-4">
+              <Hammer
+                class="mt-1 shrink-0 text-accent"
+                size={24}
+                strokeWidth={1.5}
+              />
+
+              <div>
+                <div class="flex flex-wrap items-baseline gap-x-3">
+                  <h3 class="text-xl! text-white!">Demolition &amp; Construction Cleanup</h3>
+                  <span class="text-lg font-semibold text-accent">
+                    Starting at $300
+                  </span>
+                </div>
+
+                <p class="mt-1 text-white/70">
+                  Every demolition project is unique, so we provide a
+                  custom quote based on your specific job before any work
+                  is scheduled.
+                </p>
+
+                <div class="mt-4">
+                  <Button
+                    href="https://clienthub.getjobber.com/hubs/936bcad6-c7f4-4cb8-b57a-16fabd6d5c1b/public/requests/5227337/new"
+                    variant="secondary"
+                    size="sm"
+                  >
+                    Request a Quote
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portable Storage sits after Demolition — no online pricing yet. -->
           <div class="mt-12 border-t border-white/15 pt-8">
             <div class="flex gap-4">
               <Package
