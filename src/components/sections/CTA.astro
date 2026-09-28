@@ -18,6 +18,14 @@ const {
   secondaryLabel,
   secondaryHref,
 } = Astro.props;
+
+// Only tag the button for cta_click tracking when it actually leads into
+// a Jobber booking form or the Free Quote form — e.g. Portable Storage's
+// CTA points to /contact instead, which isn't a booking/quote form.
+const isBookingCta =
+  buttonHref === "/online-ordering" ||
+  buttonHref === "/free-quote" ||
+  buttonHref.includes("clienthub.getjobber.com");
 ---
 
 <section class="bg-primary-dark">
@@ -32,7 +40,11 @@ const {
     </p>
 
     <div class="flex flex-col items-center gap-4">
-      <Button href={buttonHref} variant="secondary">
+      <Button
+        href={buttonHref}
+        variant="secondary"
+        data-cta={isBookingCta ? buttonLabel : undefined}
+      >
         {buttonLabel}
       </Button>
 

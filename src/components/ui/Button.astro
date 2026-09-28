@@ -5,6 +5,9 @@ interface Props {
   size?: "default" | "sm";
   disabled?: boolean;
   loading?: boolean;
+  // Passed through to the rendered element — e.g. data-cta for the
+  // delegated cta_click tracking listener in BaseLayout.astro.
+  [dataAttr: `data-${string}`]: string | undefined;
 }
 
 const {
@@ -13,6 +16,7 @@ const {
   size = "default",
   disabled = false,
   loading = false,
+  ...rest
 } = Astro.props;
 
 const sizes = {
@@ -33,7 +37,7 @@ const classes = `inline-flex items-center justify-center gap-2 rounded-xl font-m
 
 {
   isDisabled ? (
-    <button type="button" class={classes} disabled aria-busy={loading}>
+    <button type="button" class={classes} disabled aria-busy={loading} {...rest}>
       {loading && (
         <span
           class="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"
@@ -43,7 +47,7 @@ const classes = `inline-flex items-center justify-center gap-2 rounded-xl font-m
       <slot />
     </button>
   ) : (
-    <a href={href} class={classes}>
+    <a href={href} class={classes} {...rest}>
       <slot />
     </a>
   )

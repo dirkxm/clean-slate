@@ -112,20 +112,34 @@ const localBusinessSchema = {
   <body>
     <slot />
 
-    <!-- Fire a GA4 phone_click event for every tel: link on the page.
-         Runs on the main thread; forward: ['dataLayer.push'] in
-         astro.config.mjs relays the push into the Partytown-sandboxed GA4. -->
-    <script is:inline>
-      document.addEventListener("click", function (event) {
-        const link = event.target.closest('a[href^="tel:"]');
-        if (!link) return;
-        if (window.dataLayer) {
-          window.dataLayer.push({
-            event: "phone_click",
-            link_url: link.getAttribute("href"),
-            page_path: window.location.pathname,
+    <!-- GA4 event tracking: phone_click for every tel: link, cta_click for
+         every link/button into a Jobber booking form or the Free Quote
+         form (flagged with data-cta — see Button.astro, CTA.astro, and
+         the individual pages/components that set it).
+         Runs on the main thread, using the gtag() call signature — not a
+         raw dataLayer.push({...}) object, which is GTM syntax and does
+         nothing here. forward: ['dataLayer.push'] in astro.config.mjs
+         relays these calls into the Partytown-sandboxed gtag.js. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+
+      document.querySelectorAll('a[href^="tel:"]').forEach((a) => {
+        a.addEventListener('click', () => {
+          gtag('event', 'phone_click', {
+            link_url: a.getAttribute('href'),
+            page_path: location.pathname,
           });
-        }
+        });
+      });
+
+      document.addEventListener('click', (event) => {
+        const cta = event.target.closest('[data-cta]');
+        if (!cta) return;
+        gtag('event', 'cta_click', {
+          cta_label: cta.dataset.cta,
+          page_path: location.pathname,
+        });
       });
     </script>
   </body>

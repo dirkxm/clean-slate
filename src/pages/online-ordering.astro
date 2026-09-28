@@ -88,6 +88,7 @@ const orderingLinks: OrderingLink[] = [
                 <a
                   href={link.href}
                   class="group flex items-center gap-4 rounded-3xl border border-border bg-white p-6 shadow-soft transition hover:border-primary"
+                  data-cta={link.title}
                 >
                   <link.icon class="text-primary" size={32} strokeWidth={1.5} />
                   <span class="flex flex-1 flex-wrap items-center gap-3">
@@ -149,6 +150,7 @@ const orderingLinks: OrderingLink[] = [
               larger project? <a
                 href="/free-quote"
                 class="font-semibold text-primary hover:text-primary-dark"
+                data-cta="Request a free quote"
               >Request a free quote</a> instead.
             </p>
           </div>
