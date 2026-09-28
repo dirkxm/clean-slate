@@ -3,7 +3,7 @@ export const site = {
   // Business
   // =====================================================
 
-  name: "Clean Slate",
+  name: "Clean Slate Services",
 
   legalName: "Clean Slate Services, LLC",
 
@@ -83,6 +83,21 @@ export const site = {
     instagram: "",
     google: "",
   },
+
+  // =====================================================
+  // Reviews
+  // =====================================================
+
+  googleReviewUrl: "https://g.page/r/CSVkL85_mx2AECE/review",
+
+  // =====================================================
+  // Analytics
+  // =====================================================
+  //
+  // GA4 measurement ID, loaded via @astrojs/partytown in BaseLayout.astro
+  // so gtag.js runs off the main thread. Placeholder until the real ID
+  // is provided.
+  gaMeasurementId: "G-XXXXXXXXXX",
 
   // =====================================================
   // SEO

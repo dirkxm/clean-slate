@@ -12,7 +12,7 @@ interface Props {
 }
 
 const {
-  title = "Clean Slate",
+  title = "Clean Slate Services",
   description = "Professional construction cleanup, junk removal, and portable storage throughout Central Iowa.",
   ogDescription = description,
 } = Astro.props;
@@ -50,6 +50,9 @@ const localBusinessSchema = {
     addressCountry: site.address.country,
   },
   areaServed: locationNames.map((name) => ({ "@type": "City", name })),
+  // Mon-Fri 8am-6pm, Sat 8am-noon, closed Sunday. Sunday is omitted
+  // rather than listed as closed — that's the schema.org convention.
+  openingHours: ["Mo-Fr 08:00-18:00", "Sa 08:00-12:00"],
 };
 ---
 
@@ -88,10 +91,42 @@ const localBusinessSchema = {
       set:html={JSON.stringify(localBusinessSchema)}
     />
 
+    <!-- GA4, loaded off the main thread via Partytown (astro.config.mjs). -->
+    <script
+      type="text/partytown"
+      is:inline
+      src={`https://www.googletagmanager.com/gtag/js?id=${site.gaMeasurementId}`}
+    />
+    <script
+      type="text/partytown"
+      is:inline
+      set:html={`window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '${site.gaMeasurementId}');`}
+    />
+
     <slot name="head" />
   </head>
 
   <body>
     <slot />
+
+    <!-- Fire a GA4 phone_click event for every tel: link on the page.
+         Runs on the main thread; forward: ['dataLayer.push'] in
+         astro.config.mjs relays the push into the Partytown-sandboxed GA4. -->
+    <script is:inline>
+      document.addEventListener("click", function (event) {
+        const link = event.target.closest('a[href^="tel:"]');
+        if (!link) return;
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "phone_click",
+            link_url: link.getAttribute("href"),
+            page_path: window.location.pathname,
+          });
+        }
+      });
+    </script>
   </body>
 </html>

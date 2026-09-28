@@ -78,7 +78,7 @@ export const locations: Location[] = [
   {
     name: "Urbandale",
     slug: "urbandale",
-    description: "Clean Slate handles the lifting, loading, hauling, and removal.",
+    description: "Clean Slate Services handles the lifting, loading, hauling, and removal.",
   },
   {
     name: "Waukee",
