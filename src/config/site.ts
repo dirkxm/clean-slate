@@ -94,9 +94,7 @@ export const site = {
   // Analytics
   // =====================================================
   //
-  // GA4 measurement ID, loaded via @astrojs/partytown in BaseLayout.astro
-  // so gtag.js runs off the main thread. Placeholder until the real ID
-  // is provided.
+  // GA4 measurement ID, loaded directly (main thread) in BaseLayout.astro.
   gaMeasurementId: "G-QT1NMDMWNV",
 
   // =====================================================

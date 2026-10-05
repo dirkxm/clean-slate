@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import partytown from '@astrojs/partytown';
 
 import tailwindcss from '@tailwindcss/vite';
 
@@ -22,11 +21,6 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !SITEMAP_EXCLUDE.includes(new URL(page).pathname),
-    }),
-    partytown({
-      config: {
-        forward: ['dataLayer.push'],
-      },
     }),
   ],
 

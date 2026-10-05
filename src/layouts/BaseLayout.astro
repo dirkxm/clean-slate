@@ -91,17 +91,16 @@ const localBusinessSchema = {
       set:html={JSON.stringify(localBusinessSchema)}
     />
 
-    <!-- GA4, loaded off the main thread via Partytown (astro.config.mjs). -->
+    <!-- GA4. Loaded on the main thread, not via Partytown — gtag() calls
+         made through the Partytown proxy never reached GA4 in practice.
+         is:inline on the config script so Astro doesn't bundle it as a
+         deferred module; it needs to define window.gtag before anything
+         else (the phone_click/cta_click listeners below) runs. -->
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${site.gaMeasurementId}`}></script>
     <script
-      type="text/partytown"
-      is:inline
-      src={`https://www.googletagmanager.com/gtag/js?id=${site.gaMeasurementId}`}
-    />
-    <script
-      type="text/partytown"
       is:inline
       set:html={`window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag(){ dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', '${site.gaMeasurementId}');`}
     />
@@ -115,15 +114,9 @@ const localBusinessSchema = {
     <!-- GA4 event tracking: phone_click for every tel: link, cta_click for
          every link/button into a Jobber booking form or the Free Quote
          form (flagged with data-cta — see Button.astro, CTA.astro, and
-         the individual pages/components that set it).
-         Runs on the main thread, using the gtag() call signature — not a
-         raw dataLayer.push({...}) object, which is GTM syntax and does
-         nothing here. forward: ['dataLayer.push'] in astro.config.mjs
-         relays these calls into the Partytown-sandboxed gtag.js. -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-
+         the individual pages/components that set it). gtag() is already
+         defined on window by the config script in <head>. -->
+    <script is:inline>
       document.querySelectorAll('a[href^="tel:"]').forEach((a) => {
         a.addEventListener('click', () => {
           gtag('event', 'phone_click', {
@@ -132,7 +125,9 @@ const localBusinessSchema = {
           });
         });
       });
+    </script>
 
+    <script is:inline>
       document.addEventListener('click', (event) => {
         const cta = event.target.closest('[data-cta]');
         if (!cta) return;
